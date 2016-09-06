@@ -3,7 +3,7 @@ date: 2016-04-30 10:30:55
 tags: [Python, Programming Language]
 ---
 
-前两天做[数据挖掘的作业](https://github.com/nettee/AssociationRuleMining)，是我第一次用Python写一个有点规模（两百多行）的程序，第一次真正使用Python的类和namedtuple，在编程的过程中对Python语言产生了不少思考，在这里先记录下来，以后有时间的时候就仔细探究一下。
+前两天做数据挖掘的作业，是我第一次用Python写一个有点规模（两百多行）的程序，第一次真正使用Python的类和namedtuple，在编程的过程中对Python语言产生了不少思考，在这里先记录下来，以后有时间的时候就仔细探究一下。
 
 ### 1. Python的面向对象机制
 
