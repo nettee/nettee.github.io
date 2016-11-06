@@ -1,4 +1,5 @@
-title: Android Activity回调方法的特殊调用顺序：onStart -> onStop
+title: Activity回调方法的特殊调用顺序：onStart -> onStop
+date: 2016-09-12 19:40:33
 tags: [Android]
 ---
 

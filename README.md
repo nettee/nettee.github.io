@@ -7,7 +7,6 @@
 #### 安装Hexo
 
 ```Shell
-npm install -g hexo
 npm install
 ```
 
