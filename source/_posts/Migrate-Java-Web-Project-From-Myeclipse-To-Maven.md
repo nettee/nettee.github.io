@@ -14,22 +14,43 @@ tags: [Java, JSP, Maven]
 1. 添加依赖
 1. 使用jetty
 
+<!-- more -->
+
 ## 生成Maven webapp项目骨架
 
-```Shell
-mvn archetype:generate
-```
+为了清晰直观，这里我先生成Maven webapp的目录骨架，再把已有的文件搬到对应的目录里。运行`mvn archetype:generate`，注意artifactId选择org.apache.maven.archetypes:maven-archetype-webapp。
 
 ## 更改目录结构
 
-+ [更新之前的目录结构](https://github.com/nettee/IFTTT-Web/tree/629f50ed92b755294b29ab90f79604700d4739e8)
-+ [更新之后的目录结构](https://github.com/nettee/IFTTT-Web/tree/b4af1ab6926b20cf8d6a557d47216513260c4356)
+首先让我们看一下[更新之前的目录结构](https://github.com/nettee/IFTTT-Web/tree/629f50ed92b755294b29ab90f79604700d4739e8)：
+
+```
+
+```
+
+这是一个典型的MyEclipse生成的Java Web项目的目录结构，WebRoot目录下放着webapp需要的各种文件。需要注意的是，src和weibo都是source folder。
+
+而上一步生成的Maven项目骨架是这个样子的：
+
+```
+
+```
+
+按照Maven对webapp项目的约定，src/main/java放置Java源代码，src/main/resources放置资源文件，src/main/webapp放置JSP、JavaScript、CSS等文件，其中web.xml放置在src/main/webapp/WEB-INF目录下。
+
+那么，原来的文件这样进行移动：
+
+1. src、weibo目录下所有包含Java源代码的子目录移动到src/main/java目录中
+2. 配置文件config.properties，log4j.properties移动到src/main/resources目录中
+3. WebRoot目录下所有的文件原样移动到src/main/webapp中
+
+感觉移动起来还是挺简单的:) 原来的lib目录就不需要了，我们马上会使用Maven依赖来完成这个任务。文件移动之后的目录结构可以参看[这里](https://github.com/nettee/IFTTT-Web/tree/b4af1ab6926b20cf8d6a557d47216513260c4356)。
 
 ## 添加依赖
 
 pom.xml文件：
 
-```XML
+```POM
 <dependencies>
 	<dependency>
 		<groupId>junit</groupId>
