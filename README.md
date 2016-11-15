@@ -8,6 +8,7 @@
 
 ```Shell
 npm install
+npm install -g hexo
 ```
 
 #### 本地预览
