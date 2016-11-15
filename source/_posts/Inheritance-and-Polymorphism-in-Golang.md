@@ -1,6 +1,6 @@
 title: Go语言对面向对象的支持
 date: 2016-04-15 20:54:48
-tags: [Object-oriented, Go, Programming Language]
+tags: [OO, Go, Programming Language]
 ---
 Go语言的风格比较独特，相比于C++、Java等语言中传统的面向对象机制，Go的机制非常不同。Go支持类，但不支持继承，也不支持虚函数（抽象方法）。同时，Go语言抛弃了构造函数。
 
