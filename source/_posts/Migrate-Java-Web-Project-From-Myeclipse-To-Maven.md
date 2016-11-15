@@ -25,6 +25,42 @@ tags: [Java, JSP, Maven]
 首先让我们看一下[更新之前的目录结构](https://github.com/nettee/IFTTT-Web/tree/629f50ed92b755294b29ab90f79604700d4739e8)：
 
 ```
+.
+├── src
+│   ├── log4j.properties
+│   ├── database
+│   ├── model
+│   │   ├── data
+│   │   └── task
+│   ├── servlet
+│   └── task
+│       ├── action
+│       ├── mail
+│       ├── run
+│       ├── trigger
+│       └── weibo
+│── weibo
+│   ├── config.properties
+│   ├── log4j.properties
+│   └── weibo4j
+│       └── ...
+├── lib
+│   └── ...
+└── WebRoot
+    ├── assets
+    ├── component
+    ├── css
+    ├── dashboard.jsp
+    ├── favicon.ico
+    ├── font
+    ├── index.jsp
+    ├── js
+    ├── login.jsp
+    ├── META-INF
+    │   └── MANIFEST.MF
+    ├── register.jsp
+    └── WEB-INF
+        └── web.xml
 
 ```
 
@@ -33,7 +69,16 @@ tags: [Java, JSP, Maven]
 而上一步生成的Maven项目骨架是这个样子的：
 
 ```
-
+.
+├── pom.xml
+└── src
+    └── main
+        ├── java
+        ├── resources
+        └── webapp
+            ├── index.jsp
+            └── WEB-INF
+                └── web.xml
 ```
 
 按照Maven对webapp项目的约定，src/main/java放置Java源代码，src/main/resources放置资源文件，src/main/webapp放置JSP、JavaScript、CSS等文件，其中web.xml放置在src/main/webapp/WEB-INF目录下。
@@ -45,6 +90,47 @@ tags: [Java, JSP, Maven]
 3. WebRoot目录下所有的文件原样移动到src/main/webapp中
 
 感觉移动起来还是挺简单的:) 原来的lib目录就不需要了，我们马上会使用Maven依赖来完成这个任务。文件移动之后的目录结构可以参看[这里](https://github.com/nettee/IFTTT-Web/tree/b4af1ab6926b20cf8d6a557d47216513260c4356)。
+
+```
+.
+├── pom.xml
+└── src
+    ├── main
+    │   ├── java
+    │   │   ├── database
+    │   │   ├── model
+    │   │   │   ├── data
+    │   │   │   └── task
+    │   │   ├── servlet
+    │   │   ├── task
+    │   │   │   ├── action
+    │   │   │   ├── mail
+    │   │   │   ├── run
+    │   │   │   ├── trigger
+    │   │   │   └── weibo
+    │   │   └── weibo4j
+    │   ├── resources
+    │   │   ├── config.properties
+    │   │   ├── log4j.properties
+    │   │   └── schema.sql
+    │   └── webapp
+    │       ├── assets
+    │       ├── component
+    │       ├── css
+    │       ├── dashboard.jsp
+    │       ├── favicon.ico
+    │       ├── font
+    │       ├── index.jsp
+    │       ├── js
+    │       ├── login.jsp
+    │       ├── META-INF
+    │       │   └── MANIFEST.MF
+    │       ├── register.jsp
+    │       └── WEB-INF
+    │           └── web.xml
+    └── test
+        └── java
+```
 
 ## 添加依赖
 
