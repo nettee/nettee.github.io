@@ -2,6 +2,8 @@ title: Compiling Android Source Code
 tags: [Android, Linux]
 ---
 
+# Android 6
+
 ### Installing OpenJDK 7
 
 AOSP only accepts OpenJDK 7 as compiling Java version. No HotSpot (Oracle JDK).
@@ -56,9 +58,48 @@ index b84154b..8cf41c0 100644
  endif
 ```
 
+# Android 7
 
+### OpenJDK 8
 
+删除 openjdk-7-jre，安装 openjdk-8-jre。
 
+### Out of memory
 
+Error message:
 
+```
+[ 34% 12315/35670] Building with Jack: out/target/common/obj/JAVA_LIBRARIES/framework_intermediates/with-local/classes.dex
+FAILED: /bin/bash out/target/common/obj/JAVA_LIBRARIES/framework_intermediates/with-local/classes.dex.rsp
+Out of memory error (version 1.2-rc4 'Carnac' (298900 f95d7bdecfceb327f9d201a1348397ed8a843843 by android-jack-team@google.com)).
+GC overhead limit exceeded.
+Try increasing heap size with java option '-Xmx<size>'.
+Warning: This may have produced partial or corrupted output.
+ninja: build stopped: subcommand failed.
+build/core/ninja.mk:148: recipe for target 'ninja_wrapper' failed
+```
 
+Solution:
+
+```diff
+diff --git prebuilts/sdk/tools/jack-admin prebuilts/sdk/tools/jack-admin
+index ee193fc..3c9178a 100755
+--- a/prebuilts/sdk/tools/jack-admin
++++ b/prebuilts/sdk/tools/jack-admin
+@@ -451,7 +451,7 @@ case $COMMAND in
+     if [ "$RUNNING" = 0 ]; then
+       echo "Server is already running"
+     else
+-      JACK_SERVER_COMMAND="java -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=$TMPDIR $JACK_SERVER_VM_ARGUMENTS -cp $LAUNCHER_JAR $LAUNCHER_NAME"
++      JACK_SERVER_COMMAND="java -XX:MaxJavaStackTraceDepth=-1 -Djava.io.tmpdir=$TMPDIR $JACK_SERVER_VM_ARGUMENTS -Xmx4096m -cp $LAUNCHER_JAR $LAUNCHER_NAME"
+       echo "Launching Jack server" $JACK_SERVER_COMMAND
+       (
+         trap "" SIGHUP
+```
+
+重启jack-admin
+
+```Shell
+./prebuilts/sdk/tools/jack-admin stop-server
+./prebuilts/sdk/tools/jack-admin start-server
+```
