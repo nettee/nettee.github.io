@@ -1,10 +1,13 @@
-title: Compiling Android Source Code
+title: 编译Android源码时遇到的问题与解决方案
+date: 2017-09-07 15:03:22
 tags: [Android, Linux]
 ---
 
+因为科研需要，我最近在编译Android源码，其间遇到的一些问题记录下来，以备日后查阅。
+
 # Android 6
 
-### Installing OpenJDK 7
+## Installing OpenJDK 7
 
 AOSP only accepts OpenJDK 7 as compiling Java version. No HotSpot (Oracle JDK).
 
@@ -18,7 +21,9 @@ sudo apt-get update
 sudo apt-get install openjdk-7-jre
 ```
 
-### bison: No such file or directory
+<!-- more -->
+
+## bison: No such file or directory
 
 Error message:
 
@@ -33,7 +38,7 @@ sudo apt-get install bison
 sudo apt-get install  g++-multilib gcc-multilib
 ```
 
-### Link error
+## Link error
 
 Error message:
 
@@ -60,11 +65,11 @@ index b84154b..8cf41c0 100644
 
 # Android 7
 
-### OpenJDK 8
+## OpenJDK 8
 
 删除 openjdk-7-jre，安装 openjdk-8-jre。
 
-### Out of memory
+## Out of memory
 
 Error message:
 
