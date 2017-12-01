@@ -9,7 +9,7 @@ SQLAlchemy的代码比较难以阅读，这是由它自身的特点决定的。�
 
 -----
 
-## 1. 数据库抽象面临的挑战
+# 1. 数据库抽象面临的挑战
 
 原文中给出了一个概念，叫做“对象-关系阻抗失配”(object-relational impedance mismatch)问题。这个概念的含义是这样的：
 
@@ -25,7 +25,7 @@ SQLAlchemy的代码比较难以阅读，这是由它自身的特点决定的。�
 
 如果你开发的系统使用的是面向对象语言和关系型数据库，当系统规模大到一定程度的时候，就一定会出现对象-关系阻抗失配的问题。SQLAlchemy这类的ORM工具就是用来解决这类问题的。
 
-## 2. SQLAlchemy的两层结构
+# 2. SQLAlchemy的两层结构
 
 原文中已经给出了SQLAlchemy的两个层次的关系图：
 
@@ -51,7 +51,7 @@ SQLAlchemy的两个最主要的功能点就是**对象-关系映射（ORM）**�
 
 读者不妨在阅读时对比第4节和第6节、第5节和第7节的内容，会发现很多联系和相似之处。
 
-## 3. 改良DBAPI
+# 3. 改良DBAPI
 
 首先，我们要理解什么是DBAPI，以下内容引用自SQLAlchemy文档的术语表：
 
@@ -101,7 +101,7 @@ connection.close()
 >
 > 在一个语句执行的过程中，`Connection`会创建一个额外的`ExecutionContext`对象。这个对象从开始执行的时刻，一直存在到`ResultProxy`消亡为止。
 
-#### Engine和Connection
+## Engine和Connection
 
 全局函数`create_engine`用来创建`Engine`对象，这个函数的第一个参数是一个数据库URL，还有一些关键字参数，用来控制`Engine`，`Pool`和`Dialect`对象的特性。其中关键字参数strategy用于指定创建`Engine`时的策略。函数会从全局的`strategies`字典中查找对应的策略（`EngineStrategy`的一个子类），将自己的参数传入策略类的`create`方法。如果strategy参数没有提供，则使用默认策略`DefaultEngineStrategy`。观察每个`EngineStrategy`子类的`create`方法，发现它们都会在创建`Engine`对象之前先创建`Dialect`对象和`Pool`对象，并将这两个对象的引用保存在`Engine`对象中，保证了`Engine`对象可以通过`Dialect`和`Pool`处理DBAPI。
 
@@ -118,7 +118,7 @@ def connect(self, **kwargs):
 
 不论怎样，`Connection`拥有`Engine`的引用，并可以通过`Engine`的访问`Pool`和`Dialect`对象。对数据库的操作通常是使用`Connection.execute()`方法进行的。
 
-#### Pool
+## Pool
 
 `Pool`负责管理DBAPI连接。`Connection`对象创建时，会从连接池中取出一个DBAPI连接，而在`close`方法调用时，会将连接归还。
 
@@ -130,7 +130,7 @@ def connect(self, **kwargs):
 + `NullPool` 不进行任何池操作，直接打开/关闭DBAPI连接
 + `StaticPool` 有且仅有一个连接
 
-#### 执行SQL语句
+## 执行SQL语句
 
 `Connection`的`execute`方法执行一个SQL语句，并返回一个`ResultProxy`对象。`execute`方法接受多种类型的参数，参数类型可以是一个字符串，也可以是`ClauseElement`和`Executable`的共同子类。关于`execute`方法的参数在下文中详细讨论，这里主要分析`execute`方法执行时背后的过程。
 
@@ -160,13 +160,13 @@ def execute(self, object, *multiparams, **params):
 
 从上述方法调用的过程可以看出，`Connection`的`execute`方法最终将生成结果的任务转交给了`Dialect`的`do_execute`方法。SQLAlchemy正是用这种方法应对多变的DBAPI实现的：`Connection`在执行SQL语句的时候，会咨询`Dialect`作出选择。因此对于不同的目标DBAPI和数据库，`Connection`的行为都不一样。
 
-#### Dialect
+## Dialect
 
 `Dialect`定义在engine/interfaces.py文件中，是一个抽象的接口，其中定义了三个`do_execute*()`方法，分别是`do_execute()`，`do_executemany()`和`do_execute_no_params()`。`Dialect`的子类通过实现这些接口来定义自己执行时的行为。SQLAlchemy中默认的dialect子类是`DefaultDialect`。在默认实现中，`do_execute`方法调用`Cursor.execute`，而`Cursor`是来自DBAPI的类。在这里，SQLAlchemy核心层和DBAPI层连接了起来。
 
 `sqlalchemy.dialects`包中包含有来自firebird，mssql，mysql，oracle，postgresql，sqlite，sybase等数据库的dialect。以SQLite数据库为例，`SQLiteDialect`继承自`DefaultDialect`，而`SQLiteDialect_pysqlite`和`SQLiteDialect_pysqlcipher`。SQLite的dialect没有重写`do_execute*()`，而是重写了一些其他的方法，来定义一些和`DefaultDialect`不同的行为。例如，SQLite没有内置的DATE，TIME，DATETIME类型，`SQLiteDialect`处理了这些问题。
 
-#### ResultProxy
+## ResultProxy
 
 `ResultProxy`包装了一个DBAPI游标(cursor)对象，使一行结果中的各个字段更容易访问。在数据库术语中，结果通常称为一个行(row)。
 
@@ -191,7 +191,7 @@ def __iter__(self):
             yield row
 ```
 
-## 4. 模式定义
+# 4. 模式定义
 
 > 数据库模式是用形式化的语言描述的数据库系统的结构。在关系数据库中，模式定义了表、表中字段，以及表和字段间的关系
 
@@ -241,7 +241,7 @@ metadata.create_all(engine)
 
 阅读源代码，`Table`的构造函数`__new__`的前两个参数分别是表名和`MetaData`对象。构造函数会创建一个名字唯一的`Table`对象，用同样的表名和`MetaData`对象再次调用构造函数，会返回相同的对象。因此`Table`的构造函数充当了“注册”的角色。
 
-## 5. SQL表达式语言
+# 5. SQL表达式语言
 
 `Query`对象实现了Martin Fowler定义的*查询对象*(Query Object)模式。Martin Fowler在书中是这么描述这个模式的：
 
@@ -254,14 +254,14 @@ metadata.create_all(engine)
 
 Mike Bayer指出，SQL表达式的创建主要使用了**Python表达式**和**重载的操作符**。
 
-#### 源代码分析
+## 源代码分析
 
 `sqlalchemy.sql.dml.Insert`是`UpdateBase`的子类，而`UpdateBase`同时是`ClauseElement`和`Executable`的子类，所以可以将`Insert`的实例传给`Connection.execute()`
 
 `select`是一个全局的函数，而不是类。在sql/expression.py中，调用`public_factory`，将`selectable.Select`类变为函数`select`，也就是将
 `Select.__init__()`赋值给`select`。
 
-## 6. 对象-关系映射（ORM）
+# 6. 对象-关系映射（ORM）
 
 什么是ORM呢？让我们先看看Martin Fowler在书中所描述的**数据映射器**(Data Mapper)模式。原文中提到，SQLAlchemy的ORM系统正是借鉴了这种模式。
 
@@ -300,15 +300,15 @@ mapper(User, users)
 
 在上面的代码中，`User`类是用户自己定义的类，它是业务逻辑中的一个实体对象。而`users`是数据库的schema（在第四节“模式定义”中已经详细分析过）。使用`mapper`函数将`User`类映射到schema上。注意到，`User`类和数据库的schema完全无关，在不知道数据存储方式的情况下就可以写出这个类。这样就实现了对象和数据库的分离。
 
-#### 两类映射
+## 两类映射
 
 所谓“传统的”和“声明式的”，不过是SQLAlchemy中用户定义ORM的新旧两种风格。SQLAlchemy一开始只支持传统映射，后来出现了声明式映射，它在传统映射的基础上建立，功能更丰富，表达更简洁。两个映射方式可以互相交换使用，结果是一模一样的。而且声明式映射最终也会被转换为传统映射——用`mapper()`函数映射一个用户定义的类，因此两种映射方式在本质上是没有区别的。
 
 按我的理解，传统映射思路更加明确，更能体现对象和数据库分离的思想，而声明式映射功能更强大。
 
-## 7. 查询和加载
+# 7. 查询和加载
 
-#### 查询对象
+## 查询对象
 
 前面已经提到过，SQLAlchemy的ORM层建立在核心层之上，因此用户使用ORM层时，不会使用核心层中`connection.execute()`之类的接口。`Session`（会话）成为用户使用数据库的唯一入口。而用户通过`Session`进行查询时，需要使用`Query`对象进行查询。示例代码如下：
 
@@ -326,7 +326,7 @@ result = connection.execute(select([users])).where(users.c.name == 'ed')
 
 所谓QUERY TIME和LOAD TIME两个部分，是因为ORM层工作在核心层（SQL表达式语言）之上，要调用SQL表达式语言的基础设施进行工作。
 
-## 8. 会话
+# 8. 会话
 
 原文中的图20.13非常清晰地展示了会话的组成部分：
 
@@ -340,7 +340,7 @@ result = connection.execute(select([users])).where(users.c.name == 'ed')
 
 标识映射和状态跟踪之间的配合，是我认为SQLAlchemy设计最为精妙的两个部分之一。下面会详细介绍这两部分内容。
 
-#### 标识映射
+## 标识映射
 
 标识映射(Identity Map)是一个由Martin Fowler定义的模式，下面是Martin Fowler在书中对这个模式的介绍：
 
@@ -361,7 +361,7 @@ result = connection.execute(select([users])).where(users.c.name == 'ed')
 
 在SQLAlchemy的实际实现中，`IdentityMap`的key是数据库ID，但value不是一个对象，而是保存了对象状态的`InstanceState`。下面“状态跟踪”解释了`IdentityMap`为什么要这样设计。
 
-#### 状态跟踪
+## 状态跟踪
 
 在`Session`中，一个对象有四种状态，用一个`InstanceState`来记录：
 
@@ -381,7 +381,7 @@ result = connection.execute(select([users])).where(users.c.name == 'ed')
 图中显示，`Session`对象包含了一个`new`属性和一个`deleted`属性。阅读源代码发现，`Session`还包含一个`dirty`属性。这三个属性都是对象的集合。顾名思义，`new`表示刚刚被加入会话的对象，`dirty`属性表示刚刚被修改的对象，而`deleted`属性表示在会话中被删除的对象。这三个对象都有一个共同的特点：它们都是内存中经过改变而和数据库不一致的数据，正是上面“对象的四个状态”中的pending状态。也就是说，`Session`保存了所有处于pending状态的对象的强引用，这保证了这些对象不会被垃圾回收器回收。对于其他的对象，`Session`只保留了弱引用。
 
 
-## 9. 工作单元
+# 9. 工作单元
 
 工作单元也是Martin Fowler在书中定义的模式，SQLAlchemy的`unitofwork`模块实现了这个模式。SQLAlchemy文档中说，工作单元模式“自动地跟踪对象上发生的改变，周期性地将pending的改变刷新到数据库中”（[SQLAlchemy文档 - 术语表 - unit of work](http://docs.sqlalchemy.org/en/rel_1_0/glossary.html#term-unit-of-work)）。工作单元和会话之间的关系是：会话定义了对象的四个状态，而工作单元负责将会话中的pending状态对象转移到persistent状态，在这个过程中完成数据库持久化的工作。用户调用`Session`的`commit`方法，讲对数据的查询、更新等操作保存到数据库中。原文中提到，`commit`方法调用了`flush`方法进行“刷新”操作，而`flush`的所有实际工作都由工作单元模块完成。
 
@@ -391,13 +391,13 @@ result = connection.execute(select([users])).where(users.c.name == 'ed')
 
 工作单元则使用了一种非常优越的模式，在进行持久化操作之前，先安排好对象进行持久化的顺序。持久化的时候只需要将一批批的对象送到数据库，而不需要在处理每个对象之前先考虑一下是不是还有别的依赖。工作单元将对象之间的依赖关系用有向图进行建模，根据图论中有向无环图的拓扑排序，就可以安排出所有对象刷新的顺序。关于具体的步骤，原文中已经讲得很清楚了，在此不再赘述。
 
-## 10. 结语
+# 10. 结语
 
 在调研SQLAlchemy之前，我从未听说过ORM这个概念，也不知道Hibernate等著名的ORM工具。去年在使用JSP进行Web开发时，就遇到了关系数据库和对象之间的转换问题，也意识到这是一个必要但又很复杂的工作。如果在开发中使用ORM工具，必然会很大程度上提升程序的健壮性。 关系数据库是再重要不过的技术，而面向对象语言一直是主流的语言。ORM则将这两者结合了起来。SQLAlchemy是Python中最流行的ORM工具，也是事实上的标准。实际上，Python著名的Web框架Django因为自带了一套ORM系统而不支持SQLAlchemy一直遭人诟病。如果你还从来没有听说ORM这个概念，建议你能了解一下SQLAlchemy，并在开发中尝试使用这个库。
 
 --- 
 
-## 参考资料
+# 参考资料
 
 + [SQLAlchemy 1.0 官方文档](http://docs.sqlalchemy.org/en/rel_1_0/index.html)
 + Martin Fowler: Patterns of Enterprise Application Architecture 
