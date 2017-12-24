@@ -1,0 +1,1172 @@
+{
+  "nodes": [
+    {
+      "id": "edu.nju.androidql.test.TestAgent",
+      "group": 5
+    },
+    {
+      "id": "edu.nju.androidql.agent.AgentManager",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.IAgent",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.aql.AqlStatementBuilder",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.test.TestAqlPakcet",
+      "group": 5
+    },
+    {
+      "id": "edu.nju.androidql.aql.SimpleAqlStmtParser",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.aql.AqlStatement",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.agent.AqlPacket",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.test.TestSimpleParser",
+      "group": 5
+    },
+    {
+      "id": "edu.nju.androidql.probe.Probe",
+      "group": 6
+    },
+    {
+      "id": "edu.nju.androidql.probe.GuiProbe",
+      "group": 6
+    },
+    {
+      "id": "edu.nju.androidql.probe.ActionType",
+      "group": 6
+    },
+    {
+      "id": "edu.nju.androidql.probe.Coordinate",
+      "group": 6
+    },
+    {
+      "id": "edu.nju.androidql.probe.CmdHandler",
+      "group": 6
+    },
+    {
+      "id": "edu.nju.androidql.utility.Helper",
+      "group": 0
+    },
+    {
+      "id": "edu.nju.androidql.agent.MonitorThread",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.AqlClient",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.SelectHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.RequestDispatcher",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.LaunchHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.AqlChunkHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.ResumeHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.HitHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.ToggleHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.PerformHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.BreakpointHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.Agent",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.InstallHandler",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.agent.MultiLineShellResult",
+      "group": 7
+    },
+    {
+      "id": "edu.nju.androidql.apk.ApkFile",
+      "group": 4
+    },
+    {
+      "id": "edu.nju.androidql.aql.UncheckedAqlStatementException",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.aql.BreakpointStatement",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.aql.OptionType",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.aql.CmdType",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.aql.enum",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.aql.ToggleStatement",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.aql.IAqlStmtParser",
+      "group": 3
+    },
+    {
+      "id": "edu.nju.androidql.apk.BroadCastReceiver",
+      "group": 4
+    },
+    {
+      "id": "edu.nju.androidql.apk.IntentFilter",
+      "group": 4
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.Attributes",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.Attribute",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResourceTable",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResourceLoader",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResourcePackage",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ChunkHeader",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ParseUtils",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.Attribute.AttrIds",
+      "group": 2
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlStreamer",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.Buffers",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlCData",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.StringPool",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlNodeEndTag",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlNodeStartTag",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.Utils",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.AttributeValues",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlNamespaceStartTag",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlNamespaceEndTag",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlResourceMapHeader",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.StringPoolHeader",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlNodeHeader",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.Type",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.TypeHeader",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResTableConfig",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResourceEntry",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResourceMapEntry",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResourceTableMap",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResourceEntity",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ApkParser",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlTranslator",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlEscaper",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.CharSequenceTranslator",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.EntityArrays",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.NumericEntityEscaper",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.XmlNamespaces",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.AggregateTranslator",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.ResValue",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.TypeSpec",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.Locales",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.CompositeXmlStreamer",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.PackageHeader",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.model.TypeSpecHeader",
+      "group": 1
+    },
+    {
+      "id": "edu.nju.androidql.apk.ApkParser",
+      "group": 4
+    },
+    {
+      "id": "edu.nju.androidql.apk.ManifestParser",
+      "group": 4
+    }
+  ],
+  "links": [
+    {
+      "source": "edu.nju.androidql.test.TestAgent",
+      "target": "edu.nju.androidql.agent.AgentManager",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.test.TestAgent",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.test.TestAgent",
+      "target": "edu.nju.androidql.aql.AqlStatementBuilder",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.AgentManager",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.AgentManager",
+      "target": "edu.nju.androidql.utility.Helper",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.aql.AqlStatementBuilder",
+      "target": "edu.nju.androidql.aql.IAqlStmtParser",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.test.TestAqlPakcet",
+      "target": "edu.nju.androidql.aql.SimpleAqlStmtParser",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.test.TestAqlPakcet",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.test.TestAqlPakcet",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.aql.SimpleAqlStmtParser",
+      "target": "edu.nju.androidql.apk.ApkFile",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.aql.SimpleAqlStmtParser",
+      "target": "edu.nju.androidql.aql.ToggleStatement",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.aql.AqlStatement",
+      "target": "edu.nju.androidql.aql.CmdType",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.aql.AqlStatement",
+      "target": "edu.nju.androidql.aql.enum",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.AqlPacket",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.AqlPacket",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.AqlPacket",
+      "target": "edu.nju.androidql.agent.AqlChunkHandler",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.test.TestSimpleParser",
+      "target": "edu.nju.androidql.aql.SimpleAqlStmtParser",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.test.TestSimpleParser",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.probe.Probe",
+      "target": "edu.nju.androidql.probe.Probe",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.probe.Probe",
+      "target": "edu.nju.androidql.probe.GuiProbe",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.probe.GuiProbe",
+      "target": "edu.nju.androidql.probe.ActionType",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.probe.Coordinate",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 12
+    },
+    {
+      "source": "edu.nju.androidql.probe.Coordinate",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.probe.Coordinate",
+      "target": "edu.nju.androidql.probe.Coordinate",
+      "value": 12
+    },
+    {
+      "source": "edu.nju.androidql.probe.Coordinate",
+      "target": "edu.nju.androidql.probe.CmdHandler",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.probe.Coordinate",
+      "target": "edu.nju.androidql.utility.Helper",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.MonitorThread",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.MonitorThread",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.MonitorThread",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.agent.AqlClient",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 4
+    },
+    {
+      "source": "edu.nju.androidql.agent.AqlClient",
+      "target": "edu.nju.androidql.utility.Helper",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.AqlClient",
+      "target": "edu.nju.androidql.agent.MonitorThread",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.AqlClient",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.agent.SelectHandler",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.SelectHandler",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.agent.SelectHandler",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.SelectHandler",
+      "target": "edu.nju.androidql.probe.Probe",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.SelectHandler",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.SelectHandler",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.RequestDispatcher",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.agent.RequestDispatcher",
+      "target": "edu.nju.androidql.agent.AqlChunkHandler",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.LaunchHandler",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.LaunchHandler",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.agent.LaunchHandler",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.LaunchHandler",
+      "target": "edu.nju.androidql.probe.Probe",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.LaunchHandler",
+      "target": "edu.nju.androidql.utility.Helper",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.LaunchHandler",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.LaunchHandler",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.ResumeHandler",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.ResumeHandler",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.ResumeHandler",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.ResumeHandler",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.HitHandler",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.HitHandler",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.ToggleHandler",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.ToggleHandler",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.ToggleHandler",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.ToggleHandler",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.ToggleHandler",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.PerformHandler",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.PerformHandler",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.agent.PerformHandler",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.PerformHandler",
+      "target": "edu.nju.androidql.probe.Probe",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.PerformHandler",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.PerformHandler",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.BreakpointHandler",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.BreakpointHandler",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.BreakpointHandler",
+      "target": "edu.nju.androidql.agent.AqlPacket",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.BreakpointHandler",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.BreakpointHandler",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.utility.Helper",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.AqlClient",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.SelectHandler",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.LaunchHandler",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.ResumeHandler",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.PerformHandler",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.BreakpointHandler",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.InstallHandler",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.agent.MultiLineShellResult",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.apk.ApkFile",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.agent.Agent",
+      "target": "edu.nju.androidql.aql.UncheckedAqlStatementException",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.InstallHandler",
+      "target": "edu.nju.androidql.agent.IAgent",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.agent.InstallHandler",
+      "target": "edu.nju.androidql.aql.AqlStatement",
+      "value": 4
+    },
+    {
+      "source": "edu.nju.androidql.agent.InstallHandler",
+      "target": "edu.nju.androidql.agent.RequestDispatcher",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.ApkFile",
+      "target": "edu.nju.androidql.apk.ManifestParser",
+      "value": 8
+    },
+    {
+      "source": "edu.nju.androidql.aql.BreakpointStatement",
+      "target": "edu.nju.androidql.aql.OptionType",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.BroadCastReceiver",
+      "target": "edu.nju.androidql.apk.IntentFilter",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Attributes",
+      "target": "edu.nju.androidql.apk.model.Attribute",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Attribute",
+      "target": "edu.nju.androidql.apk.model.ResourceLoader",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Attribute",
+      "target": "edu.nju.androidql.apk.model.ResourceEntity",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourceTable",
+      "target": "edu.nju.androidql.apk.model.ResourceLoader",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourceTable",
+      "target": "edu.nju.androidql.apk.model.ResourcePackage",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourcePackage",
+      "target": "edu.nju.androidql.apk.model.Type",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourcePackage",
+      "target": "edu.nju.androidql.apk.model.TypeSpec",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourcePackage",
+      "target": "edu.nju.androidql.apk.model.PackageHeader",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.Attributes",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.Attribute",
+      "value": 10
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.ChunkHeader",
+      "value": 9
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.ParseUtils",
+      "value": 4
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.Attribute.AttrIds",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.XmlStreamer",
+      "value": 4
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.Buffers",
+      "value": 18
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.XmlCData",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.StringPool",
+      "value": 12
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.XmlNodeEndTag",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.XmlNodeStartTag",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.Utils",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.AttributeValues",
+      "value": 6
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.XmlNamespaceStartTag",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.XmlNamespaceEndTag",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.XmlResourceMapHeader",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.StringPoolHeader",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "target": "edu.nju.androidql.apk.model.XmlNodeHeader",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.ResourceTable",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.ResourcePackage",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.ParseUtils",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.Buffers",
+      "value": 18
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.StringPool",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.StringPoolHeader",
+      "value": 8
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.Type",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.ResourceEntry",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.ResourceEntity",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.ResValue",
+      "value": 16
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.TypeSpec",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ParseUtils",
+      "target": "edu.nju.androidql.apk.model.Locales",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlCData",
+      "target": "edu.nju.androidql.apk.model.ResourceEntity",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Utils",
+      "target": "edu.nju.androidql.apk.model.Utils",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.AttributeValues",
+      "target": "edu.nju.androidql.apk.model.Utils",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Type",
+      "target": "edu.nju.androidql.apk.model.ParseUtils",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Type",
+      "target": "edu.nju.androidql.apk.model.Buffers",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Type",
+      "target": "edu.nju.androidql.apk.model.StringPool",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Type",
+      "target": "edu.nju.androidql.apk.model.TypeHeader",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Type",
+      "target": "edu.nju.androidql.apk.model.ResTableConfig",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Type",
+      "target": "edu.nju.androidql.apk.model.ResourceEntry",
+      "value": 7
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Type",
+      "target": "edu.nju.androidql.apk.model.ResourceMapEntry",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.Type",
+      "target": "edu.nju.androidql.apk.model.ResourceTableMap",
+      "value": 4
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourceEntry",
+      "target": "edu.nju.androidql.apk.model.ResourceEntity",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourceMapEntry",
+      "target": "edu.nju.androidql.apk.model.ResourceEntry",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourceMapEntry",
+      "target": "edu.nju.androidql.apk.model.ResourceMapEntry",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourceMapEntry",
+      "target": "edu.nju.androidql.apk.model.ResourceTableMap",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ResourceEntity",
+      "target": "edu.nju.androidql.apk.model.ParseUtils",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ApkParser",
+      "target": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ApkParser",
+      "target": "edu.nju.androidql.apk.model.Utils",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.ApkParser",
+      "target": "edu.nju.androidql.apk.model.XmlTranslator",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlTranslator",
+      "target": "edu.nju.androidql.apk.model.Attributes",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlTranslator",
+      "target": "edu.nju.androidql.apk.model.Attribute",
+      "value": 4
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlTranslator",
+      "target": "edu.nju.androidql.apk.model.XmlCData",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlTranslator",
+      "target": "edu.nju.androidql.apk.model.XmlNodeEndTag",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlTranslator",
+      "target": "edu.nju.androidql.apk.model.XmlNodeStartTag",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlTranslator",
+      "target": "edu.nju.androidql.apk.model.XmlEscaper",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlTranslator",
+      "target": "edu.nju.androidql.apk.model.XmlNamespaces",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlEscaper",
+      "target": "edu.nju.androidql.apk.model.CharSequenceTranslator",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlEscaper",
+      "target": "edu.nju.androidql.apk.model.EntityArrays",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlEscaper",
+      "target": "edu.nju.androidql.apk.model.NumericEntityEscaper",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlNamespaces",
+      "target": "edu.nju.androidql.apk.model.XmlNamespaceStartTag",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.XmlNamespaces",
+      "target": "edu.nju.androidql.apk.model.XmlNamespaceEndTag",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.AggregateTranslator",
+      "target": "edu.nju.androidql.apk.model.CharSequenceTranslator",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.TypeSpec",
+      "target": "edu.nju.androidql.apk.model.TypeSpecHeader",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.model.CompositeXmlStreamer",
+      "target": "edu.nju.androidql.apk.model.XmlStreamer",
+      "value": 5
+    },
+    {
+      "source": "edu.nju.androidql.apk.ApkParser",
+      "target": "edu.nju.androidql.apk.model.BinaryXmlParser",
+      "value": 3
+    },
+    {
+      "source": "edu.nju.androidql.apk.ApkParser",
+      "target": "edu.nju.androidql.apk.model.Utils",
+      "value": 2
+    },
+    {
+      "source": "edu.nju.androidql.apk.ApkParser",
+      "target": "edu.nju.androidql.apk.model.XmlTranslator",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.ManifestParser",
+      "target": "edu.nju.androidql.apk.BroadCastReceiver",
+      "value": 1
+    },
+    {
+      "source": "edu.nju.androidql.apk.ManifestParser",
+      "target": "edu.nju.androidql.apk.ApkParser",
+      "value": 2
+    }
+  ]
+}
