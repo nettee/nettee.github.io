@@ -30,9 +30,9 @@ A distributed system is a collection of **autonomous(自治的) computing elemen
 + Distribution **transparency** (hide the fact that resources are distributed): 透明性
 + **Openness**: 开放性
 + **Scalability**: 可扩展性
-  + size scalability: 用户/机器的数量
-  + geographical scalability: 节点间的最大距离
-  + administrative scalability: Number of administrative domains
+  + **size scalability**: 可以容易地添加用户/资源，而没有显著的性能损失
+  + **geographical scalability**: 用户/资源可能距离很远，但没有显著的通信延迟
+  + **administrative scalability**: An administratively scalable system is one that can still be easily managed even if it spans many independent administrative organizations. 即使跨越许多独立的行政组织，仍然可以轻松管理
   + 大部分系统可以做到第一点，但后两点很难做到
 
 <!-- more -->
@@ -51,37 +51,87 @@ A distributed system is a collection of **autonomous(自治的) computing elemen
 
 ### 开放性 [01-15] [P12]
 
-(From textbook) An **open** distributed system is essentially a system that offers components that can easily be used by, or integrated into other systems. 可以提供可以被其他系统使用或集成的组件。
+(Textbook p.12) An **open** distributed system is essentially a system that offers components that can easily be used by, or integrated into other systems. 可以提供可以被其他系统使用或集成的组件。
 
 策略(policy)与机制(mechanism)分离：策略具体，机制抽象
 
-## 分布式系统构成方法：分布式操作系统、网络操作系统和基于中间件的系统
+## 分布式系统构成方法
 
-## 分布式系统的类型 [01-18]
+分为：分布式操作系统(DOS)、网络操作系统(NOS)和基于中间件的系统(Middleware)
 
-+ Distributed computing systems : Cluster Computing
-+ Distributed information systems : Transaction processing systems
-+ Distributed pervasive systems : Mobile computing systems , Mobile computing systems
+（课件没有，参见急救包）
+
+## 分布式系统的类型 [01-19]
+
++ Distributed computing systems
+  + Cluster Computing
+  + Grid Computing
+  + Cloud Computing
++ Distributed information systems
+  + Transaction processing systems
++ Distributed pervasive systems (next-generation)
+  + Mobile computing systems
+  + Sensor networks
 
 # 分布式系统架构
 
 ## 分布式系统架构风格 [02-3~4]
 
-Organize into logically different components, and distribute those components over the various machines.
-Decoupling processes in space (“anonymous”) and also time (“asynchronous”) has led to alternative styles.
++ Organize into logically different components, and distribute those components over the various machines.
++ Decoupling processes in space (“anonymous”) and also time (“asynchronous”) has led to alternative styles.
 
-## 分布式系统组织形式
+(Textbook p.56) 使用**component**和**connector**定义，有四种典型类型：
 
-+ Centralized :Basic Client–Server Model
-+ Decentralized :
-  + Structured P2P: nodes are organized following a specific distributed data structure
-  + Unstructured P2P: nodes have randomly selected neighbors
-  + Hybrid P2P: some nodes are appointed special functions in a well-organized fashion
-+ Hybrid : Client-server combined with P2P
++ Layered architectures
++ Object-based architectures
++ Resource-centered architectures
++ Event-based architectures
+
+经典的三层架构：
+
++ user interface layer
++ processing layer
++ data layer
+
+## 分布式系统组织形式 [02-5]
+
++ **Centralized**: 基本的 Client/Server 模型
++ **Decentralized**: Peer-to-peer (P2P)
++ **Hybrid**: Client/Server combined with P2P
 
 ## 客户-服务器模式和对等模式
 
-## 将分布式系统组织为中间件
++ Client-Server 模式是 **vertical distribution**，将不同逻辑功能的 component 划分到不同的机器上
++ P2P 模式是 **horizontal distribution**，每个机器的功能都是等价的
+
+### Client-Server 模式 [02-6]
+
+Request/Response 模型
+
++ Multiple client / Single server
++ Multiple client / Multiple server
+
+多层架构（对于机器而言）
+
++ (Physically) two-tiered architecture: client machine & server machine
+  + 一般将 user interface layer 放在 client machine 上，将 processing layer 和 data layer放在 server machine 上
++ (Physically) three-tiered architecture: client machine, application server & database server.
+
+### 对等 (P2P) 模式 [02-21]
+
++ Structured P2P: 有特定的拓扑结构，如环、二叉树、网格
+  + 找一个数据只要找特定ID的结点即可
++ Unstructured P2P: nodes have randomly selected neighbors
+  + search 方法：
+    + Flooding
+    + Random walk
+  + Super peers: weak peer 通过 super peers 来通信
++ Hybrid P2P: some nodes are appointed special functions in a well-organized fashion
+  + **Edge-server systems**
+
+## 将分布式系统组织为中间件 [02-28]
+
+???
 
 # 进程与线程
 ## 进程和线程
