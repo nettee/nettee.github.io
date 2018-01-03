@@ -17,23 +17,43 @@ A distributed system is a collection of **autonomous(自治的) computing elemen
 + Economic: 微处理器比大型机性价比高
 + Speed: 分布式系统整个计算能力比单个大型主机要强
 + Inherent(固有的) distribution: 有些应用涉及到空间上分散的机器
-+ Reliability: 如果其中一台机器崩溃,整体系统仍然能够运转
-+ Incremental growth: 计算能力可以逐渐有所增加
++ Reliability: 如果其中一台机器崩溃,整体系统仍然能够运转 ==> Availability
++ Incremental growth: 计算能力可以逐渐有所增加 ==> Scalability
 
 ## 分布式系统的目标 [01-12]
 
-+ Making resources available: 可用性
-+ Distribution transparency: 透明性
-+ Openness: 开放性
-+ Scalability: (用户和 cpu)
+（构建分布式系统的时候应该努力达成的重要目标）
+
+"ATOS"
+
++ Making resources **available**: 可用性
++ Distribution **transparency** (hide the fact that resources are distributed): 透明性
++ **Openness**: 开放性
++ **Scalability**: 可扩展性
+  + size scalability: 用户/机器的数量
+  + geographical scalability: 节点间的最大距离
+  + administrative scalability: Number of administrative domains
+  + 大部分系统可以做到第一点，但后两点很难做到
 
 <!-- more -->
 
 ## 分布式系统透明性和开放性的含义
 
-### 透明性 [01-13]
+### 透明性 [01-13] [P8]
 
-### 开放性 [01-15]
++ Access
++ Location
++ Migration
++ Relocation
++ Replication
++ Concurrency
++ Failure
+
+### 开放性 [01-15] [P12]
+
+(From textbook) An **open** distributed system is essentially a system that offers components that can easily be used by, or integrated into other systems. 可以提供可以被其他系统使用或集成的组件。
+
+策略(policy)与机制(mechanism)分离：策略具体，机制抽象
 
 ## 分布式系统构成方法：分布式操作系统、网络操作系统和基于中间件的系统
 
