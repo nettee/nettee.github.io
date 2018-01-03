@@ -168,52 +168,60 @@ Request/Response 模型
 
 # 通信
 
-## 通信的类型
+## 通信的类型 [P172]
 
-有四个广泛使用的通信模型：RPC，RMI，MOM，STREAM
+Persistent/transient
++ **persistent communication**: a message that has been submitted for transmission is stored by the communication middleware as long as it takes to deliver it to the receiver
++ **transient communication**: a message is stored by the communication system only as long as the sending and receiving application are executing
+
+Asynchronous/synchronous
+
++ **asynchronous communication**: a sender continues immediately after it has submitted its
+message for transmission
++ **synchronous communication**: the sender is blocked until its request is known to be accepted
 
 ## 远程过程调用RPC
 
 ### RPC的工作过程
 
-1. Client procedure calls client stub.
-2. Stub builds message; calls local OS.
-3. OS sends message to remote OS.
-4. Remote OS gives message to stub.
-5. Stub unpacks parameters and calls server.
-6. Server makes local call and returns result to stub.
-7. Stub builds message; calls OS.
-8. OS sends message to client’s OS.
-9. Client’s OS gives message to stub
-10. Client stub unpacks result and returns to the client.
+1. The client procedure calls the client stub in the normal way.
+2. The client stub builds a message and calls the local operating system.
+3. The client’s OS sends the message to the remote OS.
+4. The remote OS gives the message to the server stub.
+5. The server stub unpacks the parameter(s) and calls the server.
+6. The server does the work and returns the result to the stub.
+7. The server stub packs the result in a message and calls its local OS.
+8. The server’s OS sends the message to the client’s OS.
+9. The client’s OS gives the message to the client stub.
+10. The stub unpacks the result and returns it to the client.
 
 Client --(1)-> Client stub -(2)-> Client OS -(3)-> Server OS -(4)-> Server stub (5)-> Server
 Client <-(10)- Client stub <-(9)- Client OS <-(8)- Server OS <-(7)- Server stub <-(6)- Server
 
-### 故障处理
+### 故障处理 [P464]
 
 五种 failure:
-+ The client is unable to locate the server
-+ The request message is lost
-+ The reply message is lost
-+ The server crashes after receiving a request
-+ The client crashes after sending a request
 
-客户无法定位服务器
-解决：使用特定的返回值(error)/异常处理
-客户发给服务器的请求消息丢失
-解决：设置一个 timer，超时重发
-服务器发给客户的应答消息丢失
-解决：设置一个 timer,对于不幂等的请求，为客户请求分配序号，服务器区别不同的请求
-服务器在收到消息后崩溃
-1 接受后，执行前崩溃
-2 执行后，发送前崩溃
-解决：等待服务器启动,然后重发请求/立即放弃并报告失败/不做任何保证
-客户机在发送消息后崩溃
-解决：在日志文件中纪录 RPC 请求，重启后清除孤儿（根绝）
-将时间划分成纪元，重启后广播新的纪元（再生）
-/温和再生/过期
-更多的 issue：性能和安全
+1. Client cannot locate the server
+    + Reason: 服务器宕机，服务器接口更新
+    + Solution: Throw an exception，或使用特殊的返回值
+2. Lost request messages
+    + 超时则重新request
+    + 对于不幂等的请求，编上序号让server能识别重复请求
+3. Server crashes
+    + 两种情况: Execute之前Crash，Execute之后Crash
+    + 难以解决
+      + 重启server并重新进行处理：保证至少执行一次(at-least-once)
+      + 立即放弃并报告错误：保证至多执行一次(at-most-once)
+      + 什么都不保证
+4. Lost reply messages
+    + 超时则重新request
+    + 对于不幂等的请求，编上序号让server能识别重复请求
+5. Client crashes (orphan 问题)
+    + **orphan extermination**: 为request记录log，client重启时检查log
+    + **reincarnation**: client重启时广播，停止orphan computations
+    + **gentle reincarnation**: server收到广播时寻找本地computations的owner，找不到则停止computations
+    + **expiration**: 除非另外要求，RPC都要在规定时间内完成
 
 ### 动态绑定
 
