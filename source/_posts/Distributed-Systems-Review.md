@@ -134,25 +134,97 @@ Request/Response 模型
 ???
 
 # 进程与线程
+
 ## 进程和线程
+
+什么是进程：
+
++ Program: Static code and static data
++ Process: Dynamic instance of code and data
+
+线程是轻量级的进程：
+
++ 一个线程只能属于一个进程，而一个进程可以有多个线程
++ 进程是系统进行资源分配和调度的一个独立单位，线程是CPU调度和分派的基本单位
++ 线程不拥有存储资源，同一进程的所有线程共享该进程的所有资源
+
 ## 代码迁移
+
 ### 什么是代码迁移
-#### Approaches to code migration
-#### Migration and local resources
-#### Migration in heterogeneous systems
+
++ **weak mobility**: 只迁移 code segment，一定重启
++ **strong mobility**: 迁移 code segment & execution segment
+
 ### 强迁移 vs. 弱迁移
-#### 强迁移
-#### 弱迁移
+
++ 强迁移
+  + Move only code and data segment (and reboot execution):
+  + Relatively simple, especially if code is portable
+  + Distinguish code shipping (push) from code fetching (pull)
++ 弱迁移
+  + Move component, including execution state
+  + Migration: move entire object from one machine to the other
+  + Cloning: start a clone, and set it in the same execution state
 
 # 通信
+
 ## 通信的类型
+
+有四个广泛使用的通信模型：RPC，RMI，MOM，STREAM
+
 ## 远程过程调用RPC
+
 ### RPC的工作过程
+
+1. Client procedure calls client stub.
+2. Stub builds message; calls local OS.
+3. OS sends message to remote OS.
+4. Remote OS gives message to stub.
+5. Stub unpacks parameters and calls server.
+6. Server makes local call and returns result to stub.
+7. Stub builds message; calls OS.
+8. OS sends message to client’s OS.
+9. Client’s OS gives message to stub
+10. Client stub unpacks result and returns to the client.
+
+Client --(1)-> Client stub -(2)-> Client OS -(3)-> Server OS -(4)-> Server stub (5)-> Server
+Client <-(10)- Client stub <-(9)- Client OS <-(8)- Server OS <-(7)- Server stub <-(6)- Server
+
 ### 故障处理
+
+五种 failure:
++ The client is unable to locate the server
++ The request message is lost
++ The reply message is lost
++ The server crashes after receiving a request
++ The client crashes after sending a request
+
+客户无法定位服务器
+解决：使用特定的返回值(error)/异常处理
+客户发给服务器的请求消息丢失
+解决：设置一个 timer，超时重发
+服务器发给客户的应答消息丢失
+解决：设置一个 timer,对于不幂等的请求，为客户请求分配序号，服务器区别不同的请求
+服务器在收到消息后崩溃
+1 接受后，执行前崩溃
+2 执行后，发送前崩溃
+解决：等待服务器启动,然后重发请求/立即放弃并报告失败/不做任何保证
+客户机在发送消息后崩溃
+解决：在日志文件中纪录 RPC 请求，重启后清除孤儿（根绝）
+将时间划分成纪元，重启后广播新的纪元（再生）
+/温和再生/过期
+更多的 issue：性能和安全
+
 ### 动态绑定
+
+一种让 client 找到 server 的方法
+
 ## 基于消息的通信
+
 ### 持久性/非持久性
+
 ### 同步/异步
+
 ### 流数据
 
 # 同步与资源管理
