@@ -9,8 +9,6 @@ tags:
 
 A distributed system is a collection of **autonomous(自治的) computing elements** that appears to its users as a **single coherent(一致的) system**.
 
-+ 定义包含了硬件和软件两个方面的内容。硬件指的是机器本身是独立的;软件是说对于用户来讲就像在和单个系统打交道。
-+ 分布式系统的目标是单一性(single),但是区别于网络系统的单一性,从功能上来说,网络系统都可以完成,但是二者之间的差别在于透明性。而构造分布式系统也不仅仅是用网线连接若干台独立的计算机。
 
 ## 为什么要分布式? [01-11]
 
@@ -170,19 +168,11 @@ Request/Response 模型
 
 ## 通信的类型 [P172]
 
-Persistent/transient
-+ **persistent communication**: a message that has been submitted for transmission is stored by the communication middleware as long as it takes to deliver it to the receiver
-+ **transient communication**: a message is stored by the communication system only as long as the sending and receiving application are executing
+见“基于消息的通信”
 
-Asynchronous/synchronous
+## 远程过程调用(RPC) 
 
-+ **asynchronous communication**: a sender continues immediately after it has submitted its
-message for transmission
-+ **synchronous communication**: the sender is blocked until its request is known to be accepted
-
-## 远程过程调用RPC
-
-### RPC的工作过程
+### RPC的工作过程 [04-1-16]
 
 1. The client procedure calls the client stub in the normal way.
 2. The client stub builds a message and calls the local operating system.
@@ -198,7 +188,7 @@ message for transmission
 Client --(1)-> Client stub -(2)-> Client OS -(3)-> Server OS -(4)-> Server stub (5)-> Server
 Client <-(10)- Client stub <-(9)- Client OS <-(8)- Server OS <-(7)- Server stub <-(6)- Server
 
-### 故障处理 [P464]
+### 故障处理 [P464] [04-1-20]
 
 五种 failure:
 
@@ -227,22 +217,86 @@ Client <-(10)- Client stub <-(9)- Client OS <-(8)- Server OS <-(7)- Server stub 
 
 一种让 client 找到 server 的方法
 
-## 基于消息的通信
+静态绑定：将server地址硬编码到client代码中 (ip, port)
 
-### 持久性/非持久性
+???
 
-### 同步/异步
+## 基于消息的通信 [04-2]
 
-### 流数据
+### 持久性/非持久性 [P172] [04-2-4]
+
+Persistent/transient (reliable/unreliable)
+
++ **persistent communication**: a message that has been submitted for transmission is stored by the communication middleware as long as it takes to deliver it to the receiver
++ **transient communication**: a message is stored by the communication system only as long as the sending and receiving application are executing
+
+Asynchronous/synchronous (unblocking/blocking) [04-2-3]
+
++ **asynchronous communication**: a sender continues immediately after it has submitted its
+message for transmission
++ **synchronous communication**: the sender is blocked until its request is known to be accepted
+  + synchronize at request submission
+  + synchronize at request delivery
+  + synchronize after processing by server (at response)
+
+[04-2-7] Persistent Messaging Alternatives 这页啥意思？？？
+
+### 流数据 [04-2-16]
+
+？？？
+
+### Multicast communication [04-2-26]
+ 
+不在范围内
 
 # 同步与资源管理
-## 同步问题
-## 时钟同步机制
-## 逻辑时钟
-### Lamport算法
-### 向量时戳
-## 分布式系统中的互斥访问
-## 分布式系统中的选举机制
+
+## 同步问题 [06-4]
+
+## 时钟同步机制 [06-5]
+
+时间不能回退，可以逐渐放快或放慢
+
++ Cristian's algorithm [06-12] [P304]
+  + 假设 time server 提供精确时间
+  + 所有机器和 time server 同步
+  + 考虑通信延迟
++ Berkeley algorithm [06-13] [P306]
+  + 适用于没有精确时钟的情况
+  + time daemon 主动询问其他所有机器的时间
+  + 计算平均时间作为标准
++ Network Time Protocol [06-15] [P304]
+  + 类似 Cristian's algorithm 的计算方法
+  + Stratum-0/1/2/3 server，数字越小越精确
+
+## Logical clocks 逻辑时钟 [06-16]
+
+很多时候不需要知道精确的时间，只需要知道事件发生的先后关系就可以，这就叫做逻辑时钟
+
+### Lamport's logical clocks [06-18] [P310]
+
++ 定义 Happens-before 关系
++ Assigning time C(e) to events，使满足 HB 关系
+  + 每个进程维护一个 C (分布式)
+  + 调整方法：When a message arrives and the receiver’s clock shows a value prior to the time the message was sent, the receiver fast forwards its clock to be one more than the sending time. C_j = max{ts(m), C_j}
+  + 为 timestamp 添加进程ID(e.g. <40,i>, <40,j>)，防止出现相等的 timestamp
++ 缺点
+  + 通过 C(a) 和 C(b) 不能确定 a 和 b 的 HB 关系 
+  + 根本原因: Lamport's logical clocks 不包含因果关系(causality)
+
+### Vector clock 向量时戳 [06-23] [P316]
+
++ 原理：记录所有进程的历史信息(causal histories)
++ Assign time VC，VC[i] 表示 P_i 发生过的时间数量
+  + 每个进程维护一个 VC (分布式)
+  + 调整方法同Lamport's logical clocks
++ 比较方法
+  + VC(a) < VC(b) iff. VC(a)[k] <= VC(b)[k] for all k
++ 若 VC(a) < VC(b)，则可以认为 a, b 之间有 causal relationship
+
+## Mutual exclusion 互斥访问 [06-27]
+
+## Election 选举机制 [06-34]
 
 # 复制与一致性
 ## 复制的优势与不足
