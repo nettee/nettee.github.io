@@ -296,7 +296,60 @@ message for transmission
 
 ## Mutual exclusion 互斥访问 [06-27]
 
+### A centralized algorithm [P322] [06-28]
+
++ 方法
+  + 使用单个决策进程，称为 coordinator
+  + 请求资源的进程向 coordinator 请求 permission
+  + 若资源被占用，可能 block，也可能返回错误消息
++ 缺点
+  +	单点失效
+    + 进程无法区分到底是 coordinator 失效了还是被 block 了
+  + 性能瓶颈
+
+### A distributed algorithm [P323] [06-29]
+
++ 方法
+  + 基于 timestamp
+  + 请求资源的进程向所有进程请求 permission
+  + 若两个进程都感兴趣，timestamp 更早的胜出
+  + 获得所有进程的 permission 才可以使用资源、
++ 缺点
+  + 单点失效（任何一个进程 fail 都会导致单点失效）
+  + 如果环境不支持广播，会很麻烦
+  + 相比集中式算法更慢、更复杂，还更易失效
+
+### A token-ring algorithm [P325] [06-32]
+
++ 方法
+  + 在环上传递 token
+  + 拥有 token 的才能使用资源
++ 缺点
+  + token 丢失后很难判断
+
+### 算法比较
+
+见 [06-33]
+
 ## Election 选举机制 [06-34]
+
++ ID 大的胜出
++ 考虑进程 fail 的情况
+
+### The bully algorithm [P330] [06-35]
+
++ 一个进程开始选举，发送 ELECTION 消息给 ID 更大的进程
++ 进程收到 ELECTION 消息后，返回 OK 消息，并向更 ID 更大的进程发送 ELECTION 消息
++ 收到 OK 消息的进程出局
++ 如果发送 ELECTION 消息之后没有回应，当前进程成为 Leader
+
+### A ring algorithm [P332] [06-38]
+
++ 一个进程开始选举，在环上发送 ELECTION 消息，跳过 fail 的进程
++ 每个进程在环上添加自己的 ID，并继续传递
++ 当 ELECTION 消息传了一圈后，选出 ID 最大的进程
++ 发送 COORDINATOR 消息通知所有人谁是 Leader
++ 如果两个进程同时开始选举，不影响时间复杂度，只是占用带宽增加
 
 # 复制与一致性
 ## 复制的优势与不足
