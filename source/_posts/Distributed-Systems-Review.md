@@ -253,6 +253,17 @@ message for transmission
 
 ## 同步问题 [06-4]
 
+为什么要进行同步？
+
++ 保证多个进程不会同时访问gs共享资源 (mutual exclusion)
++ 保证多个进程可以相互达成一致 (consensus)
+
+分布式系统的同步与集中式系统有何区别？
+
+分布式系统中的同步更困难：
++ ？？？
++ ？？？
+
 ## 时钟同步机制 [06-5]
 
 时间不能回退，可以逐渐放快或放慢
@@ -352,17 +363,93 @@ message for transmission
 + 如果两个进程同时开始选举，不影响时间复杂度，只是占用带宽增加
 
 # 复制与一致性
-## 复制的优势与不足
+
+## 复制的优势与不足 [07-2]
+
++ 优势
+  + Reliability
+    + Avoid single points of failure
+  + Performance
+    + Scalability in numbers and geographic area
++ 劣势
+  + Replication transparency
+  + Consistency issues
+    + Updates are costly
+    + Availability may suffer if not careful
+
 ## 数据一致性模型
+
++ Data-centric consistency [07-9]
+  + 未使用同步操作的模型
+    + Strict [07-10]
+    + Linearizability [07-12]
+    + Sequential [07-11] [P364]
+	  + 所有的进程看到相同的操作序列
+    + Causal [07-14] [P368]
+	  + 比 Sequential consistency 要弱
+    + FIFO [07-17]
+	  + Writes that are potentially casually related must be seen by all processes in the same order. Concurrent writes may be seen in a different order on different machines.
+  + 使用同步操作的模型
+    + Weak [07-21]
+    + Release [07-24]
+    + Entry [07-26] [P372]
++ Client-centric consistency [07-29]
+  + Eventual [07-30] [P373]
+  + Monotonic reads [07-32] [P377]
+  + Monotonic writes [07-33] [P379]
+  + Read your writes [07-34] [P380]
+  + Writes follow reads [07-35] [P382]
+
 ## 数据一致性协议实例
-### 基于法定数量的协议
+
+### Quorum-based protocols 基于法定数量的协议 [P402] [07-45]
+
+TODO
 
 # 容错
-## 可信系统(Dependable System)特征
-## 提高系统可信性的途径
+
+## 可信系统(Dependable System)特征 [08-3]
+
++ Reliability
+  + A measure of success with which a system conforms to some authoritative specification of its behavior.
+  + Probability that the system has not experienced any failures within a given time period.
+  + Typically used to describe systems that cannot be repaired or where the continuous operation of the system is critical.
++ Availability
+  + The fraction of the time that a system meets its specification.
+  + The probability that the system is operational at a given time t.
++ Safety
+  + When the system temporarily fails to conform to its specification, nothing catastrophic occurs.
++ Maintainability
+  + Measure of how easy it is to repair a system.
+
+## 提高系统可信性(Dependability)的途径 [08-9]
+
 ## K容错系统
+
+K 容错：系统能够经受 k 个组件的故障并且还能满足规范要求。
+
 ## 拜占庭问题( Byzantine Problem)
-## 系统恢复
+
+第一步：每个将军发送一个消息给其他所有 n-1 个将军。忠诚者说真话，叛徒说谎话。
+第二步：收集 n 个向量。
+第三步：每个将军把得到的向量传递给其他所有的将军，每个将军都得到来自其他 n-1 个将军的 n-1 个向量。
+第四步：每个将军检查新收到的向量中第 i 个元素。把多数值保留下来，得到一致结果。
+结论：在具有 m 个故障进程的系统中，只有存在 2m+1 个正确的进程才能达成一致，也 即共有 3m+1 个进程。
+
+## Distributed commit (不在考点中)
+
++ Two-phase commit
++ Three-phase commit
+
+## 系统恢复 [08-54]
+
+真正发生故障以后，使崩溃的进程恢复到正确的状态。
+
 ### 回退恢复
+
 ### 前向恢复
-## 检查点(Check point)
+
+## 检查点(Checkpointing) [08-56]
+
++ 独立检查点(Independent checkpointing) [08-58]
++ 协调检查点(Coordinated checkpointing) [08-59]
