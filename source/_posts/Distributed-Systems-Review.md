@@ -85,12 +85,6 @@ A distributed system is a collection of **autonomous(自治的) computing elemen
 + Resource-centered architectures
 + Event-based architectures
 
-经典的三层架构：
-
-+ user interface layer
-+ processing layer
-+ data layer
-
 ## 分布式系统组织形式 [02-5]
 
 + **Centralized**: 基本的 Client/Server 模型
@@ -109,6 +103,12 @@ Request/Response 模型
 + Multiple client / Single server
 + Multiple client / Multiple server
 
+经典的三层架构：
+
++ user interface layer
++ processing layer
++ data layer
+
 多层架构（对于机器而言）
 
 + (Physically) two-tiered architecture: client machine & server machine
@@ -126,8 +126,11 @@ Request/Response 模型
   + Super peers: weak peer 通过 super peers 来通信
 + Hybrid P2P: some nodes are appointed special functions in a well-organized fashion
   + **Edge-server systems**
+  + BitTorrent
 
-## 将分布式系统组织为中间件 [02-28]
+## 将分布式系统组织为中间件 [02-28] [P71]
+
+Interceptors: Intercept the usual flow of control when invoking a remote object
 
 ???
 
@@ -186,6 +189,7 @@ Request/Response 模型
 10. The stub unpacks the result and returns it to the client.
 
 Client --(1)-> Client stub -(2)-> Client OS -(3)-> Server OS -(4)-> Server stub (5)-> Server
+
 Client <-(10)- Client stub <-(9)- Client OS <-(8)- Server OS <-(7)- Server stub <-(6)- Server
 
 ### 故障处理 [P464] [04-1-20]
@@ -408,33 +412,52 @@ TODO
 
 # 容错
 
-## 可信系统(Dependable System)特征 [08-3]
+## 可信系统(dependable systems)特征 [08-3]
 
-+ Reliability
-  + A measure of success with which a system conforms to some authoritative specification of its behavior.
-  + Probability that the system has not experienced any failures within a given time period.
-  + Typically used to describe systems that cannot be repaired or where the continuous operation of the system is critical.
-+ Availability
-  + The fraction of the time that a system meets its specification.
-  + The probability that the system is operational at a given time t.
-+ Safety
-  + When the system temporarily fails to conform to its specification, nothing catastrophic occurs.
-+ Maintainability
-  + Measure of how easy it is to repair a system.
++ Availability 可用性
+  + 系统可以立即被使用
+  + 在给定时间点可以最大可能地正常工作
++ Reliability 可靠性
+  + (在一段时间内)持续运行，而没有 failure
++ Safety 安全性
+  + 当系统暂时无法正常运行时，不会造成灾难性后果（例：核电站）
++ Maintainability 可维护性
+  + 系统 fail 后是否容易修复
+  
+一些概念（不在考点内）	：
+
+fault --> error --> failure
+
++ **failure**: 没有满足承诺，无法提供服务
++ **error**: 系统的错误状态，可能导致 failure
++ **fault**: 造成 error 的原因
+
+Failure 的分类
++ Crash failure
++ Omission failure
++ Timing failure
++ Response failure
++ Byzantine failure
 
 ## 提高系统可信性(Dependability)的途径 [08-9]
 
-## K容错系统
+使用冗余来掩盖故障 (Mask failures by redundancy)
 
-K 容错：系统能够经受 k 个组件的故障并且还能满足规范要求。
++ Information redundancy
+  + 在数据传输中添加纠错码
++ Time redundancy
+  + 事务处理终止，则重新执行
++ Physical redundancy
+  + 添加额外的机器或进程
 
-## 拜占庭问题( Byzantine Problem)
+## k-容错系统
 
-第一步：每个将军发送一个消息给其他所有 n-1 个将军。忠诚者说真话，叛徒说谎话。
-第二步：收集 n 个向量。
-第三步：每个将军把得到的向量传递给其他所有的将军，每个将军都得到来自其他 n-1 个将军的 n-1 个向量。
-第四步：每个将军检查新收到的向量中第 i 个元素。把多数值保留下来，得到一致结果。
-结论：在具有 m 个故障进程的系统中，只有存在 2m+1 个正确的进程才能达成一致，也 即共有 3m+1 个进程。
+k-容错定义 [P435]
++ A system is said to be k-fault tolerant if it can survive faults in k components and still meet its specifications
+
+## 拜占庭问题 (Byzantine agreement problem)
+
+TODO
 
 ## Distributed commit (不在考点中)
 
@@ -445,11 +468,22 @@ K 容错：系统能够经受 k 个组件的故障并且还能满足规范要求
 
 真正发生故障以后，使崩溃的进程恢复到正确的状态。
 
-### 回退恢复
+### 两种形式的错误恢复 [08-55]
 
-### 前向恢复
++ 回退恢复 (backward recovery)
+  + 从当前的错误状态回退到先前的正确状态
+  + 定时记录系统的状态，称为**检查点**
++ 前向恢复 (forward recovery)
+  + 尝试从某点继续执行，把系统带入一个正确的新状态
+  + 关键在于必须预先知道会发生什么错误
 
-## 检查点(Checkpointing) [08-56]
+### 检查点(Checkpointing) [08-56]
 
 + 独立检查点(Independent checkpointing) [08-58]
+  + 每个进程独立地设置本地检查点
+  + 每个进程回退到的状态可能不一致，需要继续回退，可能造成多米诺效应
 + 协调检查点(Coordinated checkpointing) [08-59]
+  + 所保存的状态自动保持全局一致
+  + 两个算法：
+    + Distributed snapshot algorithm
+	+ Two-phase blocking protocol
