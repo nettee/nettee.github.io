@@ -171,21 +171,45 @@ Request/Response 模型
 + 迁移虚拟机比迁移代码要容易很多
 + 同构系统中, 假设迁移后的代码可以直接运行
 
+### 迁移内容
+
++ **Code segment**: contains the actual code
++ **Data segment**: contains the state
++ **Execution state**: contains context of thread executing the object’s code
+
 ### 强迁移 vs. 弱迁移 [03-32]
 
-+ **weak mobility**: 只迁移 code segment，一定重启
-+ **strong mobility**: 迁移 code segment & execution segment
-
-+ 强迁移
-  + Move only code and data segment (and reboot execution):
-  + Relatively simple, especially if code is portable
-  + Distinguish code shipping (push) from code fetching (pull)
 + 弱迁移
-  + Move component, including execution state
+  + 只迁移 code segment & data segment
+  + 一定重启
+  + 最后被目标进程或者另外一个独立的进程执行
++ 强迁移
+  + 迁移 code segment, data segment & execution state
+  + 要么复制进程 (正在执行的进程停下来，移动后再恢复)
+  + 要么克隆 (所有数据完全复制到另外一台机器上，和原来的进程并行)
   + Migration: move entire object from one machine to the other
   + Cloning: start a clone, and set it in the same execution state
 
-### 虚拟机迁移 [P158]
+### 迁移和本地资源
+
++ 对象使用可能在目标站点可用或不可用的本地资源
++ 资源类型
+  + 固定资源 Fixed：资源不能迁移，如本地硬件
+  + 捆绑资源 Fastened：资源原则上可以迁移，但成本很高
+  + 独立资源 Unattached：资源可以轻松地随对象一起移动（例如缓存）
++ 对象到资源绑定
+  + 通过标识符：对象需要资源的特定实例（例如特定数据库）
+  + 按值：对象需要资源的值（例如，缓存实体集合）
+  + 按类型：对象要求只有一种类型的资源可用（例如，颜色监视器）
+
+### 在异构系统中的迁移 [P158]
+
++ 主要问题
+  + 目标计算机可能不适合执行迁移的代码
+  + 进程/线程/处理器上下文的定义高度依赖于本地硬件，操作系统和运行时系统
++ 利用在不同平台上实现的抽象机
+  + 解释语言，有效地拥有自己的 VM
+  + 虚拟机
 
 将计算环境与底层系统解耦
 
@@ -241,35 +265,71 @@ Client <-(10)- Client stub <-(9)- Client OS <-(8)- Server OS <-(7)- Server stub 
 
 ### 动态绑定 [04-1-35]
 
-一种让 client 找到 server 的方法
+（书上没有）
 
-静态绑定：将server地址硬编码到client代码中 (ip, port)
-
-???
++ 绑定：一种让 client 找到 server 的方法
+  + 静态绑定：将server地址硬编码到client代码中 (ip, port)
++ 结构
+  + Client/Server/Binder
+    + Server 向 Binder 注册/取消注册 
+    + Client 向 Binder 查找，Binder 返回结果
+    + Client 调用 Server
++ 绑定过程（Client 第一次调用 RPC 时）
+  + Server 启动时向 Binder 注册
+    + Register 请求，参数：ID、名字、版本、地址
+    + Unregister 请求，参数：ID、名字、版本
+  + Client stub 向 Binder 查找 Server 接口 
+    + Look-up 请求，参数：名字、版本；返回：ID、地址
+  + Client 根据地址发送 RPC 调用
++ 优点
+  + 灵活性 flexibility
+  + 可以支持多个支持同一接口的服务器，例如：
+    + Binder 可以随机地将服务器上的客户端传播到均匀负载（相当于负载均衡器）
+    + Binder 可以定期轮询服务器，自动取消注册失败的服务器，以达到一定的容错能力
+    + Binder 可以帮助身份验证
+  + Binder 可以验证客户端和服务器都使用相同版本的接口
++ 缺点
+  + 导出/导入接口的额外开销花费时间
+  + binder 可能成为大型分布式系统中的瓶颈
 
 ## 基于消息的通信 [04-2]
 
-### 持久性/非持久性 [P172] [04-2-4]
+### 持久性/非持久性(瞬时性) [P172] [04-2-4]
 
 Persistent/transient (reliable/unreliable)
 
-+ **persistent communication**: a message that has been submitted for transmission is stored by the communication middleware as long as it takes to deliver it to the receiver
-+ **transient communication**: a message is stored by the communication system only as long as the sending and receiving application are executing
++ **persistent communication**: a message that has been submitted for transmission is stored by the communication middleware as long as it takes to deliver it to the receiver 通信机制本身会对消息进行持久存储，直到它被传递给目的
+  + 消息的发送者和接收这不必同时存在（同时处于执行状态），如：电子邮件
++ **transient communication**: a message is stored by the communication system only as long as the sending and receiving application are executing 传输服务仅仅提供临时的对消息的存储
+  + 一旦发送者退出或者接收者退出，传输就会失败，如：电话
 
 Asynchronous/synchronous (unblocking/blocking) [04-2-3]
 
 + **asynchronous communication**: a sender continues immediately after it has submitted its
 message for transmission
 + **synchronous communication**: the sender is blocked until its request is known to be accepted
-  + synchronize at request submission
-  + synchronize at request delivery
-  + synchronize after processing by server (at response)
+  + synchronize at request submission 直到消息被成功提交给传输服务
+  + synchronize at request delivery 直到消息被接收者成功接收
+  + synchronize after processing by server (at response) 直到消息的接收者接收、处理消息、并且处理的结果返回到发送者
 
 [04-2-7] Persistent Messaging Alternatives 这页啥意思？？？
 
-### 流数据 [04-2-16]
+### 面向流的通信 Stream-oriented communication [04-2-16]
 
-？？？
+连续媒体
+
++ 离散媒体：数据项在时间上的联系不重要
++ 连续媒体 (continuous media)：不同数据项在时间上的联系（对于正确解释数据含义）非常重要，如：音频、视频、动画
+
+不同的传输模式
+
++ 异步传输模式（离散媒体）：没有时间的限制
++ 同步传输模式（连续媒体）：最大延迟时间
++ 等时传输模式（连续媒体）：最大延迟时间 & 最小延迟时间
+
+流与 QoS (Quality of Service)
+
+TODO
 
 ### Multicast communication [04-2-26]
  
@@ -281,14 +341,13 @@ message for transmission
 
 为什么要进行同步？
 
-+ 保证多个进程不会同时访问gs共享资源 (mutual exclusion)
++ 保证多个进程不会同时访问共享资源 (mutual exclusion)
 + 保证多个进程可以相互达成一致 (consensus)
 
 分布式系统的同步与集中式系统有何区别？
 
-分布式系统中的同步更困难：
-+ ？？？
-+ ？？？
++ 在集中式系统中，同步问题可以通过信号量等方法解决
++ 但这些方法无法在分布式系统中生效，因为它们隐含地依赖于共享内存的存在
 
 ## 时钟同步机制 [06-5]
 
@@ -393,21 +452,24 @@ message for transmission
 ## 复制的优势与不足 [07-2]
 
 + 优势
-  + Reliability
-    + Avoid single points of failure
-  + Performance
-    + Scalability in numbers and geographic area
+  + Reliability 可靠性
+    + 避免单点失效
+  + Performance 性能
+    + 服务器数量和地理区域上的可扩展性 scalability
 + 劣势
-  + Replication transparency
-  + Consistency issues
-    + Updates are costly
-    + Availability may suffer if not careful
+  + Replication transparency 复制透明性
+    + 某个用户不知道某个对象是复制的
+  + 一致性问题
+    + 更新过程开销大
+    + 不小心可能影响系统可用性
 
 ## 数据一致性模型
 
 + Data-centric consistency [07-9]
   + 未使用同步操作的模型
     + Strict [07-10]
+      + 最优解
+      + 不可能实现，隐含的假设存在绝对的全局时间
     + Linearizability [07-12]
     + Sequential [07-11] [P364]
 	  + 所有的进程看到相同的操作序列
@@ -417,14 +479,26 @@ message for transmission
 	  + Writes that are potentially casually related must be seen by all processes in the same order. Concurrent writes may be seen in a different order on different machines.
   + 使用同步操作的模型
     + Weak [07-21]
+      + 完成一次同步后，共享数据一致
     + Release [07-24]
+      + 离开一个临界区时，共享数据一致
     + Entry [07-26] [P372]
+      + 进入共享数据对应临界区时，共享数据一致
 + Client-centric consistency [07-29]
   + Eventual [07-30] [P373]
+    + 如果在一段相当长的时间内没有更新操作,那么所有的副本将逐渐成为一致的
   + Monotonic reads [07-32] [P377]
+    + 如果一个进程数据项 x 的值，那么该进程对 x 执行的任何后续读操作将总是得到第一次读取的那个值或更新的值
+    + 保证之后不会看到 x 的更老版本
   + Monotonic writes [07-33] [P379]
+    + 一个进程对数据项 x 执行的写操作必须在该进程对 x 执行任何后续写操作之前完成
+    + 写操作必须顺序完成，不能交叉
   + Read your writes [07-34] [P380]
+    + 一个进程对数据项 x 执行一次写操作的结果总是会被该进程对 x 执行的后续读操作看见
+    + 保证读取总是最新的
   + Writes follow reads [07-35] [P382]
+    + 同一个进程对数据项 x 执行的读操作之后的写操作，摆正发生在于 x 读取值相同或比之更新的值上
+    + 更新是作为前一个读操作的结果传播的
 
 ## 数据一致性协议实例
 
@@ -470,14 +544,24 @@ Failure 的分类
 + Time redundancy
   + 事务处理终止，则重新执行
 + Physical redundancy
-  + 添加额外的机器或进程
+  + 添加额外的机器或进程，使整体容忍部分错误
 
 ## k-容错系统
 
 k-容错定义 [P435]
-+ A system is said to be k-fault tolerant if it can survive faults in k components and still meet its specifications
++ A system is said to be k-fault tolerant if it can survive faults in k components and still meet its specifications 系统能够经受 k 个组件的故障并且还能满足规范要求
+
+k-容错所需要的冗余数
++ 失败沉默 Fail-silent faults：K+1
++ 拜占庭失败 Byzantine faults ：2K+1
 
 ## 拜占庭问题 (Byzantine agreement problem)
+
+算法步骤
+1. 每个将军向其他 n-1 个将军告知自己的兵力（真实或说谎）
+2. 每个将军将收到的消息组成一个长度为 n 的向量
+3. 每个将军将自己的向量发送给其他 n-1 个将军
+4. 每个将军检查每个接收到的向量中的第 i 个元素，将其众数作为其结果向量的第 i 个元素
 
 TODO
 
