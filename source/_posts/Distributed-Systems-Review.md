@@ -9,6 +9,8 @@ tags:
 
 A distributed system is a collection of **autonomous(自治的) computing elements** that appears to its users as a **single coherent(一致的) system**.
 
++ 每个计算单元(机器/进程)可以独立地工作（但他们通过通信相互协作）
++ 用户(人或应用)认为他面对的是一个单一系统（分布式透明性）
 
 ## 为什么要分布式? [01-11]
 
@@ -24,10 +26,11 @@ A distributed system is a collection of **autonomous(自治的) computing elemen
 
 "ATOS"
 
-+ Making resources **available**: 可用性
-+ Distribution **transparency** (hide the fact that resources are distributed): 透明性
-+ **Openness**: 开放性
-+ **Scalability**: 可扩展性
++ Making resources **available** 可用性
+  + 用户易于访问, 易于共享
++ **Transparency** 透明性: Hide the fact that resources are distributed
++ **Openness** 开放性
++ **Scalability** 可扩展性
   + **size scalability**: 可以容易地添加用户/资源，而没有显著的性能损失
   + **geographical scalability**: 用户/资源可能距离很远，但没有显著的通信延迟
   + **administrative scalability**: An administratively scalable system is one that can still be easily managed even if it spans many independent administrative organizations. 即使跨越许多独立的行政组织，仍然可以轻松管理
@@ -40,18 +43,27 @@ A distributed system is a collection of **autonomous(自治的) computing elemen
 ### 透明性 [01-13] [P8]
 
 + Access
+  + Hide differences in data representation and how a resource is accessed: 数据在不同的机器上如何表示
 + Location
-+ Migration
+  + Hide where a resource is located: 机器/资源的物理位置
 + Relocation
+  + Hide that a resource may be moved to another location while in use (被动移动): 云计算中很重要
++ Migration
+  + Hide that a resource may move to another location (主动移动): 如移动通信
 + Replication
+  + Hide that a resource may be shared by several competitive users
 + Concurrency
+  + Hide that a resource may be shared by several competitive users: 并发访问时需要保持资源的一致性状态
 + Failure
+  + Hide the failure and recovery of a resource: 用户察觉不到故障以及后续的修复过程
 
 ### 开放性 [01-15] [P12]
 
-(Textbook p.12) An **open** distributed system is essentially a system that offers components that can easily be used by, or integrated into other systems. 可以提供可以被其他系统使用或集成的组件。
-
-策略(policy)与机制(mechanism)分离：策略具体，机制抽象
++ (Textbook p.12) An **open** distributed system is essentially a system that offers components that can easily be used by, or integrated into other systems.
+ 提供的组件可以很容易地被其他系统使用或集成
++ 灵活性 flexibility
++ 可以更换一个组件而不影响整个系统
++ 策略(policy)与机制(mechanism)分离：策略具体，机制抽象
 
 ## 分布式系统构成方法
 
@@ -130,9 +142,13 @@ Request/Response 模型
 
 ## 将分布式系统组织为中间件 [02-28] [P71]
 
-Interceptors: Intercept the usual flow of control when invoking a remote object
-
-???
++ 上面讨论的都是高层的架构, 而中间件是一个具体的组织形式
++ 中间件的目标: 实现开放性
++ 中间件常用的两个设计模式: wrappers 和 interceptors
+  + wrapper/adapter: 为某个组件提供接口, 解决了接口不兼容的问题
+    + broker 模式用来将 adapter 的数量由 m*n 减少为 m+n
+  + interceptor: 在正常的控制流(通常是RPC请求过程)中插入一段代码
+  + 通常用于改造中间件, 以满足应用的实际需求
 
 # 进程与线程
 
@@ -149,14 +165,16 @@ Interceptors: Intercept the usual flow of control when invoking a remote object
 + 进程是系统进行资源分配和调度的一个独立单位，线程是CPU调度和分派的基本单位
 + 线程不拥有存储资源，同一进程的所有线程共享该进程的所有资源
 
-## 代码迁移
+## 代码迁移 [03-31]
 
-### 什么是代码迁移
++ 迁移代码通常是为了性能考虑
++ 迁移虚拟机比迁移代码要容易很多
++ 同构系统中, 假设迁移后的代码可以直接运行
+
+### 强迁移 vs. 弱迁移 [03-32]
 
 + **weak mobility**: 只迁移 code segment，一定重启
 + **strong mobility**: 迁移 code segment & execution segment
-
-### 强迁移 vs. 弱迁移
 
 + 强迁移
   + Move only code and data segment (and reboot execution):
@@ -166,6 +184,10 @@ Interceptors: Intercept the usual flow of control when invoking a remote object
   + Move component, including execution state
   + Migration: move entire object from one machine to the other
   + Cloning: start a clone, and set it in the same execution state
+
+### 虚拟机迁移 [P158]
+
+将计算环境与底层系统解耦
 
 # 通信
 
@@ -217,7 +239,7 @@ Client <-(10)- Client stub <-(9)- Client OS <-(8)- Server OS <-(7)- Server stub 
     + **gentle reincarnation**: server收到广播时寻找本地computations的owner，找不到则停止computations
     + **expiration**: 除非另外要求，RPC都要在规定时间内完成
 
-### 动态绑定
+### 动态绑定 [04-1-35]
 
 一种让 client 找到 server 的方法
 
@@ -486,4 +508,4 @@ TODO
   + 所保存的状态自动保持全局一致
   + 两个算法：
     + Distributed snapshot algorithm
-	+ Two-phase blocking protocol
+    + Two-phase blocking protocol
