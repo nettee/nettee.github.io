@@ -15,7 +15,7 @@ A distributed system is a collection of **autonomous(自治的) computing elemen
 ## 为什么要分布式? [01-11]
 
 + Economic: 微处理器比大型机性价比高
-+ Speed: 分布式系统整个计算能力比单个大型主机要强
++ Speed: 分布式系统整个计算能力比单个大型主机要强 ==> Performance
 + Inherent(固有的) distribution: 有些应用涉及到空间上分散的机器
 + Reliability: 如果其中一台机器崩溃,整体系统仍然能够运转 ==> Availability
 + Incremental growth: 计算能力可以逐渐有所增加 ==> Scalability
@@ -69,7 +69,16 @@ A distributed system is a collection of **autonomous(自治的) computing elemen
 
 分为：分布式操作系统(DOS)、网络操作系统(NOS)和基于中间件的系统(Middleware)
 
-（课件没有，参见急救包）
++ 分布式操作系统(DOS)
+  + 具有较好的透明性和易用性，但没有对相互独立的计算机集合的操作处理能力
++ 网络操作系统(NOS)
+  + 有良好的可扩展性和开放性，但对透明性和易用性比较差
++ 基于中间件的系统(Middleware)
+  + 在网络操作系统之上增加一个中间层，屏蔽各底层平台之间的异构性，增加透明性和易用性
+
+DOS 不是管理一组独立的计算机，NOS 也没有提供单个一致的系统，因此都不是分布式系统
+
+???
 
 ## 分布式系统的类型 [01-19]
 
@@ -329,7 +338,9 @@ message for transmission
 
 流与 QoS (Quality of Service)
 
-TODO
++ 利用区分服务为不同类型的数据提供服务
++ 利用缓冲区减少延时抖动
++ 交错传输来降低丢包的影响
 
 ### Multicast communication [04-2-26]
  
@@ -473,16 +484,25 @@ TODO
     + Linearizability [07-12]
     + Sequential [07-11] [P364]
 	  + 所有的进程看到相同的操作序列
+      + 不一定按照时间先后
     + Causal [07-14] [P368]
+      + 有因果关系的写操作，不同的进程要看到相同的顺序
+      + 没有因果关系的写操作，不同的进程可以看到不同的顺序
 	  + 比 Sequential consistency 要弱
-    + FIFO [07-17]
-	  + Writes that are potentially casually related must be seen by all processes in the same order. Concurrent writes may be seen in a different order on different machines.
+    + FIFO (PRAM) [07-17]
+      + 由同一个进程进行的写操作，必须看到正确的顺序
+      + 由不同进程进行的写操作，不同进程可以看到不同的顺序
   + 使用同步操作的模型
     + Weak [07-21]
       + 完成一次同步后，共享数据一致
     + Release [07-24]
+      + 将同步操作分为Acquire和Release，是对Weak 的弱化
+      + Acquire 的时候只需要本地的操作结束
+      + Release 的时候将本地的更改传播到所有进程
       + 离开一个临界区时，共享数据一致
     + Entry [07-26] [P372]
+      + 和 Release 模型类似
+      + Acquire 的时候，所有对该变量的操作都要完成
       + 进入共享数据对应临界区时，共享数据一致
 + Client-centric consistency [07-29]
   + Eventual [07-30] [P373]
@@ -495,16 +515,21 @@ TODO
     + 写操作必须顺序完成，不能交叉
   + Read your writes [07-34] [P380]
     + 一个进程对数据项 x 执行一次写操作的结果总是会被该进程对 x 执行的后续读操作看见
-    + 保证读取总是最新的
+    + 保证读取总是最新的（一个进程内）
   + Writes follow reads [07-35] [P382]
-    + 同一个进程对数据项 x 执行的读操作之后的写操作，摆正发生在于 x 读取值相同或比之更新的值上
+    + 同一个进程对数据项 x 执行的读操作之后的写操作，保证发生在与 x 读取值相同或比之更新的值上
     + 更新是作为前一个读操作的结果传播的
 
 ## 数据一致性协议实例
 
 ### Quorum-based protocols 基于法定数量的协议 [P402] [07-45]
 
-TODO
++ 对于一个具有 N 个副本的文件
+  + 客户要读取时，必须组织一个服务器数量为 Nr 的读团体(read quorum)
+  + 客户要修改时，必须组织一个服务器数量为 Nw 的写团体(write quorum)
++ 其中，Nr 与 Nw 满足以下限制条件
+  + Nr+Nw>N: 用于防止读写冲突
+  + Nw>N/2: 用于防止写写冲突
 
 # 容错
 
@@ -562,8 +587,6 @@ k-容错所需要的冗余数
 2. 每个将军将收到的消息组成一个长度为 n 的向量
 3. 每个将军将自己的向量发送给其他 n-1 个将军
 4. 每个将军检查每个接收到的向量中的第 i 个元素，将其众数作为其结果向量的第 i 个元素
-
-TODO
 
 ## Distributed commit (不在考点中)
 
