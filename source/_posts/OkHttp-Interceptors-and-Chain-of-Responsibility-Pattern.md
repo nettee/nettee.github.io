@@ -1,4 +1,5 @@
 title: OkHttp 的 Interceptors 与责任链模式
+date: 2018-05-01 22:53:30
 tags: [Android, Java, 设计模式]
 ---
 
@@ -27,6 +28,8 @@ int responseCode = response.code();
 ### Interceptors
 
 [Interceptor](https://github.com/square/okhttp/wiki/Interceptors)是OkHttp提供的一个强大的机制。用户使用Interceptor可以对网络请求(call)进行监控、重写或重试。用户通过实现`Interceptor`接口来创建一个interceptor。例如，下面是一个对request/response记录log的interceptor：
+
+<!-- more -->
 
 ```Java
 class LoggingInterceptor implements Interceptor {
@@ -86,20 +89,15 @@ Response getResponseWithInterceptorChain() throws IOException {
 }
 ```
 
-通过传入`List<Interceptor>`，以及其他信息，得到了`chain`对象。调用`chain.proceed(Request)`得到`Response`。`chain.proceed()`所做的事情是这样的：
+这里的每个`Interceptor`是进行具体工作的模块，包括用户定义的`client.interceptors()`，负责失败重试以及重定向的 `RetryAndFollowUpInterceptor`，负责把用户构造的请求转换为发送到服务器的请求、把服务器返回的响应转换为用户友好的响应的 `BridgeInterceptor`，负责读取缓存直接返回、更新缓存的 `CacheInterceptor`，负责和服务器建立连接的 `ConnectInterceptor`，用户定义的`client.networkInterceptors()`，和负责向服务器发送请求数据、从服务器读取响应数据的 `CallServerInterceptor`。
 
-```Java
-// Call the next interceptor in the chain.
-RealInterceptorChain next = new RealInterceptorChain(interceptors, streamAllocation, httpCodec,
-    connection, index + 1, request, call, eventListener, connectTimeout, readTimeout,
-    writeTimeout);
-Interceptor interceptor = interceptors.get(index);
-Response response = interceptor.intercept(next);
-```
+而`Chain`类则是辅助interceptors执行的工具类。`Chain`的构造函数的第5个参数表示`index`，代表第i个及以后的interceptor是有效的。`index`的初始值是0，每执行一个interceptor，它的值都会增加1。调用`Chain.proceed(Request)`时，会从第i个interceptor开始依次执行，最终返回一个response对象。每个`interceptor.intercept()`方法会调用`Chain.proceed()`来执行其后的interceptors。这样所有的interceptors可以依次被调用。时序图如下：
 
-得到当前的interceptor，并生成下一个`chain`对象。调用`interceptor.intercept(chain)`。而interceptor，正如上面`LoggingInterceptor`的例子所示，会反过来调用`chain.proceed()`。
+（时序图待续）
 
-实际上，`Chain`可以理解为interceptors的执行环境，其中`index`表示了从第i个interceptor开始是有效的。`Chain`类保证`Chain.proceed(Request)`一定能返回一个response对象。
+## 责任链模式 (Chain-of-responsibility pattern)
+
+未完待续。
 
 ## 参考文档
 
