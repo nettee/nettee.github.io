@@ -93,7 +93,7 @@ Response getResponseWithInterceptorChain() throws IOException {
 
 而`Chain`类则是辅助interceptors执行的工具类。`Chain`的构造函数的第5个参数表示`index`，代表第i个及以后的interceptor是有效的。`index`的初始值是0，每执行一个interceptor，它的值都会增加1。调用`Chain.proceed(Request)`时，会从第i个interceptor开始依次执行，最终返回一个response对象。每个`interceptor.intercept()`方法会调用`Chain.proceed()`来执行其后的interceptors。这样所有的interceptors可以依次被调用。时序图如下：
 
-（时序图待续）
+![UML: Interceptors 时序图](OkHttp-Interceptors-and-Chain-of-Responsibility-Pattern/uml-seq.png)
 
 ## 责任链模式 (Chain-of-responsibility pattern)
 
