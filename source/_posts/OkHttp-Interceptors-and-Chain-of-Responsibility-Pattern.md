@@ -97,7 +97,9 @@ Response getResponseWithInterceptorChain() throws IOException {
 
 ## 责任链模式 (Chain-of-responsibility pattern)
 
-未完待续。
+**责任链模式** 包含 _命令对象_ 和一系列实现了相同接口的 _处理对象_ ，这些处理对象相互连接成为一条责任链。每一个处理对象能决定它能处理哪些命令对象，对于它不能处理的命令对象，将会传递给该链中的下一个处理对象。
+
+在 OkHttp 中，命令对象就是 `Request` 对象，处理对象就是每一个 `Interceptor` 对象。每个 interceptor 对 request 进行一些步骤的处理，而将其余的工作交给下一个 interceptor。注意到，责任链中的处理对象如果可以全权处理命令对象，则不需要交给下一个处理对象。OkHttp 中的 `CacheInterceptor` 也是具有全权处理的能力。如果请求的结果已经缓存，则不需要再交给 `ConnectInterceptor` 等进行连接服务器、发送请求的处理，直接返回已缓存的 response 即可。
 
 ## 参考文档
 
