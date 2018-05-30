@@ -1,0 +1,27 @@
+language: node_js
+
+node_js: stable
+
+install:
+  - npm install
+
+script:
+  - hexo clean
+  - hexo generate
+
+after_script:
+  - cd ./public
+  - git init
+  - git config user.name "nettee"
+  - git config user.email "nettee.liu@gmail.com"
+  - git add .
+  - git commit -m "Deploy blog pages"
+  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:master
+
+branches:
+  only:
+    - blog
+
+env:
+  global:
+    - GH_REF: github.com/nettee/nettee.github.io.git
