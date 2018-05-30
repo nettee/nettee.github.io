@@ -9,6 +9,7 @@ install:
 before_script:
   - git clone https://github.com/nettee/hexo-theme-next themes/next
   - git clone https://github.com/nettee/iknowledge iknowledge
+  - cd iknowledge && make install
 
 script:
   - gitbook build iknowledge source/knowledge
