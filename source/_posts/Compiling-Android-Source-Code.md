@@ -47,7 +47,7 @@ clang: error: linker command failed with exit code 1 (use -v to see invocation)
 build/core/host_shared_library_internal.mk:51: recipe for target 'out/host/linux-x86/obj/lib/libart.so' failed
 ```
 
-Solution:
+解决方法：修改文件 `art/build/Android.common_build.mk`
 
 ```diff
 diff --git a/build/Android.common_build.mk b/build/Android.common_build.mk
@@ -62,6 +62,26 @@ index b84154b..8cf41c0 100644
 +  ART_HOST_CLANG := false
  endif
 ```
+
+另一种解决方法：修改文件 `art/build/Android.common_build.mk`
+
+```diff
+diff --git a/build/Android.common_build.mk b/build/Android.common_build.mk
+index b84154b..187ede8 100644
+--- a/build/Android.common_build.mk
++++ b/build/Android.common_build.mk
+@@ -72,7 +72,7 @@ ART_TARGET_CFLAGS :=
+
+ # Host.
+ ART_HOST_CLANG := false
+-ifneq ($(WITHOUT_HOST_CLANG),true)
++ifeq ($(WITHOUT_HOST_CLANG),false)
+   # By default, host builds use clang for better warnings.
+   ART_HOST_CLANG := true
+ endif
+```
+
+来源：https://blog.csdn.net/cnliwy/article/details/52189349
 
 # Android 7
 
