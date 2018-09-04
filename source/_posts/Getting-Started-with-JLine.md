@@ -26,6 +26,8 @@ WRITE TIME|DATE|LOCATION TO [FILE_VAR]
 CLOSE [FILE_VAR]
 ```
 
+<!-- more -->
+
 下面我们将一步步地写出 Fog 软件的命令行界面。首先，用 JLine3 搭建一个最基础的 REPL (Read-Eval-Print Loop) 框架：
 
 ```Java
@@ -134,9 +136,31 @@ LineReader lineReader = LineReaderBuilder.builder()
 1. CREATE 命令和 OPEN 命令分别定义了 completer，再用 `AggregateCompleter` 组合起来。`AggregateCompleter` 是另一种复合 completer，将多种可能的补全方式组合到了一起。打比方来说，`ArgumentCompleter` 相当于串联电路，而 `AggregateCompleter` 相当于并联电路。
 2. OPEN 命令的 `ArgumentCompleter` 中只定义了前三个单词的补全方式。这是因为第四个单词是用户定义了文件变量，用户可能输入任何的名字，因此无法进行补全。
 
-### 补全与程序语义
+### 动态补全
 
-WRITE 命令的补全与前两个稍有不同。根据程序语义，只有用户在 OPEN 命令中定义了的文件变量才能在 WRITE 命令中使用。那么，在补全的时候也应该考虑这一点。
+WRITE 命令的补全与前两个稍有不同。根据程序语义，只有用户在 OPEN 命令中定义了的文件变量才能在 WRITE 命令中使用。那么，在补全的时候也应该考虑这一点。我们需要在运行时动态地调整补全候选词：每当用户使用 OPEN 命令打开一个文件后，都调整 completer，将新的文件变量纳入补全候选词。我们需要知道如何动态地修改 completer。虽然 completer 的创建和传递给 `LineReader` 的过程是静态的，但在程序运行时，是通过调用 `Completer.complete()` 来获取补全的候选词的。那么，我们可以继承 `Completer` 并重写 `complete()` 方法来实现动态的候选词调整。
+
+```Java
+public class FileVarsCompleter implements Completer {
+
+    Completer completer;
+
+    public FileVarsCompleter() {
+        this.completer = new StringsCompleter();
+    }
+
+    @Override
+    public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
+        completer.complete(reader, line, candidates);
+    }
+
+    public void setFileVars(List<String> fileVars) {
+        this.completer = new StringsCompleter(fileVars);
+    }
+}
+```
+
+当调用 `setFileVars()` 时，会重新创建一个新的 `StringsCompleter`，从而扩充候选词。而在 REPL 中，只需要在用户输入 OPEN 命令后，调用 `setFileVars()` 即可。
 
 ```Java
 public class Fog {
@@ -186,6 +210,63 @@ public class Fog {
 ```
 
 ## 命令历史
+
+前面已经过说，在默认情况下，JLine3 已经支持命令历史查找。不过我们想加上一个特殊的功能：用户输入的注释（以 # 开头）不会进入命令历史，从而在命令历史查找时不受注释内容的干扰。
+
+JLine3 中，`History` 负责控制历史记录的行为，其默认实现为 `DefaultHistory`。查看源代码，我们发现 `add()` 方法是其核心行为。用户输入的一行命令，会通过 `add()` 方法加入命令历史中。
+
+```Java
+@Override
+public void add(Instant time, String line) {
+    Objects.requireNonNull(time);
+    Objects.requireNonNull(line);
+
+    if (getBoolean(reader, LineReader.DISABLE_HISTORY, false)) {
+        return;
+    }
+
+    // ...
+
+    internalAdd(time, line);
+
+    // ...
+}
+```
+
+同样地，我们可以通过继承并重写 `add()` 方法，将注释内容过滤掉，不加入命令历史：
+
+```Java
+public final class FogHistory extends DefaultHistory {
+
+    private static boolean isComment(String line) {
+        return line.startsWith("#");
+    }
+
+    @Override
+    public void add(Instant time, String line) {
+        if (isComment(line)) {
+            return;
+        }
+        super.add(time, line);
+    }
+}
+```
+
+然后我们这样设置 `LineReader`：
+
+```Java
+LineReader lineReader = LineReaderBuilder.builder()
+        .terminal(terminal)
+        .completer(fogCompleter)
+        .history(new FogHistory())
+        .build();
+```
+
+## 总结
+
+我们发现，JLine3 的各个功能设计得比较清晰，有其对应的接口和默认实现。如果我们想自定义一些特性，一般通过继承并重写的方式可以做到。JLine3 的源代码也比较容易理解，遇到困难时，可以自己阅读源代码来寻找线索。
+
+本文中示例程序的完整代码参见 [jline3-demo](https://github.com/nettee/jline3-demo)。
 
 [jline3]: https://github.com/jline/jline3
 [jline example]: https://github.com/jline/jline3/blob/master/builtins/src/test/java/org/jline/example/Example.java
