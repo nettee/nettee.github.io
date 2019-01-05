@@ -1,4 +1,4 @@
-title: Java 8 -- 事实上的多继承语言
+title: Java 8： 事实上的多继承语言
 date: 2018-12-26 20:38:57
 tags: [Java, OO, Programming Language]
 ---
