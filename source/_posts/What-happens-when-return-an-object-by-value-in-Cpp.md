@@ -1,9 +1,9 @@
-title: C++ 函数返回一个对象，究竟有多大影响？
+title: C++ 函数可以直接返回一个对象吗？
 date: 2018-11-16 19:16:21
 tags: [C++]
 ---
 
-稍微了解一点 C++ 的人都会知道，C++ 的内存和资源管理是相当复杂的。不像 Java 一股脑地把所有对象都放在堆上，C++ 既可以默认地把对象放在栈上，也可以用 `new` 把对象放在堆上。当我们把一个大对象放在栈上的时候，就必须要考虑对象拷贝的开销了。C++ 由于和 C 兼容，默认情况下参数是按值传递 (call by value) 的，在传递参数的时候就会拷贝一遍对象。对于这种情况，我们可以将参数声明为引用类型 `T&` 来避免对象拷贝。然而，函数返回时的对象拷贝开销，往往无法用引用类型来解决。我们必须正视这一问题。
+内存和资源管理是 C++ 最强的能力之一，也是 C++ 最复杂和最需要思考的地方。写 Java 的时候，我们只需要无脑地把所有对象都 `new` 出来。反正所有的对象只能放在堆区，又反正又垃圾回收器帮我们管理内存。然而，在 C++ 中，我们需要思考是把对象放在栈上，还是用 `new` 把对象放在堆上。默认情况下，对象会放在栈上，这样的好处是我们不会忘记释放对象的内存而造成内存泄漏。不过如果我们把一个大对象放在栈上，又将其作为参数或者返回值传递，就必须要考虑对象拷贝的开销了。C++ 由于和 C 兼容，默认情况下参数是按值传递 (call by value) 的，在传递参数和返回值的时候都会拷贝一遍对象。对于参数，我们尚可以将参数声明为引用类型 `T&` 来避免对象拷贝。而对于返回值的拷贝开销，则是不能声明为引用类型来解决的。
 
 # 何时必须返回一个对象
 
@@ -19,9 +19,21 @@ vector<int> range(int begin, int end, int step=1) {
 }
 ```
 
-这段代码会返回一个 `vector<int>` 对象，也就是我们不希望看到的：放在栈上的大对象。调用这个函数会产生返回值的临时对象，从而产生对象拷贝。很显然，你不能直接把返回值类型改成 `vector<int>&` 来避免对象拷贝——编译器会产生一个警告：`warning: reference to local variable ‘res’ returned`，你返回了一个临时变量的引用，这个引用指向了一个栈上的地址，而这个地址随时可能被回收。所以，正确的做法就是返回一个对象。
+这段代码会返回一个 `vector<int>` 对象，也就是我们不希望看到的：放在栈上的大对象。调用这个函数会产生返回值的临时对象，从而需要拷贝列表中的所有元素。很显然，你不能直接把返回值类型改成 `vector<int>&` 来避免对象拷贝——编译器会产生一个警告：`warning: reference to local variable ‘res’ returned`，你返回了一个临时变量的引用，这个引用指向了一个栈上的地址，而这个地址随时可能被回收。这也是 C++ 初学者容易犯的一个错误。既然不能返回一个引用，又想避免对象拷贝的开销，很多“老” C++ 程序员会进行一个人肉优化：把返回值作为引用参数传进去。按这种方法，`range()` 函数可以改写如下：
 
-那么，这时候对象拷贝会有怎样的开销呢？
+```C++
+vector<int> range(vector<int>& out, int begin, int end, int step=1) {
+    for (int i = begin; i < end; i += step) {
+        out.push_back(i);
+    }
+}
+
+// Caller
+vector<int> r;
+range(r, 0, 10);
+```
+
+C/C++ 程序员可能非常习惯这样写。然而，必须承认这是一个丑陋的写法。那么，直接返回一个 `vector<int>` 对象到底会怎么样呢？对象拷贝的开销能否避免？
 
 # 临时对象与返回值优化
 
@@ -41,6 +53,8 @@ r1 = range(1, 10); // 调用 r1 的 copy assignment operator (即 operator=)
 可以看到，虽然只是简单的一次函数调用，临时对象就进行了两次拷贝。而 `range` 产生的数越多，需要拷贝的内容就越多，对性能的影响就越大。
 
 为了解决这个问题，很多 C++ 编译器都实现了 [返回值优化][RVO] (Return Value Optimization)，来消除返回值临时对象的多次拷贝。
+
+<!-- more -->
 
 # 一个例子
 
@@ -154,6 +168,8 @@ End assigning value
 
 # 移动语义与 move constructor
 
+移动语义是 C++11 标准中引入的重要概念。移动语义类似 Rust 中的“所有权转移”。Move constructor 接收的是“右值引用”。在一般情况下，由于右值只是一个临时变量，我们可以“偷走”右值对象中的内容，而不会引起其他影响。在 C++11 中，移动语义才是真正重要的。Move constructor 如下定义：
+
 ```C++
 Blob(Blob&& other) {
     log("Blob's move constructor");
@@ -170,6 +186,8 @@ Blob& operator=(Blob&& other) {
     swap(size_, other.size_);
 }
 ```
+
+我们再进行代码，观察 constructor 的调用情况。
 
 不进行返回值优化的结果：
 
@@ -197,4 +215,12 @@ End assigning value
 [0x7ffc18a6e2a0] Blob's destructor
 ```
 
+可以发现，这次的运行结果相当于将前一次运行中的所有 copy constructor / copy assignment operator 换成了 move constructor / move assignment operator。可以看到，移动语义带来的性能优化实际上和 RVO 是正交的：RVO 负责消除多余的临时变量和 constructor；移动语义则负责将开销较大的 copy constructor 换成 move constructor。
+
+最后，现代的很多编译器已经可以自动添加 move constructor 了，编译器的 RVO 也做得越来越好。老的 C++ 程序员的写法似乎更像是一种“人肉编译器”的写法。我们必须要知道的一点是：编译器肯定是会越做越好的，而且编译器的能力常常远超过我们的想象。所以，我们更好的办法是将代码写得更优雅已读，如返回值拷贝开销这样的问题，更应该交给编译器去完成。
+
 [RVO]: https://en.wikipedia.org/wiki/Copy_elision#Return_value_optimization
+
+<!-- 
+TODO: https://www.zhihu.com/question/29511959
+-->

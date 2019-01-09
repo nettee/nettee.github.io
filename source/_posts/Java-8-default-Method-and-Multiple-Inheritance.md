@@ -39,6 +39,8 @@ public interface Iterable<T> {
 
 ## default 与多重继承
 
+<!-- more -->
+
 Java 在设计之初，将 interface 设计成“没有任何实现”的纯接口，以此来避免接口多继承可能导致的问题。如果继承的多个接口中定义了相同的方法，只需要检查方法的返回值是否一致即可，例如：
 
 ```Java
