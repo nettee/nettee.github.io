@@ -9,7 +9,7 @@ tags: [Android]
 adb shell monkey -p your.package.name -v 500
 ```
 
-然而，Monkey 程序还有一个特殊的 `--port` 选项。当这个选项开启后，Monkey 会运行在 _Automated Network Control_ 模式下，可以精确地向 app 发送一些 [KeyEvent](https://developer.android.com/reference/android/view/KeyEvent.html) 和 [MotionEvent](https://developer.android.com/reference/android/view/MotionEvent)。这也提供了一种在 `adb shell input` 命令之外，程序性地发送用户事件的方法。经测试，Monkey 支持的用户事件比 `input` 命令的用户事件更细致一些。
+然而，Monkey 程序还有一个特殊的 `--port` 选项。当这个选项开启后，Monkey 会运行在 _Automated Network Control_ 模式下，可以精确地向 app 发送一些 [KeyEvent](https://developer.android.com/reference/android/view/KeyEvent.html) 和 [MotionEvent](https://developer.android.com/reference/android/view/MotionEvent)。这也提供了一种在 `adb shell input` 命令之外，程序性地发送用户事件的方法。关于 `adb shell input` 命令，可以参考[这里](https://stackoverflow.com/questions/7789826/adb-shell-input-events)。经测试，Monkey 支持的用户事件比 `input` 命令的用户事件更细致一些。例如 `input` 命令对 swipe 动作只能指定滑动时间，但 Monkey 可以细致地指定滑动中的多次手指移动。
 
 如果你有 AOSP 源代码，可以在 `development/cmds/monkey/` 目录下找到 README.NETWORK.txt 文件，其中有说明 _Automated Network Control_ 协议的简单文档。或者你可以访问[这里](https://android.googlesource.com/platform/development/+/master/cmds/monkey/README.NETWORK.txt)。
 
