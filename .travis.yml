@@ -8,11 +8,8 @@ install:
 
 before_script:
   - git clone https://github.com/nettee/hexo-theme-next themes/next
-  - git clone https://github.com/nettee/iknowledge iknowledge
-  - pushd iknowledge && make install && popd
 
 script:
-  - gitbook build iknowledge source/knowledge
   - hexo clean
   - hexo generate
 
