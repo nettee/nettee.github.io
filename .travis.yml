@@ -6,9 +6,6 @@ install:
   - npm install
   - npm install -g gitbook-cli
 
-before_script:
-  - git clone https://github.com/nettee/hexo-theme-next themes/next
-
 script:
   - hexo clean
   - hexo generate
