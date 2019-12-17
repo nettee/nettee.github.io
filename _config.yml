@@ -72,5 +72,5 @@ theme: next
 ## Docs: http://hexo.io/docs/deployment.html
 deploy: 
   type: git
-  repository: https://github.com/nettee/nettee.github.io.git
+  repository: git@106.14.207.119:/home/git/hexo.git
   branch: master
