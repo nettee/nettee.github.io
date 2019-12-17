@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="nettee 的 blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="我们都知道，软件的用户界面无非分为 GUI （图形用户界面）和 CLI （命令行用户界面）。对于我们经常使用 Linux 的人来说，命令行界面一定非常熟悉。无论是 Shell 里输入命令的界面，还是如 GDB 等软件的内部交互界面，都是命令行界面。而当我们开发自己的软件，要写认真写一个 CLI 的时候，却发现要手写做出一个好用的命令行界面其实非常困难。因为一个好的命令行界面，在输入/输出之外，还要">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 命令行交互输入库 JLine 入门">
+<meta property="og:url" content="http://yoursite.com/posts/2018/Getting-Started-with-JLine/index.html">
+<meta property="og:site_name" content="nettee 的 blog">
+<meta property="og:description" content="我们都知道，软件的用户界面无非分为 GUI （图形用户界面）和 CLI （命令行用户界面）。对于我们经常使用 Linux 的人来说，命令行界面一定非常熟悉。无论是 Shell 里输入命令的界面，还是如 GDB 等软件的内部交互界面，都是命令行界面。而当我们开发自己的软件，要写认真写一个 CLI 的时候，却发现要手写做出一个好用的命令行界面其实非常困难。因为一个好的命令行界面，在输入/输出之外，还要">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-17T13:30:12.278Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 命令行交互输入库 JLine 入门">
+<meta name="twitter:description" content="我们都知道，软件的用户界面无非分为 GUI （图形用户界面）和 CLI （命令行用户界面）。对于我们经常使用 Linux 的人来说，命令行界面一定非常熟悉。无论是 Shell 里输入命令的界面，还是如 GDB 等软件的内部交互界面，都是命令行界面。而当我们开发自己的软件，要写认真写一个 CLI 的时候，却发现要手写做出一个好用的命令行界面其实非常困难。因为一个好的命令行界面，在输入/输出之外，还要">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/posts/2018/Getting-Started-with-JLine/"/>
+
+
+
+
+
+  <title>Java 命令行交互输入库 JLine 入门 | nettee 的 blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">nettee 的 blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Less is more than more.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/2018/Getting-Started-with-JLine/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nettee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="nettee 的 blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java 命令行交互输入库 JLine 入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-03T15:04:00+00:00">
+                2018-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/2018/Getting-Started-with-JLine/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="posts/2018/Getting-Started-with-JLine/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我们都知道，软件的用户界面无非分为 GUI （图形用户界面）和 CLI （命令行用户界面）。对于我们经常使用 Linux 的人来说，命令行界面一定非常熟悉。无论是 Shell 里输入命令的界面，还是如 GDB 等软件的内部交互界面，都是命令行界面。而当我们开发自己的软件，要写认真写一个 CLI 的时候，却发现要手写做出一个好用的命令行界面其实非常困难。因为一个好的命令行界面，在输入/输出之外，还要支持一些常见的命令行功能。</p>
+<p>对我而言，一个合格的命令行软件界面应该支持这三个功能：</p>
+<ul>
+<li>自动补全：当按下 TAB 键时，在当前光标处进行内容补全。根据上下文信息，补全可能是对命令的补全，也可能是对文件路径的补全。</li>
+<li>命令历史：当按上/下方向键时，可以显示上一条/下一条命令。</li>
+<li>行编辑 (line editing)：可以使用 Emacs 快捷键进行行内的编辑功能，例如 Ctrl+A 移动光标至行首，Ctrl+E 移动光标至行尾。</li>
+</ul>
+<p>熟悉 Linux 的人会发现，上面这三个功能都是 <a href="https://en.wikipedia.org/wiki/GNU_Readline" target="_blank" rel="noopener">GNU Readline</a> 的功能。我们不需要在软件中手写这几个功能，只要用这样一个库就可以了。实际上，GNU/Linux 中使用 GNU Readline 库的软件非常多，这使得 GNU Readline 同时也成为了一个事实上的命令行交互标准。GNU Readline 是 C 语言的库。我们用其他语言的时候，就要找对应功能的库（这往往是封装了底层的 GNU Readline 的库）。对 Java 语言来说，<a href="https://github.com/jline/jline3" target="_blank" rel="noopener">JLine</a> 就是这样一个帮助你搭建一个命令行交互界面的库。</p>
+<p>本文是想通过一个例子介绍 JLine3 的基本用法。JLine3 并没有一个 “Hello, world!” 的例子，它的 <a href="https://github.com/jline/jline3/wiki" target="_blank" rel="noopener">wiki</a> 也写得非常简略。虽然有一个示例的程序 <a href="https://github.com/jline/jline3/blob/master/builtins/src/test/java/org/jline/example/Example.java" target="_blank" rel="noopener">Example.java</a>，但这个示例比较复杂，难以理解。希望本文的内容能对你理解 JLine3 的用法有所帮助。</p>
+<h2 id="基本框架"><a href="#基本框架" class="headerlink" title="基本框架"></a>基本框架</h2><p>我们尝试为软件 Fog 设计一个命令行用户界面。用户可以输入四种命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CREATE [FILE_NAME]</span><br><span class="line">OPEN [FILE_NAME] AS [FILE_VAR]</span><br><span class="line">WRITE TIME|DATE|LOCATION TO [FILE_VAR]</span><br><span class="line">CLOSE [FILE_VAR]</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>下面我们将一步步地写出 Fog 软件的命令行界面。首先，用 JLine3 搭建一个最基础的 REPL (Read-Eval-Print Loop) 框架：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Terminal terminal = TerminalBuilder.builder()</span><br><span class="line">        .system(<span class="keyword">true</span>)</span><br><span class="line">        .build();</span><br><span class="line"></span><br><span class="line">LineReader lineReader = LineReaderBuilder.builder()</span><br><span class="line">        .terminal(terminal)</span><br><span class="line">        .build();</span><br><span class="line"></span><br><span class="line">String prompt = <span class="string">"fog&gt; "</span>;</span><br><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    String line;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        line = lineReader.readLine(prompt);</span><br><span class="line">        System.out.println(line);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (UserInterruptException e) &#123;</span><br><span class="line">        <span class="comment">// Do nothing</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (EndOfFileException e) &#123;</span><br><span class="line">        System.out.println(<span class="string">"\nBye."</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里除了设置命令提示符 (prompt)，没有进行任何特殊的设置。命令行会将用户输入的一行原样打印出来。当用户输入 Ctrl+D (End of line) 时，程序会退出。</p>
+<p>即使我们只写了一个框架，但此时程序已经拥有了 JLine3 默认提供的命令历史和行编辑功能。此时按上/下方向键时，会显示上一条/下一条命令，也可以使用 Ctrl+A、Ctrl+E 等 Emacs 快捷键进行行内编辑。</p>
+<h2 id="命令补全"><a href="#命令补全" class="headerlink" title="命令补全"></a>命令补全</h2><h3 id="简单补全与复合补全"><a href="#简单补全与复合补全" class="headerlink" title="简单补全与复合补全"></a>简单补全与复合补全</h3><p>由于命令补全和程序的命令格式密切相关，所以我们必须自己定义补全的方式。根据 <a href="https://github.com/jline/jline3/wiki" target="_blank" rel="noopener">wiki</a> 中所写，JLine3 中定义命令补全的方式是：创建一个 <code>Completer</code> 类的实例，将其传入 <code>LineReader</code>。JLine3 内置了多个 completer，其中最常见的是 <code>FileNameCompleter</code> （补全文件名）和 <code>StringsCompleter</code> （根据预定义的几个字符串进行补全，用于命令名或参数名）。例如，Fog 程序的四个命令分别以 CREATE, OPEN, WRITE, CLOSE 开头，那么我们可以使用一个 <code>StringsCompleter</code> 来对命令的第一个单词进行补全：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Completer commandCompleter = <span class="keyword">new</span> StringsCompleter(<span class="string">"CREATE"</span>, <span class="string">"OPEN"</span>, <span class="string">"WRITE"</span>, <span class="string">"CLOSE"</span>);</span><br><span class="line"></span><br><span class="line">LineReader lineReader = LineReaderBuilder.builder()</span><br><span class="line">        .terminal(terminal)</span><br><span class="line">        .completer(commandCompleter)</span><br><span class="line">        .build();</span><br></pre></td></tr></table></figure>
+<p>然而，这种补全方式只能支持每个命令的第一个单词，我们想要在命令的各种可能的地方都进行补全该怎么办呢？这时候就需要将 completer 进行组合，形成 <strong>复合 completer</strong> 。一般情况下，<code>StringsCompleter</code> 这样的 <strong>简单 completer</strong> 只能负责一个单词的补全，而要想实现整条命令的补全，就需要将几个不同的 completer 组合起来使用。<code>ArgumentCompleter</code> 就是用来补全整条命令的复合 completer。它可以将若干个 completer 组合在一起，每个 completer 负责补全命令中的第 i 个单词。以 CREATE 命令为例，这条命令共有两个单词，第一个单词需要字符串补全，第二个单词需要文件名补全。于是我们使用 <code>ArgumentCompleter</code> 将 <code>StringsCompleter</code> 和 <code>FileNameCompleter</code> 组合起来：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Completer createCompleter = <span class="keyword">new</span> ArgumentCompleter(</span><br><span class="line">        <span class="keyword">new</span> StringsCompleter(<span class="string">"CREATE"</span>),</span><br><span class="line">        <span class="keyword">new</span> Completers.FileNameCompleter()</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">LineReader lineReader = LineReaderBuilder.builder()</span><br><span class="line">        .terminal(terminal)</span><br><span class="line">        .completer(createCompleter)</span><br><span class="line">        .build();</span><br></pre></td></tr></table></figure>
+<p>根据 <code>ArgumentCompleter</code> 的两个参数，在输入第一个单词的时候会补全 CREATE，输入第二个单词的时候会补全文件名。但实测时会发现一个问题：当你已经输入了 CREATE 和文件名后，再试图进行补全，在第三个单词处试图补全，还是会出现文件名的补全。这是因为，<code>ArgumentCompleter</code> 在你已经“用完了”所有的 completers 之后（即第三个单词开始），会默认使用最后一个 completer。这并不是我们想要的效果。为了解决这个问题，我们可以在最后添加一个 <code>NullCompleter</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Completer createCompleter = <span class="keyword">new</span> ArgumentCompleter(</span><br><span class="line">        <span class="keyword">new</span> StringsCompleter(<span class="string">"CREATE"</span>),</span><br><span class="line">        <span class="keyword">new</span> Completers.FileNameCompleter(),</span><br><span class="line">        NullCompleter.INSTANCE</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">LineReader lineReader = LineReaderBuilder.builder()</span><br><span class="line">        .terminal(terminal)</span><br><span class="line">        .completer(createCompleter)</span><br><span class="line">        .build();</span><br></pre></td></tr></table></figure>
+<p><code>NullCompleter</code> 即不进行任何补全。这样，从第三个单词开始，都不会进行任何多余的补全。</p>
+<p>类似地，我们再加入 OPEN 命令补全的定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Completer createCompleter = <span class="keyword">new</span> ArgumentCompleter(</span><br><span class="line">        <span class="keyword">new</span> StringsCompleter(<span class="string">"CREATE"</span>),</span><br><span class="line">        <span class="keyword">new</span> Completers.FileNameCompleter(),</span><br><span class="line">        NullCompleter.INSTANCE</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">Completer openCompleter = <span class="keyword">new</span> ArgumentCompleter(</span><br><span class="line">        <span class="keyword">new</span> StringsCompleter(<span class="string">"OPEN"</span>),</span><br><span class="line">        <span class="keyword">new</span> Completers.FileNameCompleter(),</span><br><span class="line">        <span class="keyword">new</span> StringsCompleter(<span class="string">"AS"</span>),</span><br><span class="line">        NullCompleter.INSTANCE</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">Completer fogCompleter = <span class="keyword">new</span> AggregateCompleter(</span><br><span class="line">        createCompleter,</span><br><span class="line">        openCompleter</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">LineReader lineReader = LineReaderBuilder.builder()</span><br><span class="line">        .terminal(terminal)</span><br><span class="line">        .completer(fogCompleter)</span><br><span class="line">        .build();</span><br></pre></td></tr></table></figure>
+<p>这里有两点需要注意的地方：</p>
+<ol>
+<li>CREATE 命令和 OPEN 命令分别定义了 completer，再用 <code>AggregateCompleter</code> 组合起来。<code>AggregateCompleter</code> 是另一种复合 completer，将多种可能的补全方式组合到了一起。打比方来说，<code>ArgumentCompleter</code> 相当于串联电路，而 <code>AggregateCompleter</code> 相当于并联电路。</li>
+<li>OPEN 命令的 <code>ArgumentCompleter</code> 中只定义了前三个单词的补全方式。这是因为第四个单词是用户定义了文件变量，用户可能输入任何的名字，因此无法进行补全。</li>
+</ol>
+<h3 id="动态补全"><a href="#动态补全" class="headerlink" title="动态补全"></a>动态补全</h3><p>WRITE 命令的补全与前两个稍有不同。根据程序语义，只有用户在 OPEN 命令中定义了的文件变量才能在 WRITE 命令中使用。那么，在补全的时候也应该考虑这一点。我们需要在运行时动态地调整补全候选词：每当用户使用 OPEN 命令打开一个文件后，都调整 completer，将新的文件变量纳入补全候选词。我们需要知道如何动态地修改 completer。虽然 completer 的创建和传递给 <code>LineReader</code> 的过程是静态的，但在程序运行时，是通过调用 <code>Completer.complete()</code> 来获取补全的候选词的。那么，我们可以继承 <code>Completer</code> 并重写 <code>complete()</code> 方法来实现动态的候选词调整。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileVarsCompleter</span> <span class="keyword">implements</span> <span class="title">Completer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Completer completer;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FileVarsCompleter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.completer = <span class="keyword">new</span> StringsCompleter();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">complete</span><span class="params">(LineReader reader, ParsedLine line, List&lt;Candidate&gt; candidates)</span> </span>&#123;</span><br><span class="line">        completer.complete(reader, line, candidates);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFileVars</span><span class="params">(List&lt;String&gt; fileVars)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.completer = <span class="keyword">new</span> StringsCompleter(fileVars);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当调用 <code>setFileVars()</code> 时，会重新创建一个新的 <code>StringsCompleter</code>，从而扩充候选词。而在 REPL 中，只需要在用户输入 OPEN 命令后，调用 <code>setFileVars()</code> 即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fog</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;String&gt; fileVars = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> FileVarsCompleter fileVarsCompleter = <span class="keyword">new</span> FileVarsCompleter();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">        Completer writeCompleter = <span class="keyword">new</span> ArgumentCompleter(</span><br><span class="line">                <span class="keyword">new</span> StringsCompleter(<span class="string">"WRITE"</span>),</span><br><span class="line">                <span class="keyword">new</span> StringsCompleter(<span class="string">"TIME"</span>, <span class="string">"DATE"</span>, <span class="string">"LOCATION"</span>),</span><br><span class="line">                <span class="keyword">new</span> StringsCompleter(<span class="string">"TO"</span>),</span><br><span class="line">                fileVarsCompleter,</span><br><span class="line">                NullCompleter.INSTANCE</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        Completer fogCompleter = <span class="keyword">new</span> AggregateCompleter(</span><br><span class="line">                createCompleter,</span><br><span class="line">                openCompleter,</span><br><span class="line">                writeCompleter</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">        String prompt = <span class="string">"fog&gt; "</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            String line;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                line = lineReader.readLine(prompt);</span><br><span class="line">                System.out.println(line);</span><br><span class="line">                <span class="keyword">if</span> (line.startsWith(<span class="string">"OPEN"</span>)) &#123;</span><br><span class="line">                    fileVars.add(line.split(<span class="string">" "</span>)[<span class="number">3</span>]);</span><br><span class="line">                    fileVarsCompleter.setFileVars(fileVars);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (UserInterruptException e) &#123;</span><br><span class="line">                <span class="comment">// Do nothing</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (EndOfFileException e) &#123;</span><br><span class="line">                System.out.println(<span class="string">"\nBye."</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="命令历史"><a href="#命令历史" class="headerlink" title="命令历史"></a>命令历史</h2><p>前面已经过说，在默认情况下，JLine3 已经支持命令历史查找。不过我们想加上一个特殊的功能：用户输入的注释（以 # 开头）不会进入命令历史，从而在命令历史查找时不受注释内容的干扰。</p>
+<p>JLine3 中，<code>History</code> 负责控制历史记录的行为，其默认实现为 <code>DefaultHistory</code>。查看源代码，我们发现 <code>add()</code> 方法是其核心行为。用户输入的一行命令，会通过 <code>add()</code> 方法加入命令历史中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Instant time, String line)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(time);</span><br><span class="line">    Objects.requireNonNull(line);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (getBoolean(reader, LineReader.DISABLE_HISTORY, <span class="keyword">false</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    internalAdd(time, line);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同样地，我们可以通过继承并重写 <code>add()</code> 方法，将注释内容过滤掉，不加入命令历史：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FogHistory</span> <span class="keyword">extends</span> <span class="title">DefaultHistory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isComment</span><span class="params">(String line)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> line.startsWith(<span class="string">"#"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(Instant time, String line)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isComment(line)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.add(time, line);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们这样设置 <code>LineReader</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LineReader lineReader = LineReaderBuilder.builder()</span><br><span class="line">        .terminal(terminal)</span><br><span class="line">        .completer(fogCompleter)</span><br><span class="line">        .history(<span class="keyword">new</span> FogHistory())</span><br><span class="line">        .build();</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们发现，JLine3 的各个功能设计得比较清晰，有其对应的接口和默认实现。如果我们想自定义一些特性，一般通过继承并重写的方式可以做到。JLine3 的源代码也比较容易理解，遇到困难时，可以自己阅读源代码来寻找线索。</p>
+<p>本文中示例程序的完整代码参见 <a href="https://github.com/nettee/jline3-demo" target="_blank" rel="noopener">jline3-demo</a>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/2018/GDB-automated-debugging/" rel="next" title="GDB 自动化调试">
+                <i class="fa fa-chevron-left"></i> GDB 自动化调试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/2018/Understanding-lvalues-and-rvalues-in-C-and-C/" rel="prev" title="理解 C/C++ 中的左值和右值">
+                理解 C/C++ 中的左值和右值 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4"
+                alt="nettee" />
+            
+              <p class="site-author-name" itemprop="name">nettee</p>
+              <p class="site-description motion-element" itemprop="description">持续学习中...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/nettee" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:nettee.liu@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5c68d1196fb9a04a0164de03" target="_blank" title="掘金">
+                    
+                      <i class="fa fa-fw fa-globe"></i>掘金</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/nettee" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本框架"><span class="nav-number">1.</span> <span class="nav-text">基本框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令补全"><span class="nav-number">2.</span> <span class="nav-text">命令补全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单补全与复合补全"><span class="nav-number">2.1.</span> <span class="nav-text">简单补全与复合补全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态补全"><span class="nav-number">2.2.</span> <span class="nav-text">动态补全</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令历史"><span class="nav-number">3.</span> <span class="nav-text">命令历史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nettee</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://nettee.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/posts/2018/Getting-Started-with-JLine/';
+          this.page.identifier = 'posts/2018/Getting-Started-with-JLine/';
+          this.page.title = 'Java 命令行交互输入库 JLine 入门';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://nettee.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

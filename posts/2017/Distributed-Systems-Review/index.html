@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="nettee 的 blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="分布式系统模型什么是分布式系统 [01-8]A distributed system is a collection of autonomous(自治的) computing elements that appears to its users as a single coherent(一致的) system.  每个计算单元(机器/进程)可以独立地工作（但他们通过通信相互协作） 用户(人或应用)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式系统复习">
+<meta property="og:url" content="http://yoursite.com/posts/2017/Distributed-Systems-Review/index.html">
+<meta property="og:site_name" content="nettee 的 blog">
+<meta property="og:description" content="分布式系统模型什么是分布式系统 [01-8]A distributed system is a collection of autonomous(自治的) computing elements that appears to its users as a single coherent(一致的) system.  每个计算单元(机器/进程)可以独立地工作（但他们通过通信相互协作） 用户(人或应用)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-17T13:30:12.278Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式系统复习">
+<meta name="twitter:description" content="分布式系统模型什么是分布式系统 [01-8]A distributed system is a collection of autonomous(自治的) computing elements that appears to its users as a single coherent(一致的) system.  每个计算单元(机器/进程)可以独立地工作（但他们通过通信相互协作） 用户(人或应用)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/posts/2017/Distributed-Systems-Review/"/>
+
+
+
+
+
+  <title>分布式系统复习 | nettee 的 blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">nettee 的 blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Less is more than more.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/2017/Distributed-Systems-Review/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nettee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="nettee 的 blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分布式系统复习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-25T14:41:50+00:00">
+                2017-12-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/2017/Distributed-Systems-Review/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="posts/2017/Distributed-Systems-Review/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="分布式系统模型"><a href="#分布式系统模型" class="headerlink" title="分布式系统模型"></a>分布式系统模型</h1><h2 id="什么是分布式系统-01-8"><a href="#什么是分布式系统-01-8" class="headerlink" title="什么是分布式系统 [01-8]"></a>什么是分布式系统 [01-8]</h2><p>A distributed system is a collection of <strong>autonomous(自治的) computing elements</strong> that appears to its users as a <strong>single coherent(一致的) system</strong>.</p>
+<ul>
+<li>每个计算单元(机器/进程)可以独立地工作（但他们通过通信相互协作）</li>
+<li>用户(人或应用)认为他面对的是一个单一系统（分布式透明性）</li>
+</ul>
+<h2 id="为什么要分布式-01-11"><a href="#为什么要分布式-01-11" class="headerlink" title="为什么要分布式? [01-11]"></a>为什么要分布式? [01-11]</h2><ul>
+<li>Economic: 微处理器比大型机性价比高</li>
+<li>Speed: 分布式系统整个计算能力比单个大型主机要强 ==&gt; Performance</li>
+<li>Inherent(固有的) distribution: 有些应用涉及到空间上分散的机器</li>
+<li>Reliability: 如果其中一台机器崩溃,整体系统仍然能够运转 ==&gt; Availability</li>
+<li>Incremental growth: 计算能力可以逐渐有所增加 ==&gt; Scalability</li>
+</ul>
+<h2 id="分布式系统的目标-01-12"><a href="#分布式系统的目标-01-12" class="headerlink" title="分布式系统的目标 [01-12]"></a>分布式系统的目标 [01-12]</h2><p>（构建分布式系统的时候应该努力达成的重要目标）</p>
+<p>“ATOS”</p>
+<ul>
+<li>Making resources <strong>available</strong> 可用性<ul>
+<li>用户易于访问, 易于共享</li>
+</ul>
+</li>
+<li><strong>Transparency</strong> 透明性: Hide the fact that resources are distributed</li>
+<li><strong>Openness</strong> 开放性</li>
+<li><strong>Scalability</strong> 可扩展性<ul>
+<li><strong>size scalability</strong>: 可以容易地添加用户/资源，而没有显著的性能损失</li>
+<li><strong>geographical scalability</strong>: 用户/资源可能距离很远，但没有显著的通信延迟</li>
+<li><strong>administrative scalability</strong>: An administratively scalable system is one that can still be easily managed even if it spans many independent administrative organizations. 即使跨越许多独立的行政组织，仍然可以轻松管理</li>
+<li>大部分系统可以做到第一点，但后两点很难做到</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<h2 id="分布式系统透明性和开放性的含义"><a href="#分布式系统透明性和开放性的含义" class="headerlink" title="分布式系统透明性和开放性的含义"></a>分布式系统透明性和开放性的含义</h2><h3 id="透明性-01-13-P8"><a href="#透明性-01-13-P8" class="headerlink" title="透明性 [01-13] [P8]"></a>透明性 [01-13] [P8]</h3><ul>
+<li>Access<ul>
+<li>Hide differences in data representation and how a resource is accessed: 数据在不同的机器上如何表示</li>
+</ul>
+</li>
+<li>Location<ul>
+<li>Hide where a resource is located: 机器/资源的物理位置</li>
+</ul>
+</li>
+<li>Relocation<ul>
+<li>Hide that a resource may be moved to another location while in use (被动移动): 云计算中很重要</li>
+</ul>
+</li>
+<li>Migration<ul>
+<li>Hide that a resource may move to another location (主动移动): 如移动通信</li>
+</ul>
+</li>
+<li>Replication<ul>
+<li>Hide that a resource may be shared by several competitive users</li>
+</ul>
+</li>
+<li>Concurrency<ul>
+<li>Hide that a resource may be shared by several competitive users: 并发访问时需要保持资源的一致性状态</li>
+</ul>
+</li>
+<li>Failure<ul>
+<li>Hide the failure and recovery of a resource: 用户察觉不到故障以及后续的修复过程</li>
+</ul>
+</li>
+</ul>
+<h3 id="开放性-01-15-P12"><a href="#开放性-01-15-P12" class="headerlink" title="开放性 [01-15] [P12]"></a>开放性 [01-15] [P12]</h3><ul>
+<li>(Textbook p.12) An <strong>open</strong> distributed system is essentially a system that offers components that can easily be used by, or integrated into other systems.<br>提供的组件可以很容易地被其他系统使用或集成</li>
+<li>灵活性 flexibility</li>
+<li>可以更换一个组件而不影响整个系统</li>
+<li>策略(policy)与机制(mechanism)分离：策略具体，机制抽象</li>
+</ul>
+<h2 id="分布式系统构成方法"><a href="#分布式系统构成方法" class="headerlink" title="分布式系统构成方法"></a>分布式系统构成方法</h2><p>分为：分布式操作系统(DOS)、网络操作系统(NOS)和基于中间件的系统(Middleware)</p>
+<ul>
+<li>分布式操作系统(DOS)<ul>
+<li>具有较好的透明性和易用性，但没有对相互独立的计算机集合的操作处理能力</li>
+</ul>
+</li>
+<li>网络操作系统(NOS)<ul>
+<li>有良好的可扩展性和开放性，但对透明性和易用性比较差</li>
+</ul>
+</li>
+<li>基于中间件的系统(Middleware)<ul>
+<li>在网络操作系统之上增加一个中间层，屏蔽各底层平台之间的异构性，增加透明性和易用性</li>
+</ul>
+</li>
+</ul>
+<p>DOS 不是管理一组独立的计算机，NOS 也没有提供单个一致的系统，因此都不是分布式系统</p>
+<p>???</p>
+<h2 id="分布式系统的类型-01-19"><a href="#分布式系统的类型-01-19" class="headerlink" title="分布式系统的类型 [01-19]"></a>分布式系统的类型 [01-19]</h2><ul>
+<li>Distributed computing systems<ul>
+<li>Cluster Computing</li>
+<li>Grid Computing</li>
+<li>Cloud Computing</li>
+</ul>
+</li>
+<li>Distributed information systems<ul>
+<li>Transaction processing systems</li>
+</ul>
+</li>
+<li>Distributed pervasive systems (next-generation)<ul>
+<li>Mobile computing systems</li>
+<li>Sensor networks</li>
+</ul>
+</li>
+</ul>
+<h1 id="分布式系统架构"><a href="#分布式系统架构" class="headerlink" title="分布式系统架构"></a>分布式系统架构</h1><h2 id="分布式系统架构风格-02-3-4"><a href="#分布式系统架构风格-02-3-4" class="headerlink" title="分布式系统架构风格 [02-3~4]"></a>分布式系统架构风格 [02-3~4]</h2><ul>
+<li>Organize into logically different components, and distribute those components over the various machines.</li>
+<li>Decoupling processes in space (“anonymous”) and also time (“asynchronous”) has led to alternative styles.</li>
+</ul>
+<p>(Textbook p.56) 使用<strong>component</strong>和<strong>connector</strong>定义，有四种典型类型：</p>
+<ul>
+<li>Layered architectures</li>
+<li>Object-based architectures</li>
+<li>Resource-centered architectures</li>
+<li>Event-based architectures</li>
+</ul>
+<h2 id="分布式系统组织形式-02-5"><a href="#分布式系统组织形式-02-5" class="headerlink" title="分布式系统组织形式 [02-5]"></a>分布式系统组织形式 [02-5]</h2><ul>
+<li><strong>Centralized</strong>: 基本的 Client/Server 模型</li>
+<li><strong>Decentralized</strong>: Peer-to-peer (P2P)</li>
+<li><strong>Hybrid</strong>: Client/Server combined with P2P</li>
+</ul>
+<h2 id="客户-服务器模式和对等模式"><a href="#客户-服务器模式和对等模式" class="headerlink" title="客户-服务器模式和对等模式"></a>客户-服务器模式和对等模式</h2><ul>
+<li>Client-Server 模式是 <strong>vertical distribution</strong>，将不同逻辑功能的 component 划分到不同的机器上</li>
+<li>P2P 模式是 <strong>horizontal distribution</strong>，每个机器的功能都是等价的</li>
+</ul>
+<h3 id="Client-Server-模式-02-6"><a href="#Client-Server-模式-02-6" class="headerlink" title="Client-Server 模式 [02-6]"></a>Client-Server 模式 [02-6]</h3><p>Request/Response 模型</p>
+<ul>
+<li>Multiple client / Single server</li>
+<li>Multiple client / Multiple server</li>
+</ul>
+<p>经典的三层架构：</p>
+<ul>
+<li>user interface layer</li>
+<li>processing layer</li>
+<li>data layer</li>
+</ul>
+<p>多层架构（对于机器而言）</p>
+<ul>
+<li>(Physically) two-tiered architecture: client machine &amp; server machine<ul>
+<li>一般将 user interface layer 放在 client machine 上，将 processing layer 和 data layer放在 server machine 上</li>
+</ul>
+</li>
+<li>(Physically) three-tiered architecture: client machine, application server &amp; database server.</li>
+</ul>
+<h3 id="对等-P2P-模式-02-21"><a href="#对等-P2P-模式-02-21" class="headerlink" title="对等 (P2P) 模式 [02-21]"></a>对等 (P2P) 模式 [02-21]</h3><ul>
+<li>Structured P2P: 有特定的拓扑结构，如环、二叉树、网格<ul>
+<li>找一个数据只要找特定ID的结点即可</li>
+</ul>
+</li>
+<li>Unstructured P2P: nodes have randomly selected neighbors<ul>
+<li>search 方法：<ul>
+<li>Flooding</li>
+<li>Random walk</li>
+</ul>
+</li>
+<li>Super peers: weak peer 通过 super peers 来通信</li>
+</ul>
+</li>
+<li>Hybrid P2P: some nodes are appointed special functions in a well-organized fashion<ul>
+<li><strong>Edge-server systems</strong></li>
+<li>BitTorrent</li>
+</ul>
+</li>
+</ul>
+<h2 id="将分布式系统组织为中间件-02-28-P71"><a href="#将分布式系统组织为中间件-02-28-P71" class="headerlink" title="将分布式系统组织为中间件 [02-28] [P71]"></a>将分布式系统组织为中间件 [02-28] [P71]</h2><ul>
+<li>上面讨论的都是高层的架构, 而中间件是一个具体的组织形式</li>
+<li>中间件的目标: 实现开放性</li>
+<li>中间件常用的两个设计模式: wrappers 和 interceptors<ul>
+<li>wrapper/adapter: 为某个组件提供接口, 解决了接口不兼容的问题<ul>
+<li>broker 模式用来将 adapter 的数量由 m*n 减少为 m+n</li>
+</ul>
+</li>
+<li>interceptor: 在正常的控制流(通常是RPC请求过程)中插入一段代码</li>
+<li>通常用于改造中间件, 以满足应用的实际需求</li>
+</ul>
+</li>
+</ul>
+<h1 id="进程与线程"><a href="#进程与线程" class="headerlink" title="进程与线程"></a>进程与线程</h1><h2 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h2><p>什么是进程：</p>
+<ul>
+<li>Program: Static code and static data</li>
+<li>Process: Dynamic instance of code and data</li>
+</ul>
+<p>线程是轻量级的进程：</p>
+<ul>
+<li>一个线程只能属于一个进程，而一个进程可以有多个线程</li>
+<li>进程是系统进行资源分配和调度的一个独立单位，线程是CPU调度和分派的基本单位</li>
+<li>线程不拥有存储资源，同一进程的所有线程共享该进程的所有资源</li>
+</ul>
+<h2 id="代码迁移-03-31"><a href="#代码迁移-03-31" class="headerlink" title="代码迁移 [03-31]"></a>代码迁移 [03-31]</h2><ul>
+<li>迁移代码通常是为了性能考虑</li>
+<li>迁移虚拟机比迁移代码要容易很多</li>
+<li>同构系统中, 假设迁移后的代码可以直接运行</li>
+</ul>
+<h3 id="迁移内容"><a href="#迁移内容" class="headerlink" title="迁移内容"></a>迁移内容</h3><ul>
+<li><strong>Code segment</strong>: contains the actual code</li>
+<li><strong>Data segment</strong>: contains the state</li>
+<li><strong>Execution state</strong>: contains context of thread executing the object’s code</li>
+</ul>
+<h3 id="强迁移-vs-弱迁移-03-32"><a href="#强迁移-vs-弱迁移-03-32" class="headerlink" title="强迁移 vs. 弱迁移 [03-32]"></a>强迁移 vs. 弱迁移 [03-32]</h3><ul>
+<li>弱迁移<ul>
+<li>只迁移 code segment &amp; data segment</li>
+<li>一定重启</li>
+<li>最后被目标进程或者另外一个独立的进程执行</li>
+</ul>
+</li>
+<li>强迁移<ul>
+<li>迁移 code segment, data segment &amp; execution state</li>
+<li>要么复制进程 (正在执行的进程停下来，移动后再恢复)</li>
+<li>要么克隆 (所有数据完全复制到另外一台机器上，和原来的进程并行)</li>
+<li>Migration: move entire object from one machine to the other</li>
+<li>Cloning: start a clone, and set it in the same execution state</li>
+</ul>
+</li>
+</ul>
+<h3 id="迁移和本地资源"><a href="#迁移和本地资源" class="headerlink" title="迁移和本地资源"></a>迁移和本地资源</h3><ul>
+<li>对象使用可能在目标站点可用或不可用的本地资源</li>
+<li>资源类型<ul>
+<li>固定资源 Fixed：资源不能迁移，如本地硬件</li>
+<li>捆绑资源 Fastened：资源原则上可以迁移，但成本很高</li>
+<li>独立资源 Unattached：资源可以轻松地随对象一起移动（例如缓存）</li>
+</ul>
+</li>
+<li>对象到资源绑定<ul>
+<li>通过标识符：对象需要资源的特定实例（例如特定数据库）</li>
+<li>按值：对象需要资源的值（例如，缓存实体集合）</li>
+<li>按类型：对象要求只有一种类型的资源可用（例如，颜色监视器）</li>
+</ul>
+</li>
+</ul>
+<h3 id="在异构系统中的迁移-P158"><a href="#在异构系统中的迁移-P158" class="headerlink" title="在异构系统中的迁移 [P158]"></a>在异构系统中的迁移 [P158]</h3><ul>
+<li>主要问题<ul>
+<li>目标计算机可能不适合执行迁移的代码</li>
+<li>进程/线程/处理器上下文的定义高度依赖于本地硬件，操作系统和运行时系统</li>
+</ul>
+</li>
+<li>利用在不同平台上实现的抽象机<ul>
+<li>解释语言，有效地拥有自己的 VM</li>
+<li>虚拟机</li>
+</ul>
+</li>
+</ul>
+<p>将计算环境与底层系统解耦</p>
+<h1 id="通信"><a href="#通信" class="headerlink" title="通信"></a>通信</h1><h2 id="通信的类型-P172"><a href="#通信的类型-P172" class="headerlink" title="通信的类型 [P172]"></a>通信的类型 [P172]</h2><p>见“基于消息的通信”</p>
+<h2 id="远程过程调用-RPC"><a href="#远程过程调用-RPC" class="headerlink" title="远程过程调用(RPC)"></a>远程过程调用(RPC)</h2><h3 id="RPC的工作过程-04-1-16"><a href="#RPC的工作过程-04-1-16" class="headerlink" title="RPC的工作过程 [04-1-16]"></a>RPC的工作过程 [04-1-16]</h3><ol>
+<li>The client procedure calls the client stub in the normal way.</li>
+<li>The client stub builds a message and calls the local operating system.</li>
+<li>The client’s OS sends the message to the remote OS.</li>
+<li>The remote OS gives the message to the server stub.</li>
+<li>The server stub unpacks the parameter(s) and calls the server.</li>
+<li>The server does the work and returns the result to the stub.</li>
+<li>The server stub packs the result in a message and calls its local OS.</li>
+<li>The server’s OS sends the message to the client’s OS.</li>
+<li>The client’s OS gives the message to the client stub.</li>
+<li>The stub unpacks the result and returns it to the client.</li>
+</ol>
+<p>Client –(1)-&gt; Client stub -(2)-&gt; Client OS -(3)-&gt; Server OS -(4)-&gt; Server stub (5)-&gt; Server</p>
+<p>Client &lt;-(10)- Client stub &lt;-(9)- Client OS &lt;-(8)- Server OS &lt;-(7)- Server stub &lt;-(6)- Server</p>
+<h3 id="故障处理-P464-04-1-20"><a href="#故障处理-P464-04-1-20" class="headerlink" title="故障处理 [P464] [04-1-20]"></a>故障处理 [P464] [04-1-20]</h3><p>五种 failure:</p>
+<ol>
+<li>Client cannot locate the server<ul>
+<li>Reason: 服务器宕机，服务器接口更新</li>
+<li>Solution: Throw an exception，或使用特殊的返回值</li>
+</ul>
+</li>
+<li>Lost request messages<ul>
+<li>超时则重新request</li>
+<li>对于不幂等的请求，编上序号让server能识别重复请求</li>
+</ul>
+</li>
+<li>Server crashes<ul>
+<li>两种情况: Execute之前Crash，Execute之后Crash</li>
+<li>难以解决<ul>
+<li>重启server并重新进行处理：保证至少执行一次(at-least-once)</li>
+<li>立即放弃并报告错误：保证至多执行一次(at-most-once)</li>
+<li>什么都不保证</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Lost reply messages<ul>
+<li>超时则重新request</li>
+<li>对于不幂等的请求，编上序号让server能识别重复请求</li>
+</ul>
+</li>
+<li>Client crashes (orphan 问题)<ul>
+<li><strong>orphan extermination</strong>: 为request记录log，client重启时检查log</li>
+<li><strong>reincarnation</strong>: client重启时广播，停止orphan computations</li>
+<li><strong>gentle reincarnation</strong>: server收到广播时寻找本地computations的owner，找不到则停止computations</li>
+<li><strong>expiration</strong>: 除非另外要求，RPC都要在规定时间内完成</li>
+</ul>
+</li>
+</ol>
+<h3 id="动态绑定-04-1-35"><a href="#动态绑定-04-1-35" class="headerlink" title="动态绑定 [04-1-35]"></a>动态绑定 [04-1-35]</h3><p>（书上没有）</p>
+<ul>
+<li>绑定：一种让 client 找到 server 的方法<ul>
+<li>静态绑定：将server地址硬编码到client代码中 (ip, port)</li>
+</ul>
+</li>
+<li>结构<ul>
+<li>Client/Server/Binder<ul>
+<li>Server 向 Binder 注册/取消注册 </li>
+<li>Client 向 Binder 查找，Binder 返回结果</li>
+<li>Client 调用 Server</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>绑定过程（Client 第一次调用 RPC 时）<ul>
+<li>Server 启动时向 Binder 注册<ul>
+<li>Register 请求，参数：ID、名字、版本、地址</li>
+<li>Unregister 请求，参数：ID、名字、版本</li>
+</ul>
+</li>
+<li>Client stub 向 Binder 查找 Server 接口 <ul>
+<li>Look-up 请求，参数：名字、版本；返回：ID、地址</li>
+</ul>
+</li>
+<li>Client 根据地址发送 RPC 调用</li>
+</ul>
+</li>
+<li>优点<ul>
+<li>灵活性 flexibility</li>
+<li>可以支持多个支持同一接口的服务器，例如：<ul>
+<li>Binder 可以随机地将服务器上的客户端传播到均匀负载（相当于负载均衡器）</li>
+<li>Binder 可以定期轮询服务器，自动取消注册失败的服务器，以达到一定的容错能力</li>
+<li>Binder 可以帮助身份验证</li>
+</ul>
+</li>
+<li>Binder 可以验证客户端和服务器都使用相同版本的接口</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>导出/导入接口的额外开销花费时间</li>
+<li>binder 可能成为大型分布式系统中的瓶颈</li>
+</ul>
+</li>
+</ul>
+<h2 id="基于消息的通信-04-2"><a href="#基于消息的通信-04-2" class="headerlink" title="基于消息的通信 [04-2]"></a>基于消息的通信 [04-2]</h2><h3 id="持久性-非持久性-瞬时性-P172-04-2-4"><a href="#持久性-非持久性-瞬时性-P172-04-2-4" class="headerlink" title="持久性/非持久性(瞬时性) [P172] [04-2-4]"></a>持久性/非持久性(瞬时性) [P172] [04-2-4]</h3><p>Persistent/transient (reliable/unreliable)</p>
+<ul>
+<li><strong>persistent communication</strong>: a message that has been submitted for transmission is stored by the communication middleware as long as it takes to deliver it to the receiver 通信机制本身会对消息进行持久存储，直到它被传递给目的<ul>
+<li>消息的发送者和接收这不必同时存在（同时处于执行状态），如：电子邮件</li>
+</ul>
+</li>
+<li><strong>transient communication</strong>: a message is stored by the communication system only as long as the sending and receiving application are executing 传输服务仅仅提供临时的对消息的存储<ul>
+<li>一旦发送者退出或者接收者退出，传输就会失败，如：电话</li>
+</ul>
+</li>
+</ul>
+<p>Asynchronous/synchronous (unblocking/blocking) [04-2-3]</p>
+<ul>
+<li><strong>asynchronous communication</strong>: a sender continues immediately after it has submitted its<br>message for transmission</li>
+<li><strong>synchronous communication</strong>: the sender is blocked until its request is known to be accepted<ul>
+<li>synchronize at request submission 直到消息被成功提交给传输服务</li>
+<li>synchronize at request delivery 直到消息被接收者成功接收</li>
+<li>synchronize after processing by server (at response) 直到消息的接收者接收、处理消息、并且处理的结果返回到发送者</li>
+</ul>
+</li>
+</ul>
+<p>[04-2-7] Persistent Messaging Alternatives 这页啥意思？？？</p>
+<h3 id="面向流的通信-Stream-oriented-communication-04-2-16"><a href="#面向流的通信-Stream-oriented-communication-04-2-16" class="headerlink" title="面向流的通信 Stream-oriented communication [04-2-16]"></a>面向流的通信 Stream-oriented communication [04-2-16]</h3><p>连续媒体</p>
+<ul>
+<li>离散媒体：数据项在时间上的联系不重要</li>
+<li>连续媒体 (continuous media)：不同数据项在时间上的联系（对于正确解释数据含义）非常重要，如：音频、视频、动画</li>
+</ul>
+<p>不同的传输模式</p>
+<ul>
+<li>异步传输模式（离散媒体）：没有时间的限制</li>
+<li>同步传输模式（连续媒体）：最大延迟时间</li>
+<li>等时传输模式（连续媒体）：最大延迟时间 &amp; 最小延迟时间</li>
+</ul>
+<p>流与 QoS (Quality of Service)</p>
+<ul>
+<li>利用区分服务为不同类型的数据提供服务</li>
+<li>利用缓冲区减少延时抖动</li>
+<li>交错传输来降低丢包的影响</li>
+</ul>
+<h3 id="Multicast-communication-04-2-26"><a href="#Multicast-communication-04-2-26" class="headerlink" title="Multicast communication [04-2-26]"></a>Multicast communication [04-2-26]</h3><p>不在范围内</p>
+<h1 id="同步与资源管理"><a href="#同步与资源管理" class="headerlink" title="同步与资源管理"></a>同步与资源管理</h1><h2 id="同步问题-06-4"><a href="#同步问题-06-4" class="headerlink" title="同步问题 [06-4]"></a>同步问题 [06-4]</h2><p>为什么要进行同步？</p>
+<ul>
+<li>保证多个进程不会同时访问共享资源 (mutual exclusion)</li>
+<li>保证多个进程可以相互达成一致 (consensus)</li>
+</ul>
+<p>分布式系统的同步与集中式系统有何区别？</p>
+<ul>
+<li>在集中式系统中，同步问题可以通过信号量等方法解决</li>
+<li>但这些方法无法在分布式系统中生效，因为它们隐含地依赖于共享内存的存在</li>
+</ul>
+<h2 id="时钟同步机制-06-5"><a href="#时钟同步机制-06-5" class="headerlink" title="时钟同步机制 [06-5]"></a>时钟同步机制 [06-5]</h2><p>时间不能回退，可以逐渐放快或放慢</p>
+<ul>
+<li>Cristian’s algorithm [06-12] [P304]<ul>
+<li>假设 time server 提供精确时间</li>
+<li>所有机器和 time server 同步</li>
+<li>考虑通信延迟</li>
+</ul>
+</li>
+<li>Berkeley algorithm [06-13] [P306]<ul>
+<li>适用于没有精确时钟的情况</li>
+<li>time daemon 主动询问其他所有机器的时间</li>
+<li>计算平均时间作为标准</li>
+</ul>
+</li>
+<li>Network Time Protocol [06-15] [P304]<ul>
+<li>类似 Cristian’s algorithm 的计算方法</li>
+<li>Stratum-0/1/2/3 server，数字越小越精确</li>
+</ul>
+</li>
+</ul>
+<h2 id="Logical-clocks-逻辑时钟-06-16"><a href="#Logical-clocks-逻辑时钟-06-16" class="headerlink" title="Logical clocks 逻辑时钟 [06-16]"></a>Logical clocks 逻辑时钟 [06-16]</h2><p>很多时候不需要知道精确的时间，只需要知道事件发生的先后关系就可以，这就叫做逻辑时钟</p>
+<h3 id="Lamport’s-logical-clocks-06-18-P310"><a href="#Lamport’s-logical-clocks-06-18-P310" class="headerlink" title="Lamport’s logical clocks [06-18] [P310]"></a>Lamport’s logical clocks [06-18] [P310]</h3><ul>
+<li>定义 Happens-before 关系</li>
+<li>Assigning time C(e) to events，使满足 HB 关系<ul>
+<li>每个进程维护一个 C (分布式)</li>
+<li>调整方法：When a message arrives and the receiver’s clock shows a value prior to the time the message was sent, the receiver fast forwards its clock to be one more than the sending time. C_j = max{ts(m), C_j}</li>
+<li>为 timestamp 添加进程ID(e.g. <40,i>, <40,j>)，防止出现相等的 timestamp</40,j></40,i></li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>通过 C(a) 和 C(b) 不能确定 a 和 b 的 HB 关系 </li>
+<li>根本原因: Lamport’s logical clocks 不包含因果关系(causality)</li>
+</ul>
+</li>
+</ul>
+<h3 id="Vector-clock-向量时戳-06-23-P316"><a href="#Vector-clock-向量时戳-06-23-P316" class="headerlink" title="Vector clock 向量时戳 [06-23] [P316]"></a>Vector clock 向量时戳 [06-23] [P316]</h3><ul>
+<li>原理：记录所有进程的历史信息(causal histories)</li>
+<li>Assign time VC，VC[i] 表示 P_i 发生过的时间数量<ul>
+<li>每个进程维护一个 VC (分布式)</li>
+<li>调整方法同Lamport’s logical clocks</li>
+</ul>
+</li>
+<li>比较方法<ul>
+<li>VC(a) &lt; VC(b) iff. VC(a)[k] &lt;= VC(b)[k] for all k</li>
+</ul>
+</li>
+<li>若 VC(a) &lt; VC(b)，则可以认为 a, b 之间有 causal relationship</li>
+</ul>
+<h2 id="Mutual-exclusion-互斥访问-06-27"><a href="#Mutual-exclusion-互斥访问-06-27" class="headerlink" title="Mutual exclusion 互斥访问 [06-27]"></a>Mutual exclusion 互斥访问 [06-27]</h2><h3 id="A-centralized-algorithm-P322-06-28"><a href="#A-centralized-algorithm-P322-06-28" class="headerlink" title="A centralized algorithm [P322] [06-28]"></a>A centralized algorithm [P322] [06-28]</h3><ul>
+<li>方法<ul>
+<li>使用单个决策进程，称为 coordinator</li>
+<li>请求资源的进程向 coordinator 请求 permission</li>
+<li>若资源被占用，可能 block，也可能返回错误消息</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>单点失效<ul>
+<li>进程无法区分到底是 coordinator 失效了还是被 block 了</li>
+</ul>
+</li>
+<li>性能瓶颈</li>
+</ul>
+</li>
+</ul>
+<h3 id="A-distributed-algorithm-P323-06-29"><a href="#A-distributed-algorithm-P323-06-29" class="headerlink" title="A distributed algorithm [P323] [06-29]"></a>A distributed algorithm [P323] [06-29]</h3><ul>
+<li>方法<ul>
+<li>基于 timestamp</li>
+<li>请求资源的进程向所有进程请求 permission</li>
+<li>若两个进程都感兴趣，timestamp 更早的胜出</li>
+<li>获得所有进程的 permission 才可以使用资源、</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>单点失效（任何一个进程 fail 都会导致单点失效）</li>
+<li>如果环境不支持广播，会很麻烦</li>
+<li>相比集中式算法更慢、更复杂，还更易失效</li>
+</ul>
+</li>
+</ul>
+<h3 id="A-token-ring-algorithm-P325-06-32"><a href="#A-token-ring-algorithm-P325-06-32" class="headerlink" title="A token-ring algorithm [P325] [06-32]"></a>A token-ring algorithm [P325] [06-32]</h3><ul>
+<li>方法<ul>
+<li>在环上传递 token</li>
+<li>拥有 token 的才能使用资源</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>token 丢失后很难判断</li>
+</ul>
+</li>
+</ul>
+<h3 id="算法比较"><a href="#算法比较" class="headerlink" title="算法比较"></a>算法比较</h3><p>见 [06-33]</p>
+<h2 id="Election-选举机制-06-34"><a href="#Election-选举机制-06-34" class="headerlink" title="Election 选举机制 [06-34]"></a>Election 选举机制 [06-34]</h2><ul>
+<li>ID 大的胜出</li>
+<li>考虑进程 fail 的情况</li>
+</ul>
+<h3 id="The-bully-algorithm-P330-06-35"><a href="#The-bully-algorithm-P330-06-35" class="headerlink" title="The bully algorithm [P330] [06-35]"></a>The bully algorithm [P330] [06-35]</h3><ul>
+<li>一个进程开始选举，发送 ELECTION 消息给 ID 更大的进程</li>
+<li>进程收到 ELECTION 消息后，返回 OK 消息，并向更 ID 更大的进程发送 ELECTION 消息</li>
+<li>收到 OK 消息的进程出局</li>
+<li>如果发送 ELECTION 消息之后没有回应，当前进程成为 Leader</li>
+</ul>
+<h3 id="A-ring-algorithm-P332-06-38"><a href="#A-ring-algorithm-P332-06-38" class="headerlink" title="A ring algorithm [P332] [06-38]"></a>A ring algorithm [P332] [06-38]</h3><ul>
+<li>一个进程开始选举，在环上发送 ELECTION 消息，跳过 fail 的进程</li>
+<li>每个进程在环上添加自己的 ID，并继续传递</li>
+<li>当 ELECTION 消息传了一圈后，选出 ID 最大的进程</li>
+<li>发送 COORDINATOR 消息通知所有人谁是 Leader</li>
+<li>如果两个进程同时开始选举，不影响时间复杂度，只是占用带宽增加</li>
+</ul>
+<h1 id="复制与一致性"><a href="#复制与一致性" class="headerlink" title="复制与一致性"></a>复制与一致性</h1><h2 id="复制的优势与不足-07-2"><a href="#复制的优势与不足-07-2" class="headerlink" title="复制的优势与不足 [07-2]"></a>复制的优势与不足 [07-2]</h2><ul>
+<li>优势<ul>
+<li>Reliability 可靠性<ul>
+<li>避免单点失效</li>
+</ul>
+</li>
+<li>Performance 性能<ul>
+<li>服务器数量和地理区域上的可扩展性 scalability</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>劣势<ul>
+<li>Replication transparency 复制透明性<ul>
+<li>某个用户不知道某个对象是复制的</li>
+</ul>
+</li>
+<li>一致性问题<ul>
+<li>更新过程开销大</li>
+<li>不小心可能影响系统可用性</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="数据一致性模型"><a href="#数据一致性模型" class="headerlink" title="数据一致性模型"></a>数据一致性模型</h2><ul>
+<li>Data-centric consistency [07-9]<ul>
+<li>未使用同步操作的模型<ul>
+<li>Strict [07-10]<ul>
+<li>最优解</li>
+<li>不可能实现，隐含的假设存在绝对的全局时间</li>
+</ul>
+</li>
+<li>Linearizability [07-12]</li>
+<li>Sequential [07-11] [P364]<ul>
+<li>所有的进程看到相同的操作序列</li>
+<li>不一定按照时间先后</li>
+</ul>
+</li>
+<li>Causal [07-14] [P368]<ul>
+<li>有因果关系的写操作，不同的进程要看到相同的顺序</li>
+<li>没有因果关系的写操作，不同的进程可以看到不同的顺序</li>
+<li>比 Sequential consistency 要弱</li>
+</ul>
+</li>
+<li>FIFO (PRAM) [07-17]<ul>
+<li>由同一个进程进行的写操作，必须看到正确的顺序</li>
+<li>由不同进程进行的写操作，不同进程可以看到不同的顺序</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>使用同步操作的模型<ul>
+<li>Weak [07-21]<ul>
+<li>完成一次同步后，共享数据一致</li>
+</ul>
+</li>
+<li>Release [07-24]<ul>
+<li>将同步操作分为Acquire和Release，是对Weak 的弱化</li>
+<li>Acquire 的时候只需要本地的操作结束</li>
+<li>Release 的时候将本地的更改传播到所有进程</li>
+<li>离开一个临界区时，共享数据一致</li>
+</ul>
+</li>
+<li>Entry [07-26] [P372]<ul>
+<li>和 Release 模型类似</li>
+<li>Acquire 的时候，所有对该变量的操作都要完成</li>
+<li>进入共享数据对应临界区时，共享数据一致</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Client-centric consistency [07-29]<ul>
+<li>Eventual [07-30] [P373]<ul>
+<li>如果在一段相当长的时间内没有更新操作,那么所有的副本将逐渐成为一致的</li>
+</ul>
+</li>
+<li>Monotonic reads [07-32] [P377]<ul>
+<li>如果一个进程数据项 x 的值，那么该进程对 x 执行的任何后续读操作将总是得到第一次读取的那个值或更新的值</li>
+<li>保证之后不会看到 x 的更老版本</li>
+</ul>
+</li>
+<li>Monotonic writes [07-33] [P379]<ul>
+<li>一个进程对数据项 x 执行的写操作必须在该进程对 x 执行任何后续写操作之前完成</li>
+<li>写操作必须顺序完成，不能交叉</li>
+</ul>
+</li>
+<li>Read your writes [07-34] [P380]<ul>
+<li>一个进程对数据项 x 执行一次写操作的结果总是会被该进程对 x 执行的后续读操作看见</li>
+<li>保证读取总是最新的（一个进程内）</li>
+</ul>
+</li>
+<li>Writes follow reads [07-35] [P382]<ul>
+<li>同一个进程对数据项 x 执行的读操作之后的写操作，保证发生在与 x 读取值相同或比之更新的值上</li>
+<li>更新是作为前一个读操作的结果传播的</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="数据一致性协议实例"><a href="#数据一致性协议实例" class="headerlink" title="数据一致性协议实例"></a>数据一致性协议实例</h2><h3 id="Quorum-based-protocols-基于法定数量的协议-P402-07-45"><a href="#Quorum-based-protocols-基于法定数量的协议-P402-07-45" class="headerlink" title="Quorum-based protocols 基于法定数量的协议 [P402] [07-45]"></a>Quorum-based protocols 基于法定数量的协议 [P402] [07-45]</h3><ul>
+<li>对于一个具有 N 个副本的文件<ul>
+<li>客户要读取时，必须组织一个服务器数量为 Nr 的读团体(read quorum)</li>
+<li>客户要修改时，必须组织一个服务器数量为 Nw 的写团体(write quorum)</li>
+</ul>
+</li>
+<li>其中，Nr 与 Nw 满足以下限制条件<ul>
+<li>Nr+Nw&gt;N: 用于防止读写冲突</li>
+<li>Nw&gt;N/2: 用于防止写写冲突</li>
+</ul>
+</li>
+</ul>
+<h1 id="容错"><a href="#容错" class="headerlink" title="容错"></a>容错</h1><h2 id="可信系统-dependable-systems-特征-08-3"><a href="#可信系统-dependable-systems-特征-08-3" class="headerlink" title="可信系统(dependable systems)特征 [08-3]"></a>可信系统(dependable systems)特征 [08-3]</h2><ul>
+<li>Availability 可用性<ul>
+<li>系统可以立即被使用</li>
+<li>在给定时间点可以最大可能地正常工作</li>
+</ul>
+</li>
+<li>Reliability 可靠性<ul>
+<li>(在一段时间内)持续运行，而没有 failure</li>
+</ul>
+</li>
+<li>Safety 安全性<ul>
+<li>当系统暂时无法正常运行时，不会造成灾难性后果（例：核电站）</li>
+</ul>
+</li>
+<li>Maintainability 可维护性<ul>
+<li>系统 fail 后是否容易修复</li>
+</ul>
+</li>
+</ul>
+<p>一些概念（不在考点内）    ：</p>
+<p>fault –&gt; error –&gt; failure</p>
+<ul>
+<li><strong>failure</strong>: 没有满足承诺，无法提供服务</li>
+<li><strong>error</strong>: 系统的错误状态，可能导致 failure</li>
+<li><strong>fault</strong>: 造成 error 的原因</li>
+</ul>
+<p>Failure 的分类</p>
+<ul>
+<li>Crash failure</li>
+<li>Omission failure</li>
+<li>Timing failure</li>
+<li>Response failure</li>
+<li>Byzantine failure</li>
+</ul>
+<h2 id="提高系统可信性-Dependability-的途径-08-9"><a href="#提高系统可信性-Dependability-的途径-08-9" class="headerlink" title="提高系统可信性(Dependability)的途径 [08-9]"></a>提高系统可信性(Dependability)的途径 [08-9]</h2><p>使用冗余来掩盖故障 (Mask failures by redundancy)</p>
+<ul>
+<li>Information redundancy<ul>
+<li>在数据传输中添加纠错码</li>
+</ul>
+</li>
+<li>Time redundancy<ul>
+<li>事务处理终止，则重新执行</li>
+</ul>
+</li>
+<li>Physical redundancy<ul>
+<li>添加额外的机器或进程，使整体容忍部分错误</li>
+</ul>
+</li>
+</ul>
+<h2 id="k-容错系统"><a href="#k-容错系统" class="headerlink" title="k-容错系统"></a>k-容错系统</h2><p>k-容错定义 [P435]</p>
+<ul>
+<li>A system is said to be k-fault tolerant if it can survive faults in k components and still meet its specifications 系统能够经受 k 个组件的故障并且还能满足规范要求</li>
+</ul>
+<p>k-容错所需要的冗余数</p>
+<ul>
+<li>失败沉默 Fail-silent faults：K+1</li>
+<li>拜占庭失败 Byzantine faults ：2K+1</li>
+</ul>
+<h2 id="拜占庭问题-Byzantine-agreement-problem"><a href="#拜占庭问题-Byzantine-agreement-problem" class="headerlink" title="拜占庭问题 (Byzantine agreement problem)"></a>拜占庭问题 (Byzantine agreement problem)</h2><p>算法步骤</p>
+<ol>
+<li>每个将军向其他 n-1 个将军告知自己的兵力（真实或说谎）</li>
+<li>每个将军将收到的消息组成一个长度为 n 的向量</li>
+<li>每个将军将自己的向量发送给其他 n-1 个将军</li>
+<li>每个将军检查每个接收到的向量中的第 i 个元素，将其众数作为其结果向量的第 i 个元素</li>
+</ol>
+<h2 id="Distributed-commit-不在考点中"><a href="#Distributed-commit-不在考点中" class="headerlink" title="Distributed commit (不在考点中)"></a>Distributed commit (不在考点中)</h2><ul>
+<li>Two-phase commit</li>
+<li>Three-phase commit</li>
+</ul>
+<h2 id="系统恢复-08-54"><a href="#系统恢复-08-54" class="headerlink" title="系统恢复 [08-54]"></a>系统恢复 [08-54]</h2><p>真正发生故障以后，使崩溃的进程恢复到正确的状态。</p>
+<h3 id="两种形式的错误恢复-08-55"><a href="#两种形式的错误恢复-08-55" class="headerlink" title="两种形式的错误恢复 [08-55]"></a>两种形式的错误恢复 [08-55]</h3><ul>
+<li>回退恢复 (backward recovery)<ul>
+<li>从当前的错误状态回退到先前的正确状态</li>
+<li>定时记录系统的状态，称为<strong>检查点</strong></li>
+</ul>
+</li>
+<li>前向恢复 (forward recovery)<ul>
+<li>尝试从某点继续执行，把系统带入一个正确的新状态</li>
+<li>关键在于必须预先知道会发生什么错误</li>
+</ul>
+</li>
+</ul>
+<h3 id="检查点-Checkpointing-08-56"><a href="#检查点-Checkpointing-08-56" class="headerlink" title="检查点(Checkpointing) [08-56]"></a>检查点(Checkpointing) [08-56]</h3><ul>
+<li>独立检查点(Independent checkpointing) [08-58]<ul>
+<li>每个进程独立地设置本地检查点</li>
+<li>每个进程回退到的状态可能不一致，需要继续回退，可能造成多米诺效应</li>
+</ul>
+</li>
+<li>协调检查点(Coordinated checkpointing) [08-59]<ul>
+<li>所保存的状态自动保持全局一致</li>
+<li>两个算法：<ul>
+<li>Distributed snapshot algorithm</li>
+<li>Two-phase blocking protocol</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/2017/New-Hexo-Theme-Next/" rel="next" title="Hexo 新主题 NexT">
+                <i class="fa fa-chevron-left"></i> Hexo 新主题 NexT
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/2018/Depview-View-invocation-relationships-in-Java-projects/" rel="prev" title="Depview: Java程序调用依赖关系的分析与显示">
+                Depview: Java程序调用依赖关系的分析与显示 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4"
+                alt="nettee" />
+            
+              <p class="site-author-name" itemprop="name">nettee</p>
+              <p class="site-description motion-element" itemprop="description">持续学习中...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/nettee" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:nettee.liu@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5c68d1196fb9a04a0164de03" target="_blank" title="掘金">
+                    
+                      <i class="fa fa-fw fa-globe"></i>掘金</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/nettee" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式系统模型"><span class="nav-number">1.</span> <span class="nav-text">分布式系统模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是分布式系统-01-8"><span class="nav-number">1.1.</span> <span class="nav-text">什么是分布式系统 [01-8]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要分布式-01-11"><span class="nav-number">1.2.</span> <span class="nav-text">为什么要分布式? [01-11]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式系统的目标-01-12"><span class="nav-number">1.3.</span> <span class="nav-text">分布式系统的目标 [01-12]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式系统透明性和开放性的含义"><span class="nav-number">1.4.</span> <span class="nav-text">分布式系统透明性和开放性的含义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#透明性-01-13-P8"><span class="nav-number">1.4.1.</span> <span class="nav-text">透明性 [01-13] [P8]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开放性-01-15-P12"><span class="nav-number">1.4.2.</span> <span class="nav-text">开放性 [01-15] [P12]</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式系统构成方法"><span class="nav-number">1.5.</span> <span class="nav-text">分布式系统构成方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式系统的类型-01-19"><span class="nav-number">1.6.</span> <span class="nav-text">分布式系统的类型 [01-19]</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式系统架构"><span class="nav-number">2.</span> <span class="nav-text">分布式系统架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式系统架构风格-02-3-4"><span class="nav-number">2.1.</span> <span class="nav-text">分布式系统架构风格 [02-3~4]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式系统组织形式-02-5"><span class="nav-number">2.2.</span> <span class="nav-text">分布式系统组织形式 [02-5]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户-服务器模式和对等模式"><span class="nav-number">2.3.</span> <span class="nav-text">客户-服务器模式和对等模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Client-Server-模式-02-6"><span class="nav-number">2.3.1.</span> <span class="nav-text">Client-Server 模式 [02-6]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对等-P2P-模式-02-21"><span class="nav-number">2.3.2.</span> <span class="nav-text">对等 (P2P) 模式 [02-21]</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将分布式系统组织为中间件-02-28-P71"><span class="nav-number">2.4.</span> <span class="nav-text">将分布式系统组织为中间件 [02-28] [P71]</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程与线程"><span class="nav-number">3.</span> <span class="nav-text">进程与线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程和线程"><span class="nav-number">3.1.</span> <span class="nav-text">进程和线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码迁移-03-31"><span class="nav-number">3.2.</span> <span class="nav-text">代码迁移 [03-31]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#迁移内容"><span class="nav-number">3.2.1.</span> <span class="nav-text">迁移内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#强迁移-vs-弱迁移-03-32"><span class="nav-number">3.2.2.</span> <span class="nav-text">强迁移 vs. 弱迁移 [03-32]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迁移和本地资源"><span class="nav-number">3.2.3.</span> <span class="nav-text">迁移和本地资源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在异构系统中的迁移-P158"><span class="nav-number">3.2.4.</span> <span class="nav-text">在异构系统中的迁移 [P158]</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#通信"><span class="nav-number">4.</span> <span class="nav-text">通信</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#通信的类型-P172"><span class="nav-number">4.1.</span> <span class="nav-text">通信的类型 [P172]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#远程过程调用-RPC"><span class="nav-number">4.2.</span> <span class="nav-text">远程过程调用(RPC)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RPC的工作过程-04-1-16"><span class="nav-number">4.2.1.</span> <span class="nav-text">RPC的工作过程 [04-1-16]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#故障处理-P464-04-1-20"><span class="nav-number">4.2.2.</span> <span class="nav-text">故障处理 [P464] [04-1-20]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态绑定-04-1-35"><span class="nav-number">4.2.3.</span> <span class="nav-text">动态绑定 [04-1-35]</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于消息的通信-04-2"><span class="nav-number">4.3.</span> <span class="nav-text">基于消息的通信 [04-2]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#持久性-非持久性-瞬时性-P172-04-2-4"><span class="nav-number">4.3.1.</span> <span class="nav-text">持久性/非持久性(瞬时性) [P172] [04-2-4]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#面向流的通信-Stream-oriented-communication-04-2-16"><span class="nav-number">4.3.2.</span> <span class="nav-text">面向流的通信 Stream-oriented communication [04-2-16]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multicast-communication-04-2-26"><span class="nav-number">4.3.3.</span> <span class="nav-text">Multicast communication [04-2-26]</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#同步与资源管理"><span class="nav-number">5.</span> <span class="nav-text">同步与资源管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#同步问题-06-4"><span class="nav-number">5.1.</span> <span class="nav-text">同步问题 [06-4]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时钟同步机制-06-5"><span class="nav-number">5.2.</span> <span class="nav-text">时钟同步机制 [06-5]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logical-clocks-逻辑时钟-06-16"><span class="nav-number">5.3.</span> <span class="nav-text">Logical clocks 逻辑时钟 [06-16]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lamport’s-logical-clocks-06-18-P310"><span class="nav-number">5.3.1.</span> <span class="nav-text">Lamport’s logical clocks [06-18] [P310]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vector-clock-向量时戳-06-23-P316"><span class="nav-number">5.3.2.</span> <span class="nav-text">Vector clock 向量时戳 [06-23] [P316]</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mutual-exclusion-互斥访问-06-27"><span class="nav-number">5.4.</span> <span class="nav-text">Mutual exclusion 互斥访问 [06-27]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#A-centralized-algorithm-P322-06-28"><span class="nav-number">5.4.1.</span> <span class="nav-text">A centralized algorithm [P322] [06-28]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-distributed-algorithm-P323-06-29"><span class="nav-number">5.4.2.</span> <span class="nav-text">A distributed algorithm [P323] [06-29]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-token-ring-algorithm-P325-06-32"><span class="nav-number">5.4.3.</span> <span class="nav-text">A token-ring algorithm [P325] [06-32]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#算法比较"><span class="nav-number">5.4.4.</span> <span class="nav-text">算法比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Election-选举机制-06-34"><span class="nav-number">5.5.</span> <span class="nav-text">Election 选举机制 [06-34]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-bully-algorithm-P330-06-35"><span class="nav-number">5.5.1.</span> <span class="nav-text">The bully algorithm [P330] [06-35]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-ring-algorithm-P332-06-38"><span class="nav-number">5.5.2.</span> <span class="nav-text">A ring algorithm [P332] [06-38]</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#复制与一致性"><span class="nav-number">6.</span> <span class="nav-text">复制与一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#复制的优势与不足-07-2"><span class="nav-number">6.1.</span> <span class="nav-text">复制的优势与不足 [07-2]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据一致性模型"><span class="nav-number">6.2.</span> <span class="nav-text">数据一致性模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据一致性协议实例"><span class="nav-number">6.3.</span> <span class="nav-text">数据一致性协议实例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Quorum-based-protocols-基于法定数量的协议-P402-07-45"><span class="nav-number">6.3.1.</span> <span class="nav-text">Quorum-based protocols 基于法定数量的协议 [P402] [07-45]</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#容错"><span class="nav-number">7.</span> <span class="nav-text">容错</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#可信系统-dependable-systems-特征-08-3"><span class="nav-number">7.1.</span> <span class="nav-text">可信系统(dependable systems)特征 [08-3]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提高系统可信性-Dependability-的途径-08-9"><span class="nav-number">7.2.</span> <span class="nav-text">提高系统可信性(Dependability)的途径 [08-9]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#k-容错系统"><span class="nav-number">7.3.</span> <span class="nav-text">k-容错系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拜占庭问题-Byzantine-agreement-problem"><span class="nav-number">7.4.</span> <span class="nav-text">拜占庭问题 (Byzantine agreement problem)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Distributed-commit-不在考点中"><span class="nav-number">7.5.</span> <span class="nav-text">Distributed commit (不在考点中)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#系统恢复-08-54"><span class="nav-number">7.6.</span> <span class="nav-text">系统恢复 [08-54]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两种形式的错误恢复-08-55"><span class="nav-number">7.6.1.</span> <span class="nav-text">两种形式的错误恢复 [08-55]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查点-Checkpointing-08-56"><span class="nav-number">7.6.2.</span> <span class="nav-text">检查点(Checkpointing) [08-56]</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nettee</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://nettee.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/posts/2017/Distributed-Systems-Review/';
+          this.page.identifier = 'posts/2017/Distributed-Systems-Review/';
+          this.page.title = '分布式系统复习';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://nettee.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

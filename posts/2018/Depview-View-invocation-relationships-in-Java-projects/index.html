@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="nettee 的 blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="DepViewDepView这个工具来自程序分析课上的一个小作业，而它的灵感来自我平时读别人代码的时候。例如我前一阵子就拿到了师兄的项目源码，一共100个Java文件，11k行代码。如何理解一个项目的代码呢？首先我们想到通过读文档、注释来理解，但师兄的项目显然是没有文档也没有注释的。或者我也可以直接向师兄请教，但师兄可能已经记不清他几个月前写代码时的思路了。于是，在很多时候，我们理解一个项目的方式">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Depview: Java程序调用依赖关系的分析与显示">
+<meta property="og:url" content="http://yoursite.com/posts/2018/Depview-View-invocation-relationships-in-Java-projects/index.html">
+<meta property="og:site_name" content="nettee 的 blog">
+<meta property="og:description" content="DepViewDepView这个工具来自程序分析课上的一个小作业，而它的灵感来自我平时读别人代码的时候。例如我前一阵子就拿到了师兄的项目源码，一共100个Java文件，11k行代码。如何理解一个项目的代码呢？首先我们想到通过读文档、注释来理解，但师兄的项目显然是没有文档也没有注释的。或者我也可以直接向师兄请教，但师兄可能已经记不清他几个月前写代码时的思路了。于是，在很多时候，我们理解一个项目的方式">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/posts/2018/Depview-View-invocation-relationships-in-Java-projects/overview.png">
+<meta property="og:image" content="http://yoursite.com/posts/2018/Depview-View-invocation-relationships-in-Java-projects/depgraph.png">
+<meta property="og:updated_time" content="2019-12-17T13:30:12.274Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Depview: Java程序调用依赖关系的分析与显示">
+<meta name="twitter:description" content="DepViewDepView这个工具来自程序分析课上的一个小作业，而它的灵感来自我平时读别人代码的时候。例如我前一阵子就拿到了师兄的项目源码，一共100个Java文件，11k行代码。如何理解一个项目的代码呢？首先我们想到通过读文档、注释来理解，但师兄的项目显然是没有文档也没有注释的。或者我也可以直接向师兄请教，但师兄可能已经记不清他几个月前写代码时的思路了。于是，在很多时候，我们理解一个项目的方式">
+<meta name="twitter:image" content="http://yoursite.com/posts/2018/Depview-View-invocation-relationships-in-Java-projects/overview.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/posts/2018/Depview-View-invocation-relationships-in-Java-projects/"/>
+
+
+
+
+
+  <title>Depview: Java程序调用依赖关系的分析与显示 | nettee 的 blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">nettee 的 blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Less is more than more.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/2018/Depview-View-invocation-relationships-in-Java-projects/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nettee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="nettee 的 blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Depview: Java程序调用依赖关系的分析与显示</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-26T14:33:02+00:00">
+                2018-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/2018/Depview-View-invocation-relationships-in-Java-projects/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="posts/2018/Depview-View-invocation-relationships-in-Java-projects/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="DepView"><a href="#DepView" class="headerlink" title="DepView"></a>DepView</h1><p><a href="https://github.com/nettee/DepView" target="_blank" rel="noopener">DepView</a>这个工具来自程序分析课上的一个小作业，而它的灵感来自我平时读别人代码的时候。例如我前一阵子就拿到了师兄的项目源码，一共100个Java文件，11k行代码。如何理解一个项目的代码呢？首先我们想到通过读文档、注释来理解，但师兄的项目显然是没有文档也没有注释的。或者我也可以直接向师兄请教，但师兄可能已经记不清他几个月前写代码时的思路了。于是，在很多时候，我们理解一个项目的方式只能是通过直接阅读代码，正是所谓的”Read the fucking source code”。那么，能否有一个工具来辅助我理解代码呢？</p>
+<h2 id="理解一个项目的关键点"><a href="#理解一个项目的关键点" class="headerlink" title="理解一个项目的关键点"></a>理解一个项目的关键点</h2><p>哪些关键信息可以帮助我们很好地理解代码呢？</p>
+<p>第一种关键信息是代码的基本使用模式，或者叫做用例。通过用例我们可以很快知道哪些模块是对外的接口，这些模块应该是我们首先关注的。如果一个项目有测试代码，而且写得比较好的话，那么通过看测试用例就可以很快知道代码的使用模式。</p>
+<p>第二种关键信息是模块间的协作关系。很多时候程序的逻辑分散在不同的模块中，很难梳理。如果能够知道模块间的相互关系，就可以很方便地梳理程序脉络。这可以用工具来完成。我希望有一个工具能够显示模块间的依赖关系，包括：找到程序入口（模块入口），以及找出紧密协作的模块。Depview实现的是<strong>调用依赖关系</strong>的分析与显示。因为调用依赖关系容易定义，而且可以比较好地体现上下层模块间的关系。</p>
+<h2 id="工作步骤"><a href="#工作步骤" class="headerlink" title="工作步骤"></a>工作步骤</h2><p>Depview的工作步骤可以分为分析和显示两个部分。它首先解析源代码生成抽象语法树，在抽象语法树上提取依赖关系，最后绘制依赖图。</p>
+<p><img src="/posts/2018/Depview-View-invocation-relationships-in-Java-projects/overview.png" alt="Figure: overview"></p>
+<a id="more"></a>
+<h3 id="输入"><a href="#输入" class="headerlink" title="输入"></a>输入</h3><p>Depview分析的是一个Java项目。为了分析的需要，它同时需要Java项目的源代码和编译后的字节码。由于Java项目通常依赖众多，用户还可以根据需要，将依赖也一起进行分析。为了方便输入，Depview支持用户使用一个描述文件，其中描述了该Java项目的源代码、字节码，和相关依赖。描述文件使用的格式是<a href="https://github.com/lightbend/config" target="_blank" rel="noopener">HOCON</a>，一种类似JSON，但更易读易写的格式。描述文件示例如下，其中大部分路径支持项目内相对路径，依赖支持Jar依赖和Maven依赖，Depview会从本地Maven仓库里拷贝出相应的Jar文件。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">testSubject</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">name</span> <span class="string">=</span> <span class="string">DepView</span></span><br><span class="line">    <span class="string">package</span> <span class="string">=</span> <span class="string">me.nettee.depview</span></span><br><span class="line">    <span class="string">path</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">base</span> <span class="string">=</span> <span class="string">/home/william/projects/depview</span></span><br><span class="line">        <span class="string">sources</span> <span class="string">=</span> <span class="string">[</span> <span class="string">src/main/java</span> <span class="string">]</span></span><br><span class="line">        <span class="string">classes</span> <span class="string">=</span> <span class="string">[</span> <span class="string">target/classes</span> <span class="string">]</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line">    <span class="string">dependency.jar</span> <span class="string">=</span> <span class="string">[</span></span><br><span class="line">        <span class="string">libs/fastjson-1.2.16.jar</span></span><br><span class="line">        <span class="string">libs/guava-19.0.jar</span></span><br><span class="line">    <span class="string">]</span></span><br><span class="line">    <span class="string">dependency.maven</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">repository</span> <span class="string">=</span> <span class="string">/home/william/.m2/repository</span></span><br><span class="line">        <span class="string">jar</span> <span class="string">=</span> <span class="string">[</span></span><br><span class="line">            <span class="string">config-1.3.1.jar</span></span><br><span class="line">            <span class="string">commons-lang3-3.7.jar</span></span><br><span class="line">        <span class="string">]</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h3><p>Depview使用Eclipse JDT工具来将Java代码解析成抽象语法树。主要使用了<code>ASTParser</code>, <code>ASTNode</code>, <code>ASTVisitor</code>相关API，参见<a href="https://help.eclipse.org/neon/index.jsp?topic=/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/package-summary.html&amp;resultof=%22ASTParser%22%20%22astpars%22" target="_blank" rel="noopener">Eclipse JDT相关文档</a>。这个工具需要同时提供source path和class path，其中class path包括项目的字节码和依赖库。</p>
+<p>Eclipse JDT工具我在几年前就用过，但当时还不知道Maven，不理解依赖管理工具的重要性，都是从Eclipse的安装目录下拷贝jar文件到项目里作为依赖的。而且Eclipse JDT工具究竟要使用哪些Maven依赖也不太清楚。直到上次写AST相似度比较的项目，我才参考<a href="http://www.shenyanchao.cn/blog/2013/06/19/use-eclipse-ast-to-parser-java/" target="_blank" rel="noopener">这篇博文</a>确定了Maven依赖项。事实证明使用Maven管理确实超级方便，而且在这个项目中帮助我跳出了一个大坑。后面细说。</p>
+<h3 id="提取依赖关系"><a href="#提取依赖关系" class="headerlink" title="提取依赖关系"></a>提取依赖关系</h3><p>Depview通过遍历所有的抽象语法树来提取调用依赖关系。遍历可以通过继承<code>ASTVisitor</code>类，使用<a href="https://en.wikipedia.org/wiki/Visitor_pattern" target="_blank" rel="noopener">访问者模式</a>来遍历抽象语法树。</p>
+<p>一个调用依赖关系包括三个元素：起始类，目标类，和调用表达式。首先，遍历是从每个<strong>类定义</strong>(<code>TypeDeclaration</code>)结点开始的。这个结点下面所有的调用依赖都以这个类为起始类。在遍历的过程中，寻找<strong>方法调用</strong>(<code>MethodInvocation</code>)结点。方法调用的形式一般为<code>expression.ID(args)</code>，提取<code>expression</code>的类型名作为目标类。</p>
+<p>提取<code>expression</code>的类型需要使用JDT的binding功能。在测试的过程中我发现JDT对于接近一半的依赖关系无法得到binding，导致近一半的依赖关系无法提取，这会导致依赖图非常不完整。经过不断尝试，我发现新版本的JDT可以解析出绝大部分的binding。最终我使用的JDT版本（Maven依赖）为：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.eclipse.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>org.eclipse.core.runtime<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.7.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.eclipse.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>org.eclipse.core.resources<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.7.100<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.eclipse.tycho<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>org.eclipse.jdt.core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.12.2.v20161117-1814<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我不禁想，如果不是使用Maven，而是直接导入jar文件的话，我就算能想到版本不对的问题，也无法解决了。</p>
+<h3 id="依赖关系图"><a href="#依赖关系图" class="headerlink" title="依赖关系图"></a>依赖关系图</h3><p>我将依赖关系图使用有向图建模，以类作为结点，依赖关系作为有向边。这个图允许平行边，用来表示两个类之间存在多条调用的情况；但不允许环，即忽略一个类对自身的调用。此外默认排除了标准库和第三库的依赖。有向图数据结构使用<a href="https://github.com/google/guava/wiki/GraphsExplained" target="_blank" rel="noopener">Guava</a>的<code>Network</code>类。</p>
+<h3 id="依赖图可视化"><a href="#依赖图可视化" class="headerlink" title="依赖图可视化"></a>依赖图可视化</h3><p>我选择基于D3.js的<a href="https://bl.ocks.org/mbostock/4062045" target="_blank" rel="noopener">Force-directed Graph</a>作为可视化方式。Neo4j数据库也是使用这种方法进行可视化的。这个图是使用“力”的概念对图进行显示的，其中边类似于弹簧，提供向内的拉力；结点类似带点粒子，互相之间存在斥力。这个图会对结点进行重新排布，有利于减少图中边的交叉。此外它是可拖拽的，交互性比较好。我将原先依赖关系图中的平行边变为边的权重，这样依赖关系越多的两个类之间的权重越大，之间的拉力也会变大。</p>
+<p>使用这个图的时候要注意：如果两个结点之间不存在依赖关系，一定不要设置边，即使权重为零也不行！我一开始忽略了这一点，导致所有的边缠成了毛线球的样子，还以为是自己的图哪里搞错了。</p>
+<p>最终得到的依赖图如下。可以到<a href="/depview/">这里</a>尝试一下拖拽效果。</p>
+<p><img src="/posts/2018/Depview-View-invocation-relationships-in-Java-projects/depgraph.png" alt="Figure: depencendy graph"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/2017/Distributed-Systems-Review/" rel="next" title="分布式系统复习">
+                <i class="fa fa-chevron-left"></i> 分布式系统复习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/2018/Skip-rendering-files-in-Hexo/" rel="prev" title="Hexo之坑：如何让Hexo不渲染某些文件">
+                Hexo之坑：如何让Hexo不渲染某些文件 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4"
+                alt="nettee" />
+            
+              <p class="site-author-name" itemprop="name">nettee</p>
+              <p class="site-description motion-element" itemprop="description">持续学习中...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/nettee" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:nettee.liu@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5c68d1196fb9a04a0164de03" target="_blank" title="掘金">
+                    
+                      <i class="fa fa-fw fa-globe"></i>掘金</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/nettee" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DepView"><span class="nav-number">1.</span> <span class="nav-text">DepView</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#理解一个项目的关键点"><span class="nav-number">1.1.</span> <span class="nav-text">理解一个项目的关键点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作步骤"><span class="nav-number">1.2.</span> <span class="nav-text">工作步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#输入"><span class="nav-number">1.2.1.</span> <span class="nav-text">输入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解析"><span class="nav-number">1.2.2.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提取依赖关系"><span class="nav-number">1.2.3.</span> <span class="nav-text">提取依赖关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖关系图"><span class="nav-number">1.2.4.</span> <span class="nav-text">依赖关系图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖图可视化"><span class="nav-number">1.2.5.</span> <span class="nav-text">依赖图可视化</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nettee</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://nettee.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/posts/2018/Depview-View-invocation-relationships-in-Java-projects/';
+          this.page.identifier = 'posts/2018/Depview-View-invocation-relationships-in-Java-projects/';
+          this.page.title = 'Depview: Java程序调用依赖关系的分析与显示';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://nettee.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

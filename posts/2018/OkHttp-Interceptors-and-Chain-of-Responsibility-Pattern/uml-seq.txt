@@ -1,0 +1,21 @@
+@startuml
+participant "Interceptor 0"
+
+"Interceptor 0" -> "Interceptor 1":
+activate "Interceptor 1"
+
+"Interceptor 1" -> "Interceptor 2":
+activate "Interceptor 2"
+
+"Interceptor 2" -> "Interceptor 3":
+activate "Interceptor 3"
+
+"Interceptor 3" -> "Interceptor 2":
+deactivate "Interceptor 3"
+
+"Interceptor 2" -> "Interceptor 1":
+deactivate "Interceptor 2"
+
+"Interceptor 1" -> "Interceptor 0": 
+deactivate "Interceptor 1"
+@enduml

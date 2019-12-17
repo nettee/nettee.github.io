@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Compiler," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="nettee 的 blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前一阵子，收到烨兄的私聊，他突然要解决这样一个任务：  做如下格式的表达式转换：  Multi(a, Multi(b, c))  --&amp;gt;  a * (b * c) Divide(a, Sub(b, c))  --&amp;gt; a / (b - c)  支持的运算符有：  Add: + Sub: - Multi: * Divide: /   而且好死不死的需要用他没怎么用过的 C++ 来写。我发现">
+<meta name="keywords" content="Java,Compiler">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何手写一个简单的 parser">
+<meta property="og:url" content="http://yoursite.com/posts/2019/How-to-write-a-simple-parser-in-hand/index.html">
+<meta property="og:site_name" content="nettee 的 blog">
+<meta property="og:description" content="前一阵子，收到烨兄的私聊，他突然要解决这样一个任务：  做如下格式的表达式转换：  Multi(a, Multi(b, c))  --&amp;gt;  a * (b * c) Divide(a, Sub(b, c))  --&amp;gt; a / (b - c)  支持的运算符有：  Add: + Sub: - Multi: * Divide: /   而且好死不死的需要用他没怎么用过的 C++ 来写。我发现">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-17T13:30:12.278Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何手写一个简单的 parser">
+<meta name="twitter:description" content="前一阵子，收到烨兄的私聊，他突然要解决这样一个任务：  做如下格式的表达式转换：  Multi(a, Multi(b, c))  --&amp;gt;  a * (b * c) Divide(a, Sub(b, c))  --&amp;gt; a / (b - c)  支持的运算符有：  Add: + Sub: - Multi: * Divide: /   而且好死不死的需要用他没怎么用过的 C++ 来写。我发现">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/posts/2019/How-to-write-a-simple-parser-in-hand/"/>
+
+
+
+
+
+  <title>如何手写一个简单的 parser | nettee 的 blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">nettee 的 blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Less is more than more.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/2019/How-to-write-a-simple-parser-in-hand/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nettee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="nettee 的 blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何手写一个简单的 parser</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-04T09:32:24+00:00">
+                2019-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/2019/How-to-write-a-simple-parser-in-hand/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="posts/2019/How-to-write-a-simple-parser-in-hand/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前一阵子，收到烨兄的私聊，他突然要解决这样一个任务：</p>
+<blockquote>
+<p>做如下格式的表达式转换：</p>
+<ul>
+<li><code>Multi(a, Multi(b, c))  --&gt;  a * (b * c)</code></li>
+<li><code>Divide(a, Sub(b, c))  --&gt; a / (b - c)</code></li>
+</ul>
+<p>支持的运算符有：</p>
+<ul>
+<li><code>Add</code>: +</li>
+<li><code>Sub</code>: -</li>
+<li><code>Multi</code>: *</li>
+<li><code>Divide</code>: /</li>
+</ul>
+</blockquote>
+<p>而且好死不死的需要用他没怎么用过的 C++ 来写。我发现这是一个 parser 的问题，第一反应是推荐他用 flex/bison，但想到为了这么大点任务大费周章不太合适，又开始想手写这样一个表达式的 parser 难不难。最后得出的结论是，不难。</p>
+<p>了解编译原理的人都知道什么是 parser。Parser 中文名（语法）分析器，是每个编译器的前端都会有的一个东西。不过，从编译原理的视角来看，“语言”的范畴要比我们理解的编程语言要广义得多，任何有一定规则的字符串构成方式，都可以看成是语言，例如上面的那个任务里用 <code>Add</code>、<code>Sub</code> 这样的函数描述的表达式。</p>
+<p>那么，要解决上面这个任务，只需要对表达式的字符串进行语法分析，得到一个中间表示（一般是分析树或抽象语法树），再将中间表示输出为所需的格式即可。也就是说我们需要为表达式提供一个 parser，这个任务的任何解决方式，本质上都可以看成是写了一个 parser。</p>
+<a id="more"></a>
+<p>在平时，我们完全没有任何必要去手写一个 parser，因为这东西已经有工具可以为我们生成。感谢几十年前伟大的程序员就已经发明了这样的工具。我用过的有 C/C++ 的 flex/bison，以及 Java 的 ANTLR。你只需要提供一个文法描述，这些工具就可以为你自动生成对应的语法分析器。如果要手写分析器，会很复杂，也很容易出错，不是一个明智的选择。</p>
+<p>不过，面对上面举例的这种小任务，使用自动生成 parser 的工具有时候显得太重了，这时候也许手写一个 parser 是更好的选择。而且在这样的任务场景下，我们的 parser 有两个地方起码是可以得到大大简化的：</p>
+<p>第一，我们要处理的语言应该不会像通用编程语言那样，有很复杂的状态转移。通常情况下，应该能看到当前的字符串就知道下面要分析什么类型的内容。一般标记语言都会是这种风格的，比如：</p>
+<ul>
+<li>XML/HTML：看到 <code>&lt;tag&gt;</code> 就知道是一个标签的开始，直到 <code>&lt;/tag&gt;</code> 为止</li>
+<li>CSS：选择器后的声明，总是用花括号括起来，每一条声明以 <code>;</code> 分隔</li>
+<li>Markdown：一行以 <code>#</code> 开头就是标题，以 <code>1.</code> 开头就是有序列表项</li>
+</ul>
+<p>第二，我们不需要进行复杂的语法错误处理，只需要报“语法错误”就好了，而不需要费力说明到底发生了什么错误。</p>
+<p>有了这两个前提，我们开始思考如何手写一个语法分析器。当然，我已经思考好了，下面是我给出的一个简单的分析器的实现。我是用 Java 实现的，用到了一点 lambda 表达式的语法，不过不难理解。因为 parser 的主要工作是做字符串比较，所以用任何语言都差不多。后面我会考虑再用其他语言实现。</p>
+<p>在实现上我们再做一点简化：我们把要分析的字符串作为字符数组保存下来，而不是从所谓“字符流”中读入。这样我们不必考虑读 (get) 了字符却不用掉 (consume) 的情况下，这些是输入模块要考虑的部分，我们专注于 parser 本身。</p>
+<p>首先，我们的 <code>SimpleParser</code> 是这样定义的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleParser</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">char</span>[] input;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> pos;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SimpleParser</span><span class="params">(String source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.input = source.toCharArray();</span><br><span class="line">        <span class="keyword">this</span>.pos = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们将输入保存为字符数组，<code>pos</code> 是一个指向待读取的下一个字符的指针。将 <code>pos</code> 加一，就相当于从读入了一个字符。</p>
+<p>下面，我们添加一些脚手架函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">consumeWhitespace</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    consumeWhile(Character::isWhitespace);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">consumeWhile</span><span class="params">(Predicate&lt;Character&gt; test)</span> </span>&#123;</span><br><span class="line">    StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    <span class="keyword">while</span> (!eof() &amp;&amp; test.test(nextChar())) &#123;</span><br><span class="line">        sb.append(consumeChar());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sb.toString();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">char</span> <span class="title">consumeChar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> input[pos++];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">startsWith</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> String(input, pos, input.length - pos).startsWith(s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">char</span> <span class="title">nextChar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> input[pos];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">eof</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> pos &gt;= input.length;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些函数的来源于我之前看过的一个系列文章：<a href="https://limpet.net/mbrubeck/2014/08/08/toy-layout-engine-1.html" target="_blank" rel="noopener">Let’s build a browser engine!</a>（原文是用 Rust 语言的）。我们来看一下这几个函数：</p>
+<p>其中，<code>nextChar</code>, <code>startsWith</code> 这两个函数是用来“向后看”，判断后面输入的状态。这实际上已经和编译原理中说的语法分析不太一样了（回忆一下，编译原理中说的语法分析方法只会向后看一个字符），但是因为我们只是判断是不是等于一个固定的字符串，所以也不是太大的问题。</p>
+<p>以 <code>consume...</code> 开头的几个函数就是真正的读取输入的函数了。其中，<code>consumeWhile</code> 是一个通用的函数，<code>consumeWhitespace</code> 也是基于其实现的。类似地，我们还可以基于其实现解析变量名的函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">parseVariableName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> consumeWhile(Character::isAlphabetic);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意到这实际上就是在解析我们任务中的变量名了，以此为思路，后面的实现其实很简单。我们一上来会觉得手写 parser 会很复杂，实际上是因为没找到入手点。所以这几个脚手架函数特别重要，先有了他们，后面就可以一步一步写出整个 parser 的功能了。</p>
+<p>那么我们接下来可以这么写：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 解析由单个变量组成的表达式</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> VariableExpression <span class="title">parseVariableExpression</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    String name = parseVariableName();</span><br><span class="line">    <span class="comment">// VariableExpression 的定义略</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> VariableExpression(name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 解析加减乘除表达式</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> CompoundExpression <span class="title">parseCompoundExpression</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : name.toCharArray()) &#123;</span><br><span class="line">        checkState(c == consumeChar());</span><br><span class="line">    &#125;</span><br><span class="line">    checkState(<span class="string">'('</span> == consumeChar());</span><br><span class="line">    <span class="comment">// 递归解析</span></span><br><span class="line">    Expression left = parseExpression();</span><br><span class="line">    checkState(<span class="string">','</span> == consumeChar());</span><br><span class="line">    consumeWhitespace();</span><br><span class="line">    Expression right = parseExpression();</span><br><span class="line">    checkState(<span class="string">')'</span> == consumeChar());</span><br><span class="line">    <span class="comment">// CompoundExpression 的定义略</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> CompoundExpression(name, left, right);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// VariableExpression 和 CompoundExpression 都是 Expression</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Expression <span class="title">parseExpression</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (startsWith(<span class="string">"Add"</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> parseCompoundExpression(<span class="string">"Add"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (startsWith(<span class="string">"Sub"</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> parseCompoundExpression(<span class="string">"Sub"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (startsWith(<span class="string">"Multi"</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> parseCompoundExpression(<span class="string">"Multi"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (startsWith(<span class="string">"Divide"</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> parseCompoundExpression(<span class="string">"Divide"</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> parseVariableExpression();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>写到这里，我们 parser 的主要工作已经做完了，接下来的任务就非常简单了。似乎我们的任务有点太简单了？在这种场景下，手写 parser 确实不难，接下来可以手写一个 Markdown 的 parser 练习一下了😜。</p>
+<p>P.S. 烨兄后来并没有做这个任务，我也是到现在才想起来把这个 parser 实现出来，只是我自己觉得好玩想了这件事。</p>
+<p>文章中的 parser 的完整代码，可以到我的 GitHub 上查看：<a href="https://github.com/nettee/simpleparser" target="_blank" rel="noopener">simpleparser</a>。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/Compiler/" rel="tag"># Compiler</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/2019/Retries-Timeouts-and-Backoff/" rel="next" title="[译] 重试、超时和退避">
+                <i class="fa fa-chevron-left"></i> [译] 重试、超时和退避
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/2019/real-world-dynamic-programming-seam-carving/" rel="prev" title="[译] 动态规划算法的实际应用：接缝裁剪">
+                [译] 动态规划算法的实际应用：接缝裁剪 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4"
+                alt="nettee" />
+            
+              <p class="site-author-name" itemprop="name">nettee</p>
+              <p class="site-description motion-element" itemprop="description">持续学习中...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/nettee" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:nettee.liu@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5c68d1196fb9a04a0164de03" target="_blank" title="掘金">
+                    
+                      <i class="fa fa-fw fa-globe"></i>掘金</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/nettee" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nettee</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://nettee.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/posts/2019/How-to-write-a-simple-parser-in-hand/';
+          this.page.identifier = 'posts/2019/How-to-write-a-simple-parser-in-hand/';
+          this.page.title = '如何手写一个简单的 parser';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://nettee.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

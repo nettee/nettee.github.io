@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="C++," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="nettee 的 blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="内存和资源管理是 C++ 最强的能力之一，也是 C++ 最复杂和最需要思考的地方。写 Java 的时候，我们只需要无脑地把所有对象都 new 出来。反正所有的对象只能放在堆区，又反正又垃圾回收器帮我们管理内存。然而，在 C++ 中，我们需要思考是把对象放在栈上，还是用 new 把对象放在堆上。默认情况下，对象会放在栈上，这样的好处是我们不会忘记释放对象的内存而造成内存泄漏。不过如果我们把一个大对象">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ 函数可以直接返回一个对象吗？">
+<meta property="og:url" content="http://yoursite.com/posts/2018/What-happens-when-return-an-object-by-value-in-Cpp/index.html">
+<meta property="og:site_name" content="nettee 的 blog">
+<meta property="og:description" content="内存和资源管理是 C++ 最强的能力之一，也是 C++ 最复杂和最需要思考的地方。写 Java 的时候，我们只需要无脑地把所有对象都 new 出来。反正所有的对象只能放在堆区，又反正又垃圾回收器帮我们管理内存。然而，在 C++ 中，我们需要思考是把对象放在栈上，还是用 new 把对象放在堆上。默认情况下，对象会放在栈上，这样的好处是我们不会忘记释放对象的内存而造成内存泄漏。不过如果我们把一个大对象">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-17T13:30:12.286Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++ 函数可以直接返回一个对象吗？">
+<meta name="twitter:description" content="内存和资源管理是 C++ 最强的能力之一，也是 C++ 最复杂和最需要思考的地方。写 Java 的时候，我们只需要无脑地把所有对象都 new 出来。反正所有的对象只能放在堆区，又反正又垃圾回收器帮我们管理内存。然而，在 C++ 中，我们需要思考是把对象放在栈上，还是用 new 把对象放在堆上。默认情况下，对象会放在栈上，这样的好处是我们不会忘记释放对象的内存而造成内存泄漏。不过如果我们把一个大对象">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/posts/2018/What-happens-when-return-an-object-by-value-in-Cpp/"/>
+
+
+
+
+
+  <title>C++ 函数可以直接返回一个对象吗？ | nettee 的 blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">nettee 的 blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Less is more than more.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/2018/What-happens-when-return-an-object-by-value-in-Cpp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nettee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="nettee 的 blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++ 函数可以直接返回一个对象吗？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-16T19:16:21+00:00">
+                2018-11-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/2018/What-happens-when-return-an-object-by-value-in-Cpp/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="posts/2018/What-happens-when-return-an-object-by-value-in-Cpp/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>内存和资源管理是 C++ 最强的能力之一，也是 C++ 最复杂和最需要思考的地方。写 Java 的时候，我们只需要无脑地把所有对象都 <code>new</code> 出来。反正所有的对象只能放在堆区，又反正又垃圾回收器帮我们管理内存。然而，在 C++ 中，我们需要思考是把对象放在栈上，还是用 <code>new</code> 把对象放在堆上。默认情况下，对象会放在栈上，这样的好处是我们不会忘记释放对象的内存而造成内存泄漏。不过如果我们把一个大对象放在栈上，又将其作为参数或者返回值传递，就必须要考虑对象拷贝的开销了。C++ 由于和 C 兼容，默认情况下参数是按值传递 (call by value) 的，在传递参数和返回值的时候都会拷贝一遍对象。对于参数，我们尚可以将参数声明为引用类型 <code>T&amp;</code> 来避免对象拷贝。而对于返回值的拷贝开销，则是不能声明为引用类型来解决的。</p>
+<h1 id="何时必须返回一个对象"><a href="#何时必须返回一个对象" class="headerlink" title="何时必须返回一个对象"></a>何时必须返回一个对象</h1><p>假设我们想写一个 <code>range</code> 函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; range(<span class="keyword">int</span> begin, <span class="keyword">int</span> end, <span class="keyword">int</span> step=<span class="number">1</span>) &#123;</span><br><span class="line">    <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; res;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = begin; i &lt; end; i += step) &#123;</span><br><span class="line">        res.push_back(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码会返回一个 <code>vector&lt;int&gt;</code> 对象，也就是我们不希望看到的：放在栈上的大对象。调用这个函数会产生返回值的临时对象，从而需要拷贝列表中的所有元素。很显然，你不能直接把返回值类型改成 <code>vector&lt;int&gt;&amp;</code> 来避免对象拷贝——编译器会产生一个警告：<code>warning: reference to local variable ‘res’ returned</code>，你返回了一个临时变量的引用，这个引用指向了一个栈上的地址，而这个地址随时可能被回收。这也是 C++ 初学者容易犯的一个错误。既然不能返回一个引用，又想避免对象拷贝的开销，很多“老” C++ 程序员会进行一个人肉优化：把返回值作为引用参数传进去。按这种方法，<code>range()</code> 函数可以改写如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; range(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; out, <span class="keyword">int</span> begin, <span class="keyword">int</span> end, <span class="keyword">int</span> step=<span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = begin; i &lt; end; i += step) &#123;</span><br><span class="line">        out.push_back(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Caller</span></span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; r;</span><br><span class="line">range(r, <span class="number">0</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+<p>C/C++ 程序员可能非常习惯这样写。然而，必须承认这是一个丑陋的写法。那么，直接返回一个 <code>vector&lt;int&gt;</code> 对象到底会怎么样呢？对象拷贝的开销能否避免？</p>
+<h1 id="临时对象与返回值优化"><a href="#临时对象与返回值优化" class="headerlink" title="临时对象与返回值优化"></a>临时对象与返回值优化</h1><p>根据 《深度探索 C++ 对象模型》第 2.3 节 “程序转化语意学” (Program Transformation Semantics) 所述，函数的返回值会做如下转化：</p>
+<ol>
+<li>添加一个临时变量 <code>__result</code></li>
+<li>当函数返回时，调用 <code>__result</code> 的 copy constructor，使用返回值 <code>x</code> 作为参数</li>
+<li>（如果有的话）对 <code>__result</code> 进行后续操作</li>
+</ol>
+<p>注意，后续操作中还能包括更多的 constructor，例如我们调用 <code>range</code> 函数以初始化变量 <code>r1</code>：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; r1;</span><br><span class="line">r1 = range(<span class="number">1</span>, <span class="number">10</span>); <span class="comment">// 调用 r1 的 copy assignment operator (即 operator=)</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，虽然只是简单的一次函数调用，临时对象就进行了两次拷贝。而 <code>range</code> 产生的数越多，需要拷贝的内容就越多，对性能的影响就越大。</p>
+<p>为了解决这个问题，很多 C++ 编译器都实现了 <a href="https://en.wikipedia.org/wiki/Copy_elision#Return_value_optimization" target="_blank" rel="noopener">返回值优化</a> (Return Value Optimization)，来消除返回值临时对象的多次拷贝。</p>
+<a id="more"></a>
+<h1 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h1><p>为了验证编译器进行返回值优化前后的不同，我们运行一个完整的例子。我们定义 <code>Blob</code> 类用于保存原始的二进制数据块。<code>Blob</code> 需要自己分配空间以存储数据，因此它需要实现 destructor, copy constructor 和 copy assignment operator。所有的 constructor 和 destructor 都会调用 logging 函数，让我们能看出它们的调用顺序。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Blob</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Blob()</span><br><span class="line">    : data_(<span class="literal">nullptr</span>), size_(<span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">log</span>(<span class="string">"Blob's default constructor"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">explicit</span> <span class="title">Blob</span><span class="params">(<span class="keyword">size_t</span> size)</span></span></span><br><span class="line">    : data_(new char[size]), size_(size) &#123;</span><br><span class="line">        <span class="built_in">log</span>(<span class="string">"Blob's parameter constructor"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Blob() &#123;</span><br><span class="line">        <span class="built_in">log</span>(<span class="string">"Blob's destructor"</span>);</span><br><span class="line">        <span class="keyword">delete</span>[] data_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Blob(<span class="keyword">const</span> Blob&amp; other) &#123;</span><br><span class="line">        <span class="built_in">log</span>(<span class="string">"Blob's copy constructor"</span>);</span><br><span class="line">        data_ = <span class="keyword">new</span> <span class="keyword">char</span>[other.size_];</span><br><span class="line">        <span class="built_in">memcpy</span>(data_, other.data_, other.size_);</span><br><span class="line">        size_ = other.size_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Blob&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> Blob&amp; other) &#123;</span><br><span class="line">        <span class="built_in">log</span>(<span class="string">"Blob's copy assignment operator"</span>);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span> == &amp;other) &#123;</span><br><span class="line">            <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">delete</span>[] data_;</span><br><span class="line">        data_ = <span class="keyword">new</span> <span class="keyword">char</span>[other.size_];</span><br><span class="line">        <span class="built_in">memcpy</span>(data_, other.data_, other.size_);</span><br><span class="line">        size_ = other.size_;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">size_t</span> offset, <span class="keyword">size_t</span> len, <span class="keyword">const</span> <span class="keyword">void</span>* src)</span> </span>&#123;</span><br><span class="line">        len = min(len, size_ - offset);</span><br><span class="line">        <span class="built_in">memcpy</span>(data_ + offset, src, len);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">char</span>* data_;</span><br><span class="line">    <span class="keyword">size_t</span> size_;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">log</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* msg)</span> </span>&#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">"["</span> &lt;&lt; <span class="keyword">this</span> &lt;&lt; <span class="string">"] "</span> &lt;&lt; msg &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>我们定义 <code>createBlob</code> 函数，由字符串创建 blob，并调用这个函数：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Blob <span class="title">createBlob</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">size_t</span> len = <span class="built_in">strlen</span>(str);</span><br><span class="line">    <span class="function">Blob <span class="title">blob</span><span class="params">(len)</span></span>;</span><br><span class="line">    blob.<span class="built_in">set</span>(<span class="number">0</span>, len, str);</span><br><span class="line">    <span class="keyword">return</span> blob;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Blob blob;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Start assigning value..."</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    blob = createBlob(<span class="string">"A very very very long string representing serialized data"</span>);</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"End assigning value"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>createBlob</code> 函数返回了一个 <code>Blob</code> 对象，产生一个临时对象，这个临时对象会赋值给 <code>blob</code> 变量。那么我们应该能观察到很多的 constructor 和 destructor 调用。不过，现在编译器一般会默认进行返回值优化，消除掉很多不必要的 constructor 调用。为了观察最坏情况下的 constructor 调用情况，我们使用 <code>-fno-elide-constructors</code> 编译选项让编译器不进行返回值优化。</p>
+<p>不进行返回值优化的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[0x7ffd220ada20] Blob&apos;s default constructor</span><br><span class="line">Start assigning value...</span><br><span class="line">[0x7ffd220ad9e0] Blob&apos;s parameter constructor</span><br><span class="line">[0x7ffd220ada30] Blob&apos;s copy constructor</span><br><span class="line">[0x7ffd220ad9e0] Blob&apos;s destructor</span><br><span class="line">[0x7ffd220ada20] Blob&apos;s copy assignment operator</span><br><span class="line">[0x7ffd220ada30] Blob&apos;s destructor</span><br><span class="line">End assigning value</span><br><span class="line">[0x7ffd220ada20] Blob&apos;s destructor</span><br></pre></td></tr></table></figure>
+<p>可以看到，编译器生成了一个地址为 0x7ffd220ada30 的临时对象，临时对象需要调用一次 copy constructor 和 destructor。其中，copy constructor 需要复制 blob 中的数据，开销巨大。</p>
+<p>进行返回值优化的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[0x7ffdd52c7d50] Blob&apos;s default constructor</span><br><span class="line">Start assigning value...</span><br><span class="line">[0x7ffdd52c7d60] Blob&apos;s parameter constructor</span><br><span class="line">[0x7ffdd52c7d50] Blob&apos;s copy assignment operator</span><br><span class="line">[0x7ffdd52c7d60] Blob&apos;s destructor</span><br><span class="line">End assigning value</span><br><span class="line">[0x7ffdd52c7d50] Blob&apos;s destructor</span><br></pre></td></tr></table></figure>
+<p>编译器帮助我们优化掉了这个不需要的临时对象。然而，在实际的比较复杂的情况下（例如函数里 <code>if</code> 语句的两个分支分别返回不同的对象），编译器可能无法进行返回值优化。那么，我们需要更好的方法来消除临时对象的不利影响。C++11 中引入的 <em>移动语义</em> (move semantics) 可以很好地解决这个问题。</p>
+<h1 id="移动语义与-move-constructor"><a href="#移动语义与-move-constructor" class="headerlink" title="移动语义与 move constructor"></a>移动语义与 move constructor</h1><p>移动语义是 C++11 标准中引入的重要概念。移动语义类似 Rust 中的“所有权转移”。Move constructor 接收的是“右值引用”。在一般情况下，由于右值只是一个临时变量，我们可以“偷走”右值对象中的内容，而不会引起其他影响。在 C++11 中，移动语义才是真正重要的。Move constructor 如下定义：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Blob(Blob&amp;&amp; other) &#123;</span><br><span class="line">    <span class="built_in">log</span>(<span class="string">"Blob's move constructor"</span>);</span><br><span class="line">    swap(data_, other.data_);</span><br><span class="line">    swap(size_, other.size_);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Blob&amp; <span class="keyword">operator</span>=(Blob&amp;&amp; other) &#123;</span><br><span class="line">    <span class="built_in">log</span>(<span class="string">"Blob's move assignment operator"</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span> == &amp;other) &#123;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    swap(data_, other.data_);</span><br><span class="line">    swap(size_, other.size_);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们再进行代码，观察 constructor 的调用情况。</p>
+<p>不进行返回值优化的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[0x7ffef7172f70] Blob&apos;s default constructor</span><br><span class="line">Start assigning value...</span><br><span class="line">[0x7ffef7172f30] Blob&apos;s parameter constructor</span><br><span class="line">[0x7ffef7172f80] Blob&apos;s move constructor</span><br><span class="line">[0x7ffef7172f30] Blob&apos;s destructor</span><br><span class="line">[0x7ffef7172f70] Blob&apos;s move assignment operator</span><br><span class="line">[0x7ffef7172f80] Blob&apos;s destructor</span><br><span class="line">End assigning value</span><br><span class="line">[0x7ffef7172f70] Blob&apos;s destructor</span><br></pre></td></tr></table></figure>
+<p>进行返回值优化的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[0x7ffc18a6e2a0] Blob&apos;s default constructor</span><br><span class="line">Start assigning value...</span><br><span class="line">[0x7ffc18a6e2b0] Blob&apos;s parameter constructor</span><br><span class="line">[0x7ffc18a6e2a0] Blob&apos;s move assignment operator</span><br><span class="line">[0x7ffc18a6e2b0] Blob&apos;s destructor</span><br><span class="line">End assigning value</span><br><span class="line">[0x7ffc18a6e2a0] Blob&apos;s destructor</span><br></pre></td></tr></table></figure>
+<p>可以发现，这次的运行结果相当于将前一次运行中的所有 copy constructor / copy assignment operator 换成了 move constructor / move assignment operator。可以看到，移动语义带来的性能优化实际上和 RVO 是正交的：RVO 负责消除多余的临时变量和 constructor；移动语义则负责将开销较大的 copy constructor 换成 move constructor。</p>
+<p>最后，现代的很多编译器已经可以自动添加 move constructor 了，编译器的 RVO 也做得越来越好。老的 C++ 程序员的写法似乎更像是一种“人肉编译器”的写法。我们必须要知道的一点是：编译器肯定是会越做越好的，而且编译器的能力常常远超过我们的想象。所以，我们更好的办法是将代码写得更优雅已读，如返回值拷贝开销这样的问题，更应该交给编译器去完成。</p>
+<!-- 
+TODO: https://www.zhihu.com/question/29511959
+-->
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/2018/Understanding-lvalues-and-rvalues-in-C-and-C/" rel="next" title="理解 C/C++ 中的左值和右值">
+                <i class="fa fa-chevron-left"></i> 理解 C/C++ 中的左值和右值
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/2018/What-is-Systems-Programming-Really/" rel="prev" title="到底什么是系统编程？">
+                到底什么是系统编程？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4"
+                alt="nettee" />
+            
+              <p class="site-author-name" itemprop="name">nettee</p>
+              <p class="site-description motion-element" itemprop="description">持续学习中...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/nettee" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:nettee.liu@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5c68d1196fb9a04a0164de03" target="_blank" title="掘金">
+                    
+                      <i class="fa fa-fw fa-globe"></i>掘金</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/nettee" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#何时必须返回一个对象"><span class="nav-number">1.</span> <span class="nav-text">何时必须返回一个对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#临时对象与返回值优化"><span class="nav-number">2.</span> <span class="nav-text">临时对象与返回值优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一个例子"><span class="nav-number">3.</span> <span class="nav-text">一个例子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#移动语义与-move-constructor"><span class="nav-number">4.</span> <span class="nav-text">移动语义与 move constructor</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nettee</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://nettee.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/posts/2018/What-happens-when-return-an-object-by-value-in-Cpp/';
+          this.page.identifier = 'posts/2018/What-happens-when-return-an-object-by-value-in-Cpp/';
+          this.page.title = 'C++ 函数可以直接返回一个对象吗？';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://nettee.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

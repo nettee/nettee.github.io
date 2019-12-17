@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo,GitHub,CI," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="nettee 的 blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="在使用 Hexo 写博客的时候，每次总是要使用 hexo deploy 将博客部署到 GitHub Pages，然后在把博客的源文件 push 到自己的 GitHub repo 里。我之前使用了 Git 分支的方法将博客源文件和博客部署文件放在一个 repo 里（这里）。但是有没有一种方法能让我每次只需要 push 一次呢？答案是有的，那就是使用 Travis CI 持续集成工具。 Travis">
+<meta name="keywords" content="Hexo,GitHub,CI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Travis CI 实现 Github Pages + Hexo 博客的自动部署">
+<meta property="og:url" content="http://yoursite.com/posts/2018/Travis-Hexo-blog-automatic-deploy/index.html">
+<meta property="og:site_name" content="nettee 的 blog">
+<meta property="og:description" content="在使用 Hexo 写博客的时候，每次总是要使用 hexo deploy 将博客部署到 GitHub Pages，然后在把博客的源文件 push 到自己的 GitHub repo 里。我之前使用了 Git 分支的方法将博客源文件和博客部署文件放在一个 repo 里（这里）。但是有没有一种方法能让我每次只需要 push 一次呢？答案是有的，那就是使用 Travis CI 持续集成工具。 Travis">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-17T13:30:12.286Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Travis CI 实现 Github Pages + Hexo 博客的自动部署">
+<meta name="twitter:description" content="在使用 Hexo 写博客的时候，每次总是要使用 hexo deploy 将博客部署到 GitHub Pages，然后在把博客的源文件 push 到自己的 GitHub repo 里。我之前使用了 Git 分支的方法将博客源文件和博客部署文件放在一个 repo 里（这里）。但是有没有一种方法能让我每次只需要 push 一次呢？答案是有的，那就是使用 Travis CI 持续集成工具。 Travis">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/posts/2018/Travis-Hexo-blog-automatic-deploy/"/>
+
+
+
+
+
+  <title>使用 Travis CI 实现 Github Pages + Hexo 博客的自动部署 | nettee 的 blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">nettee 的 blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Less is more than more.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/2018/Travis-Hexo-blog-automatic-deploy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nettee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="nettee 的 blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用 Travis CI 实现 Github Pages + Hexo 博客的自动部署</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-31T09:59:24+00:00">
+                2018-05-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/2018/Travis-Hexo-blog-automatic-deploy/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="posts/2018/Travis-Hexo-blog-automatic-deploy/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在使用 Hexo 写博客的时候，每次总是要使用 <code>hexo deploy</code> 将博客部署到 GitHub Pages，然后在把博客的源文件 push 到自己的 GitHub repo 里。我之前使用了 Git 分支的方法将博客源文件和博客部署文件放在一个 repo 里（<a href="/posts/2016/Two-Branch-Managing-Blog/">这里</a>）。但是有没有一种方法能让我每次只需要 push 一次呢？答案是有的，那就是使用 Travis CI 持续集成工具。</p>
+<p>Travis CI 最普通的用法是用来做自动测试。每次你 push 到 GitHub repo 的时候，Travis 会自动执行单元测试，这样你就可以知道自己的每个 commit 是否可以通过 build。在发起 pull request 的时候，Travis 也会自动执行待合并分支的单元测试。不过 Travis 能做的事情不止这些，它同样可以实现自动部署，就比如我想要的 GitHub Pages 自动部署。</p>
+<p>Travis CI 会执行用户定义的 <code>.travis.yml</code> 脚本。我想在这个脚本中实现：使用 Hexo 生成博客内容，再将博客内容部署到 <a href="https://github.com/nettee/nettee.github.io/tree/master" target="_blank" rel="noopener">nettee.github.io 项目的 master 分支</a> 上。</p>
+<h3 id="生成博客内容"><a href="#生成博客内容" class="headerlink" title="生成博客内容"></a>生成博客内容</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"></span><br><span class="line"><span class="attr">node_js:</span> <span class="string">stable</span></span><br><span class="line"></span><br><span class="line"><span class="attr">install:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line"></span><br><span class="line"><span class="attr">before_script:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">git</span> <span class="string">clone</span> <span class="attr">https://github.com/nettee/hexo-theme-next</span> <span class="string">themes/next</span></span><br><span class="line"></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">hexo</span> <span class="string">generate</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p><code>.travis.yml</code> 脚本中首先定义了项目语言 (Node.js)，并指定了 Node.js 的版本。<code>install</code> 和 <code>before_script</code> 进行一些 build 前的准备工作。<code>npm install</code> 安装 <code>package.json</code> 文件中定义的项目依赖（Hexo 一系列的依赖）。由于我使用 NexT 主题，并且将 themes/next 作为嵌套 Git 项目，这里还需要将这个项目 clone 下来。</p>
+<p><code>script</code> 定义了真正的 build 过程。由于前面安装好了 Hexo 相关依赖，这里直接调用平时使用的 Hexo 脚本即可。</p>
+<h3 id="部署博客内容"><a href="#部署博客内容" class="headerlink" title="部署博客内容"></a>部署博客内容</h3><p>在日常的使用中，我们使用 <code>hexo deploy</code> 命令来将项目部署到 GitHub Pages 上。但是，由于 <code>.travis.yml</code> 脚本执行在 Travis 的虚拟机中，我们还需要为其配置 SSH。更方便的做法是直接将 public 目录下的内容 push 到 <a href="https://github.com/nettee/nettee.github.io/tree/master" target="_blank" rel="noopener">nettee.github.io 项目的 master 分支</a> 上。这一过程可以使用 GitHub personal token 进行认证。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">language:</span> <span class="string">node_js</span></span><br><span class="line"></span><br><span class="line"><span class="attr">node_js:</span> <span class="string">stable</span></span><br><span class="line"></span><br><span class="line"><span class="attr">install:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line"></span><br><span class="line"><span class="attr">before_script:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">git</span> <span class="string">clone</span> <span class="attr">https://github.com/nettee/hexo-theme-next</span> <span class="string">themes/next</span></span><br><span class="line"></span><br><span class="line"><span class="attr">script:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line"></span><br><span class="line"><span class="attr">after_script:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">cd</span> <span class="string">./public</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">git</span> <span class="string">init</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">git</span> <span class="string">config</span> <span class="string">user.name</span> <span class="string">"nettee"</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">git</span> <span class="string">config</span> <span class="string">user.email</span> <span class="string">"nettee.liu@gmail.com"</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">git</span> <span class="string">add</span> <span class="string">.</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">git</span> <span class="string">commit</span> <span class="bullet">-m</span> <span class="string">"Deploy blog pages"</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">git</span> <span class="string">push</span> <span class="bullet">--force</span> <span class="bullet">--quiet</span> <span class="string">"https://$&#123;GH_TOKEN&#125;@github.com/nettee/nettee.github.io"</span> <span class="attr">master:master</span></span><br><span class="line"></span><br><span class="line"><span class="attr">branches:</span></span><br><span class="line"><span class="attr">  only:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">blog</span></span><br></pre></td></tr></table></figure>
+<p>脚本中的 <code>GH_TOKEN</code> 是你在 GitHub 上获取的 personal access token。这个 token 需要配置在 Travis 的环境变量中，而不是直接写在 <code>.travis.yml</code> 脚本里。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a href="https://www.jianshu.com/p/5e74046e7a0f" target="_blank" rel="noopener">使用 Travis CI 自动部署 Hexo</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Hexo/" rel="tag"># Hexo</a>
+          
+            <a href="/tags/GitHub/" rel="tag"># GitHub</a>
+          
+            <a href="/tags/CI/" rel="tag"># CI</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/2018/OkHttp-Interceptors-and-Chain-of-Responsibility-Pattern/" rel="next" title="OkHttp 的 Interceptors 与责任链模式">
+                <i class="fa fa-chevron-left"></i> OkHttp 的 Interceptors 与责任链模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/2018/GDB-automated-debugging/" rel="prev" title="GDB 自动化调试">
+                GDB 自动化调试 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4"
+                alt="nettee" />
+            
+              <p class="site-author-name" itemprop="name">nettee</p>
+              <p class="site-description motion-element" itemprop="description">持续学习中...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/nettee" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:nettee.liu@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5c68d1196fb9a04a0164de03" target="_blank" title="掘金">
+                    
+                      <i class="fa fa-fw fa-globe"></i>掘金</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/nettee" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成博客内容"><span class="nav-number">1.</span> <span class="nav-text">生成博客内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署博客内容"><span class="nav-number">2.</span> <span class="nav-text">部署博客内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nettee</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://nettee.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/posts/2018/Travis-Hexo-blog-automatic-deploy/';
+          this.page.identifier = 'posts/2018/Travis-Hexo-blog-automatic-deploy/';
+          this.page.title = '使用 Travis CI 实现 Github Pages + Hexo 博客的自动部署';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://nettee.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

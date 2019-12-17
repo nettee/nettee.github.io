@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,Architecture," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="nettee 的 blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="这篇笔记主要是为了帮助读者更好地理解SQLAlchemy的架构。虽然原文中已经将SQLAlchemy架构的大部分讲得很全面了，但原文主要是介绍SQLAlchemy的架构，很多部分并没有详细解释。这篇笔记到了补充说明的作用。本笔记共10个小节，和原文的10个小节是完全对应的，读者可以在阅读本笔记的过程中随时参照原文。 SQLAlchemy的代码比较难以阅读，这是由它自身的特点决定的。首先，SQLAl">
+<meta name="keywords" content="Python,Architecture">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQLAlchemy架构笔记">
+<meta property="og:url" content="http://yoursite.com/posts/2016/SQLAlchemy-Architecture-Note/index.html">
+<meta property="og:site_name" content="nettee 的 blog">
+<meta property="og:description" content="这篇笔记主要是为了帮助读者更好地理解SQLAlchemy的架构。虽然原文中已经将SQLAlchemy架构的大部分讲得很全面了，但原文主要是介绍SQLAlchemy的架构，很多部分并没有详细解释。这篇笔记到了补充说明的作用。本笔记共10个小节，和原文的10个小节是完全对应的，读者可以在阅读本笔记的过程中随时参照原文。 SQLAlchemy的代码比较难以阅读，这是由它自身的特点决定的。首先，SQLAl">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://raw.githubusercontent.com/nettee/SQLAlchemy-survey/master/picture/layers.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/nettee/SQLAlchemy-survey/master/picture/engine.png">
+<meta property="og:image" content="http://martinfowler.com/eaaCatalog/databaseMapperSketch.gif">
+<meta property="og:image" content="https://raw.githubusercontent.com/nettee/SQLAlchemy-survey/master/picture/session-overview.png">
+<meta property="og:image" content="http://www.martinfowler.com/eaaCatalog/idMapperSketch.gif">
+<meta property="og:updated_time" content="2019-12-17T13:30:12.278Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SQLAlchemy架构笔记">
+<meta name="twitter:description" content="这篇笔记主要是为了帮助读者更好地理解SQLAlchemy的架构。虽然原文中已经将SQLAlchemy架构的大部分讲得很全面了，但原文主要是介绍SQLAlchemy的架构，很多部分并没有详细解释。这篇笔记到了补充说明的作用。本笔记共10个小节，和原文的10个小节是完全对应的，读者可以在阅读本笔记的过程中随时参照原文。 SQLAlchemy的代码比较难以阅读，这是由它自身的特点决定的。首先，SQLAl">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/nettee/SQLAlchemy-survey/master/picture/layers.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/posts/2016/SQLAlchemy-Architecture-Note/"/>
+
+
+
+
+
+  <title>SQLAlchemy架构笔记 | nettee 的 blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">nettee 的 blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Less is more than more.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/2016/SQLAlchemy-Architecture-Note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nettee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="nettee 的 blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SQLAlchemy架构笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-12T14:30:11+00:00">
+                2016-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/2016/SQLAlchemy-Architecture-Note/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="posts/2016/SQLAlchemy-Architecture-Note/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇笔记主要是为了帮助读者更好地理解SQLAlchemy的架构。虽然原文中已经将SQLAlchemy架构的大部分讲得很全面了，但原文主要是介绍SQLAlchemy的架构，很多部分并没有详细解释。这篇笔记到了补充说明的作用。本笔记共10个小节，和原文的10个小节是完全对应的，读者可以在阅读本笔记的过程中随时参照原文。</p>
+<p>SQLAlchemy的代码比较难以阅读，这是由它自身的特点决定的。首先，SQLAlchemy不是一个应用软件，而是一个Python Library。由于SQLAlchemy是一个数据库工具，它必须要适配各种主流的数据库，因此含有大量处理环境上下文的代码。其次，SQLAlchemy用Python书写，Python是动态类型的语言，变量不需要声明，而且可以在对象上添加任意的属性，这给阅读代码带来了很大的难度。总体来说，SQLAlchemy的源代码读起来非常困难。因此，这篇笔记中没有太多对源代码的分析，重点在于分析SQLAlchemy的架构层次，理解设计的思路、动机，并阐释其中使用的模式。</p>
+<hr>
+<h1 id="1-数据库抽象面临的挑战"><a href="#1-数据库抽象面临的挑战" class="headerlink" title="1. 数据库抽象面临的挑战"></a>1. 数据库抽象面临的挑战</h1><p>原文中给出了一个概念，叫做“对象-关系阻抗失配”(object-relational impedance mismatch)问题。这个概念的含义是这样的：</p>
+<p>“对象-关系阻抗失配”(object-relational impedance mismatch)，有时候叫做“范式不匹配”(paradigm mismatch)，指的是对象模型和关系模型不能很好地共同工作。关系数据库系统用表格的形式表示数据，然而面向对象的语言，如Java，是用相联系的对象来表示的。用表格状的关系数据库加载和存储对象，暴露了下面五个不匹配的问题。</p>
+<a id="more"></a>
+<ul>
+<li><strong>粒度</strong>：有时候你的对象模型中的类比对应的数据库中的表的数量要多（我们把这个叫做对象模型比关系模型粒度更细）。想想一个地址的例子就知道了</li>
+<li><strong>继承</strong>：继承是面向对象编程语言中一个自然的范式，然而，关系数据库系统基本上无法定义类似的东西（确实有些数据库支持子类，但那完全不是规范化的东西）</li>
+<li><strong>相等关系</strong>：关系数据库系统只定义了一种“相等”的概念：主键相等则元组相等。面向对象语言中则常常有两种相等关系。例如，Python中的<code>a is b</code>（全等）和<code>a == b</code>（相等）。</li>
+<li><strong>关联性</strong>：在面向对象语言中，关联表示为单向引用，而在关系数据库系统中，关联表示为外键。如果你在Python中需要定义双向关联，你必须定义两次关联。</li>
+<li><strong>获取数据的方式</strong>：你在Python中访问数据的方式和在关系数据库中访问数据的方式有本质的不同。在Python中，你在一个对象中通过引用访问到另一个对象。但这在关系数据库中不是一个获取数据的高效方法，你可能想要让SQL查询与的数量最小。</li>
+</ul>
+<p>如果你开发的系统使用的是面向对象语言和关系型数据库，当系统规模大到一定程度的时候，就一定会出现对象-关系阻抗失配的问题。SQLAlchemy这类的ORM工具就是用来解决这类问题的。</p>
+<h1 id="2-SQLAlchemy的两层结构"><a href="#2-SQLAlchemy的两层结构" class="headerlink" title="2. SQLAlchemy的两层结构"></a>2. SQLAlchemy的两层结构</h1><p>原文中已经给出了SQLAlchemy的两个层次的关系图：</p>
+<p><img src="https://raw.githubusercontent.com/nettee/SQLAlchemy-survey/master/picture/layers.png" alt="Figure 20.1"></p>
+<p>SQLAlchemy的两个最主要的功能点就是<strong>对象-关系映射（ORM）</strong>和<strong>SQL表达式语言</strong>。SQL表达式语言可以独立于ORM使用。而当用户使用ORM时，SQL表达式语言在背后工作，但用户也可以通过开放的API操纵SQL表达式语言的行为。</p>
+<p>下面的3到9节都是围绕上图所展示的SQLAlchemy架构层次进行阐述的。其中，3-5节讲述的是核心层，而6-9节讲述的是ORM层。</p>
+<p>我们知道，SQL语言一共分为四大类：</p>
+<ul>
+<li>DDL(Data Definition Language) - 主要包括CREATE TABLE，DROP，ALTER，用来定义数据库模式</li>
+<li>DML(Data Manipulation Language) - 主要包括SELECT，用来查询数据 </li>
+<li>DQL(Data Query Language) - 主要包括INSERT，UPDATE，DELETE，用来插入、更新、删除数据</li>
+<li>DCL(Data Control Language) - 主要包括GRANT等</li>
+</ul>
+<p>我们暂时不关注DCL。在DDL/DML/DQL中，DDL负责对数据库的模式进行定义，而DML和DQL负责数据的存取。虽然同属SQL语言，但它们关注的东西完全不同。SQLAlchemy中使用不同的模块对这两部分进行抽象。在核心层，SQLAlchemy使用<code>Metadata</code>对DDL进行抽象，使用SQL表达式语言对DML和DQL进行抽象。在ORM层，SQLAlchemy使用<code>mapper</code>对DDL进行抽象，使用<code>Query</code>对象对DML和DQL进行抽象。下面的4/5/6/7节分别对应这四块：</p>
+<ul>
+<li>(4)模式定义 - 核心层的模式定义(DDL)</li>
+<li>(5)SQL表达式语言 - 核心层的数据存取(DML/DQL)</li>
+<li>(6)对象-关系映射 - ORM层的模式定义(DDL)</li>
+<li>(7)查询和加载 - ORM层的数据存取(DML/DQL)</li>
+</ul>
+<p>读者不妨在阅读时对比第4节和第6节、第5节和第7节的内容，会发现很多联系和相似之处。</p>
+<h1 id="3-改良DBAPI"><a href="#3-改良DBAPI" class="headerlink" title="3. 改良DBAPI"></a>3. 改良DBAPI</h1><p>首先，我们要理解什么是DBAPI，以下内容引用自SQLAlchemy文档的术语表：</p>
+<blockquote>
+<p>DBAPI是“Python数据库API规范”（Python Database API Specification）的简称。这是在Python中广泛使用的规范，定义了数据库连接的第三方库的使用模式。DBAPI是一个低层的API，在一个Python应用中基本上位于最底层，和数据库直接进行交互。SQLAlchemy的方言系统按照DBAPI的操作来构建。基本上，一个方言就是DBAPI加上一个特定的数据库引擎。通过在<code>create_engine()</code>函数中提供不同的数据库URL可以将方言绑定到不同的数据库引擎上。 </p>
+<p>参见： <a href="http://www.python.org/dev/peps/pep-0249/" target="_blank" rel="noopener">PEP 249 - Python Database API Specification v2.0</a></p>
+</blockquote>
+<p>—— <a href="http://docs.sqlalchemy.org/en/rel_1_0/glossary.html#term-dbapi" target="_blank" rel="noopener">SQLAlchemy文档 - 术语表 - DBAPI</a></p>
+<p>PEP的文档介绍比较枯燥，我们可以通过这个示例代码直观地理解DBAPI的使用模式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">connection = dbapi.connect(user=<span class="string">"root"</span>, pw=<span class="string">"123456"</span>, host=<span class="string">"localhost:8000"</span>)</span><br><span class="line">cursor = connection.cursor()</span><br><span class="line">cursor.execute(<span class="string">"select * from user_table where name=?"</span>, (<span class="string">"jack"</span>,))</span><br><span class="line"><span class="keyword">print</span> <span class="string">"Columns in result:"</span>, [desc[<span class="number">0</span>] <span class="keyword">for</span> desc <span class="keyword">in</span> cursor.description]</span><br><span class="line"><span class="keyword">for</span> row <span class="keyword">in</span> cursor.fetchall():</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"Row:"</span>, row</span><br><span class="line">cursor.close()</span><br><span class="line">connection.close()</span><br></pre></td></tr></table></figure>
+<p>作为对比，SQLAlchemy的使用模式是这样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">engine = create_engine(<span class="string">"postgresql://user:pw@host/dbname"</span>)</span><br><span class="line">connection = engine.connect()</span><br><span class="line">result = connection.execute(<span class="string">"select * from user_table where name=?"</span>, <span class="string">"jack"</span>)</span><br><span class="line"><span class="keyword">print</span> result.fetchall()</span><br><span class="line">connection.close()</span><br></pre></td></tr></table></figure>
+<p>可以看到，二者的使用模式非常相似，都是直接通过SQL语句进行查询。SQLAlchemy只进行了封装，但没有进行高层次的抽象。不过，这只是SQLAlchemy最简单的使用方式，后面会看到，使用SQL表达式语言可以进行抽象性很高的描述，不需要手写SQL语句。</p>
+<p>原文中给出了SQLAlchemy方言系统核心类的关系图：</p>
+<p><img src="https://raw.githubusercontent.com/nettee/SQLAlchemy-survey/master/picture/engine.png" alt="Figure20.2"></p>
+<p>对照原文中的描述，阅读源代码：</p>
+<blockquote>
+<p><code>Engine</code>、<code>Connection</code>两个类的<code>execute</code>方法返回的结果是一个<code>ResultProxy</code>，它提供了一个与DBAPI的游标类似但功能更丰富的接口。<code>Engine</code>，<code>Connection</code>和<code>ResultProxy</code>分别对应于DBAPI模块、一个具体的DBAPI连接对象，和一个具体的DBAPI游标对象。</p>
+<p>在底层，<code>Engine</code>引用了一个叫<code>Dialect</code>的对象。<code>Dialect</code>是一个有众多实现的抽象类，它的每一个实现都对应于一个具体的DBAPI和数据库。一个为<code>Engine</code>而创建的<code>Connection</code>会咨询<code>Dialect</code>作出选择，对于不同的目标DBAPI和数据库，<code>Connection</code>的行为都不一样。</p>
+<p><code>Connection</code>创建时会从一个连接池获取并维护一个DBAPI的连接，这个连接池叫<code>Pool</code>，也和<code>Engine</code>相关联。<code>Pool</code>负责创建新的DBAPI连接，通常在内存中维护DBAPI连接池，供频繁的重复使用。</p>
+<p>在一个语句执行的过程中，<code>Connection</code>会创建一个额外的<code>ExecutionContext</code>对象。这个对象从开始执行的时刻，一直存在到<code>ResultProxy</code>消亡为止。</p>
+</blockquote>
+<h2 id="Engine和Connection"><a href="#Engine和Connection" class="headerlink" title="Engine和Connection"></a>Engine和Connection</h2><p>全局函数<code>create_engine</code>用来创建<code>Engine</code>对象，这个函数的第一个参数是一个数据库URL，还有一些关键字参数，用来控制<code>Engine</code>，<code>Pool</code>和<code>Dialect</code>对象的特性。其中关键字参数strategy用于指定创建<code>Engine</code>时的策略。函数会从全局的<code>strategies</code>字典中查找对应的策略（<code>EngineStrategy</code>的一个子类），将自己的参数传入策略类的<code>create</code>方法。如果strategy参数没有提供，则使用默认策略<code>DefaultEngineStrategy</code>。观察每个<code>EngineStrategy</code>子类的<code>create</code>方法，发现它们都会在创建<code>Engine</code>对象之前先创建<code>Dialect</code>对象和<code>Pool</code>对象，并将这两个对象的引用保存在<code>Engine</code>对象中，保证了<code>Engine</code>对象可以通过<code>Dialect</code>和<code>Pool</code>处理DBAPI。</p>
+<p><code>Connection</code>类看起来比<code>Engine</code>类更加强大。<code>Engine.connect()</code>方法用于创建<code>Connection</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">_connection_cls = Connection</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">connect</span><span class="params">(self, **kwargs)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> self._connection_cls(self, **kwargs)</span><br></pre></td></tr></table></figure>
+<p>调用<code>Engine.connect()</code>实际上是将<code>Engine</code>对象自己作为第一个参数传入了<code>Connection</code>的构造函数，但<code>Connection</code>的构造函数还要调用<code>Engine.raw_connection()</code>方法获得数据库连接。这样做主要是为了方便<code>Engine</code>的隐式执行接口。在<code>Connection</code>没有创建的时候，<code>Engine</code>也可以自己调用<code>raw_connection()</code>获得数据库连接。</p>
+<p>不论怎样，<code>Connection</code>拥有<code>Engine</code>的引用，并可以通过<code>Engine</code>的访问<code>Pool</code>和<code>Dialect</code>对象。对数据库的操作通常是使用<code>Connection.execute()</code>方法进行的。</p>
+<h2 id="Pool"><a href="#Pool" class="headerlink" title="Pool"></a>Pool</h2><p><code>Pool</code>负责管理DBAPI连接。<code>Connection</code>对象创建时，会从连接池中取出一个DBAPI连接，而在<code>close</code>方法调用时，会将连接归还。</p>
+<p><code>Pool</code>的代码定义在<code>pool.py</code>中，包括抽象父类<code>Pool</code>，和几个有具体功能的子类：</p>
+<ul>
+<li><code>QueuePool</code> 限制连接个数（默认使用）</li>
+<li><code>SingletonThreadPool</code> 为每个线程维护一个连接</li>
+<li><code>AssertionPool</code> 任何时候都只允许一个连接，否则抛出异常</li>
+<li><code>NullPool</code> 不进行任何池操作，直接打开/关闭DBAPI连接</li>
+<li><code>StaticPool</code> 有且仅有一个连接</li>
+</ul>
+<h2 id="执行SQL语句"><a href="#执行SQL语句" class="headerlink" title="执行SQL语句"></a>执行SQL语句</h2><p><code>Connection</code>的<code>execute</code>方法执行一个SQL语句，并返回一个<code>ResultProxy</code>对象。<code>execute</code>方法接受多种类型的参数，参数类型可以是一个字符串，也可以是<code>ClauseElement</code>和<code>Executable</code>的共同子类。关于<code>execute</code>方法的参数在下文中详细讨论，这里主要分析<code>execute</code>方法执行时背后的过程。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">execute</span><span class="params">(self, object, *multiparams, **params)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(object, util.string_types[<span class="number">0</span>]):</span><br><span class="line">        <span class="keyword">return</span> self._execute_text(object, multiparams, params)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        meth = object._execute_on_connection</span><br><span class="line">    <span class="keyword">except</span> AttributeError:</span><br><span class="line">        <span class="keyword">raise</span> exc.InvalidRequestError(</span><br><span class="line">        <span class="string">"Unexecutable object type: %s"</span> %</span><br><span class="line">        type(object))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> meth(self, multiparams, params)</span><br></pre></td></tr></table></figure>
+<p>可以看到，<code>execute</code>方法对SQL语句对象的类型进行判断，如果是一个字符串，则调用<code>_execute_text</code>方法执行，否则调用对象的<code>_execute_on_connection</code>方法，而不同对象的<code>_execute_on_connection</code>方法会调用<code>Connection._execute_*()</code>方法，具体为：</p>
+<ul>
+<li><code>sql.FunctionElement</code>对象，调用<code>Connection._execute_function()</code></li>
+<li><code>schema.ColumnDefault</code>对象，调用<code>Connection._execute_default()</code></li>
+<li><code>schema.DDL</code>对象，调用<code>Connection._execute_ddl()</code></li>
+<li><code>sql.ClauseElement</code>对象，调用<code>Connection._execute_clauseelement()</code></li>
+<li><code>sql.Compiled</code>对象，调用<code>Connection._execute_compiled()</code></li>
+</ul>
+<p>以上的<code>Connection._execute_*()</code>方法都调用了<code>Connection._execute_context()</code>方法。这个方法的第一个参数是<code>Dialect</code>对象，第二个参数是<code>ExecutionContext</code>对象的构造器（构造器从<code>Dialect</code>对象获取）。在方法中调用构造器构造了一个<code>ExecutionContext</code>对象，并根据context对象的状态调用dialect对象的相关方法产生结果。对不同的状态，调用的dialect对象的方法不同，总的来说，调用的是<code>Dialect.do_execute*()</code>方法。</p>
+<p>从上述方法调用的过程可以看出，<code>Connection</code>的<code>execute</code>方法最终将生成结果的任务转交给了<code>Dialect</code>的<code>do_execute</code>方法。SQLAlchemy正是用这种方法应对多变的DBAPI实现的：<code>Connection</code>在执行SQL语句的时候，会咨询<code>Dialect</code>作出选择。因此对于不同的目标DBAPI和数据库，<code>Connection</code>的行为都不一样。</p>
+<h2 id="Dialect"><a href="#Dialect" class="headerlink" title="Dialect"></a>Dialect</h2><p><code>Dialect</code>定义在engine/interfaces.py文件中，是一个抽象的接口，其中定义了三个<code>do_execute*()</code>方法，分别是<code>do_execute()</code>，<code>do_executemany()</code>和<code>do_execute_no_params()</code>。<code>Dialect</code>的子类通过实现这些接口来定义自己执行时的行为。SQLAlchemy中默认的dialect子类是<code>DefaultDialect</code>。在默认实现中，<code>do_execute</code>方法调用<code>Cursor.execute</code>，而<code>Cursor</code>是来自DBAPI的类。在这里，SQLAlchemy核心层和DBAPI层连接了起来。</p>
+<p><code>sqlalchemy.dialects</code>包中包含有来自firebird，mssql，mysql，oracle，postgresql，sqlite，sybase等数据库的dialect。以SQLite数据库为例，<code>SQLiteDialect</code>继承自<code>DefaultDialect</code>，而<code>SQLiteDialect_pysqlite</code>和<code>SQLiteDialect_pysqlcipher</code>。SQLite的dialect没有重写<code>do_execute*()</code>，而是重写了一些其他的方法，来定义一些和<code>DefaultDialect</code>不同的行为。例如，SQLite没有内置的DATE，TIME，DATETIME类型，<code>SQLiteDialect</code>处理了这些问题。</p>
+<h2 id="ResultProxy"><a href="#ResultProxy" class="headerlink" title="ResultProxy"></a>ResultProxy</h2><p><code>ResultProxy</code>包装了一个DBAPI游标(cursor)对象，使一行结果中的各个字段更容易访问。在数据库术语中，结果通常称为一个行(row)。</p>
+<p>一个字段可以通过三种方式访问：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">row = fetchone()</span><br><span class="line">col1 = row[<span class="number">0</span>] <span class="comment"># 通过位置下标访问</span></span><br><span class="line">col2 = row[<span class="string">'col2'</span>] <span class="comment"># 通过名字访问</span></span><br><span class="line">col3 = row[mytable.c.mycol] <span class="comment"># 通过Column对象访问</span></span><br></pre></td></tr></table></figure>
+<p>ResultProxy定义了<code>__iter__</code>方法，可以在ResultProxy对象上使用for循环，效果和不断调用fetchone方法一样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        row = self.fetchone()</span><br><span class="line">        <span class="keyword">if</span> row <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">yield</span> row</span><br></pre></td></tr></table></figure>
+<h1 id="4-模式定义"><a href="#4-模式定义" class="headerlink" title="4. 模式定义"></a>4. 模式定义</h1><blockquote>
+<p>数据库模式是用形式化的语言描述的数据库系统的结构。在关系数据库中，模式定义了表、表中字段，以及表和字段间的关系</p>
+</blockquote>
+<p>—— <a href="http://www.webopedia.com/TERM/S/schema.html" target="_blank" rel="noopener">Webopedia</a></p>
+<p>直观来说，下面的SQL语句就描述了一个数据库的模式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="keyword">users</span> (</span><br><span class="line">    <span class="keyword">id</span> <span class="built_in">INTEGER</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="keyword">name</span> <span class="built_in">VARCHAR</span>,</span><br><span class="line">    fullname <span class="built_in">VARCHAR</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span> (<span class="keyword">id</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> addresses (</span><br><span class="line">    <span class="keyword">id</span> <span class="built_in">INTEGER</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    user_id <span class="built_in">INTEGER</span>,</span><br><span class="line">    email_address <span class="built_in">VARCHAR</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span> (<span class="keyword">id</span>),</span><br><span class="line">    FOREIGN <span class="keyword">KEY</span>(user_id) <span class="keyword">REFERENCES</span> <span class="keyword">users</span> (<span class="keyword">id</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>SQLAlchemy的模式定义功能就是用一种抽象的方式表达上面SQL语句的内容。下面的代码定义了和上面SQL语句相同的模式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">metadata = MetaData()</span><br><span class="line"></span><br><span class="line">users = Table(<span class="string">'users'</span>, metadata,</span><br><span class="line">        Column(<span class="string">'id'</span>, Integer, primary_key=<span class="keyword">True</span>),</span><br><span class="line">        Column(<span class="string">'name'</span>, String),</span><br><span class="line">        Column(<span class="string">'fullname'</span>, String),</span><br><span class="line">)</span><br><span class="line">addresses = Table(<span class="string">'addresses'</span>, metadata,</span><br><span class="line">        Column(<span class="string">'id'</span>, Integer, primary_key=<span class="keyword">True</span>),</span><br><span class="line">        Column(<span class="string">'user_id'</span>, <span class="keyword">None</span>, ForeignKey(<span class="string">'users.id'</span>)),</span><br><span class="line">        Column(<span class="string">'email_address'</span>, String, nullable=<span class="keyword">False</span>),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">metadata.create_all(engine)</span><br></pre></td></tr></table></figure>
+<p><code>MetaData</code>的名字来自元数据映射模式，但真正实现了这个模式的实际上是<code>Table</code>和<code>mapper()</code>函数，下面关于ORM的章节将会详细讲述。</p>
+<p><code>MetaData</code>对象保存了所有的schema相关的所有结构，特别是<code>Table</code>对象。<code>sorted_tables</code>方法返回<code>Table</code>对象经过拓扑排序的列表。关于表的拓扑排序，参见第九节“工作单元”。</p>
+<p>阅读源代码，<code>Table</code>的构造函数<code>__new__</code>的前两个参数分别是表名和<code>MetaData</code>对象。构造函数会创建一个名字唯一的<code>Table</code>对象，用同样的表名和<code>MetaData</code>对象再次调用构造函数，会返回相同的对象。因此<code>Table</code>的构造函数充当了“注册”的角色。</p>
+<h1 id="5-SQL表达式语言"><a href="#5-SQL表达式语言" class="headerlink" title="5. SQL表达式语言"></a>5. SQL表达式语言</h1><p><code>Query</code>对象实现了Martin Fowler定义的<em>查询对象</em>(Query Object)模式。Martin Fowler在书中是这么描述这个模式的：</p>
+<blockquote>
+<p>SQL是一个演化中的语言，很多开发人员对它不是非常熟悉。而且，你在写查询语句的时候需要知道数据库schema是什么样的。查询对象模式可以解决这些问题。</p>
+<p>查询对象是一个解释器模式(Interpreter Pattern)，也就是一个对象可以把自己变成一个SQL查询。你可以通过使用类和属性，而不是表和字段来创建一条查询。用这种方法，你在写查询语句时可以不依赖数据库schema，对schema的改变也不会造成全局的影响。</p>
+</blockquote>
+<p>—— Martin Fowler: <a href="http://martinfowler.com/eaaCatalog/queryObject.html" target="_blank" rel="noopener"><em>Patterns of Enterprise Application Architecture</em>, Query Object</a></p>
+<p>Mike Bayer指出，SQL表达式的创建主要使用了<strong>Python表达式</strong>和<strong>重载的操作符</strong>。</p>
+<h2 id="源代码分析"><a href="#源代码分析" class="headerlink" title="源代码分析"></a>源代码分析</h2><p><code>sqlalchemy.sql.dml.Insert</code>是<code>UpdateBase</code>的子类，而<code>UpdateBase</code>同时是<code>ClauseElement</code>和<code>Executable</code>的子类，所以可以将<code>Insert</code>的实例传给<code>Connection.execute()</code></p>
+<p><code>select</code>是一个全局的函数，而不是类。在sql/expression.py中，调用<code>public_factory</code>，将<code>selectable.Select</code>类变为函数<code>select</code>，也就是将<br><code>Select.__init__()</code>赋值给<code>select</code>。</p>
+<h1 id="6-对象-关系映射（ORM）"><a href="#6-对象-关系映射（ORM）" class="headerlink" title="6. 对象-关系映射（ORM）"></a>6. 对象-关系映射（ORM）</h1><p>什么是ORM呢？让我们先看看Martin Fowler在书中所描述的<strong>数据映射器</strong>(Data Mapper)模式。原文中提到，SQLAlchemy的ORM系统正是借鉴了这种模式。</p>
+<blockquote>
+<p><img src="http://martinfowler.com/eaaCatalog/databaseMapperSketch.gif" alt="Figure: DatabaseMapperSketch"></p>
+<p>对象和关系数据库组织数据的方式是不同的。对象中的很多部分，如继承，在关系数据库中是没有的。当你建立了一个有大量业务逻辑的对象模型，对象的schema和关系数据库的schema就可能不匹配。</p>
+<p>但你仍需要在两种schema之间进行转换，这种转换本身就成为一个复杂的东西。如果内存中的对象知道关系数据库的结构，两者之间一者的改变就会影响到另一者。</p>
+<p>数据映射器(Data Mapper)是将内存中的对象和数据库分离的一层系统。它的责任是分隔对象和关系数据库，并在两者之间转换数据。有了数据映射器，内存中的对象既不需要的SQL接口代码，也不需要知道数据库schema，甚至都不需要知道数据库是否存在。</p>
+</blockquote>
+<p>—— Martin Fowler: <a href="http://martinfowler.com/eaaCatalog/dataMapper.html" target="_blank" rel="noopener"><em>Patterns of Enterprise Application Architecture</em>, Data Mapper</a></p>
+<p>为了理解上面这段话的含义，我们看下面的示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sqlalchemy <span class="keyword">import</span> Table, MetaData, Column, Integer, String, ForeignKey</span><br><span class="line"><span class="keyword">from</span> sqlalchemy.orm <span class="keyword">import</span> mapper</span><br><span class="line"></span><br><span class="line">metadata = MetaData()</span><br><span class="line"></span><br><span class="line">users = Table(<span class="string">'users'</span>, metadata,</span><br><span class="line">        Column(<span class="string">'id'</span>, Integer, primary_key=<span class="keyword">True</span>),</span><br><span class="line">        Column(<span class="string">'name'</span>, String),</span><br><span class="line">        Column(<span class="string">'fullname'</span>, String),</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, fullname, password)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">        self.fullname = fullname</span><br><span class="line">        self.password = password</span><br><span class="line"></span><br><span class="line">mapper(User, users)</span><br></pre></td></tr></table></figure>
+<p>在上面的代码中，<code>User</code>类是用户自己定义的类，它是业务逻辑中的一个实体对象。而<code>users</code>是数据库的schema（在第四节“模式定义”中已经详细分析过）。使用<code>mapper</code>函数将<code>User</code>类映射到schema上。注意到，<code>User</code>类和数据库的schema完全无关，在不知道数据存储方式的情况下就可以写出这个类。这样就实现了对象和数据库的分离。</p>
+<h2 id="两类映射"><a href="#两类映射" class="headerlink" title="两类映射"></a>两类映射</h2><p>所谓“传统的”和“声明式的”，不过是SQLAlchemy中用户定义ORM的新旧两种风格。SQLAlchemy一开始只支持传统映射，后来出现了声明式映射，它在传统映射的基础上建立，功能更丰富，表达更简洁。两个映射方式可以互相交换使用，结果是一模一样的。而且声明式映射最终也会被转换为传统映射——用<code>mapper()</code>函数映射一个用户定义的类，因此两种映射方式在本质上是没有区别的。</p>
+<p>按我的理解，传统映射思路更加明确，更能体现对象和数据库分离的思想，而声明式映射功能更强大。</p>
+<h1 id="7-查询和加载"><a href="#7-查询和加载" class="headerlink" title="7. 查询和加载"></a>7. 查询和加载</h1><h2 id="查询对象"><a href="#查询对象" class="headerlink" title="查询对象"></a>查询对象</h2><p>前面已经提到过，SQLAlchemy的ORM层建立在核心层之上，因此用户使用ORM层时，不会使用核心层中<code>connection.execute()</code>之类的接口。<code>Session</code>（会话）成为用户使用数据库的唯一入口。而用户通过<code>Session</code>进行查询时，需要使用<code>Query</code>对象进行查询。示例代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">session = Session(engine)</span><br><span class="line">result = session.query(User).filter(User.name == <span class="string">'ed'</span>).all()</span><br></pre></td></tr></table></figure>
+<p><code>Query</code>对象实现了Martin Fowler定义的<em>查询对象</em>(Query Object)模式。在第五节中已经提到，<code>select()</code>也实现了这个模式。实际上<code>Query</code>和<code>select()</code>的功能很相似，都是进行数据库查询，只不过一个工作在核心层，一个工作在ORM层。比较<code>select()</code>的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">connection = engine.connect()</span><br><span class="line">result = connection.execute(select([users])).where(users.c.name == <span class="string">'ed'</span>)</span><br></pre></td></tr></table></figure>
+<p>所谓QUERY TIME和LOAD TIME两个部分，是因为ORM层工作在核心层（SQL表达式语言）之上，要调用SQL表达式语言的基础设施进行工作。</p>
+<h1 id="8-会话"><a href="#8-会话" class="headerlink" title="8. 会话"></a>8. 会话</h1><p>原文中的图20.13非常清晰地展示了会话的组成部分：</p>
+<p><img src="https://raw.githubusercontent.com/nettee/SQLAlchemy-survey/master/picture/session-overview.png" alt="Figure 20.13"></p>
+<p>前一节已经分析了<code>Query</code>对象，它主要负责进行查询和对象加载。而<code>Session</code>负责的是更多细致和琐碎的工作。从图中可以看出，<code>Session</code>对象包含了三个重要的部分</p>
+<ul>
+<li>标识映射</li>
+<li>对象的状态</li>
+<li>事务</li>
+</ul>
+<p>标识映射和状态跟踪之间的配合，是我认为SQLAlchemy设计最为精妙的两个部分之一。下面会详细介绍这两部分内容。</p>
+<h2 id="标识映射"><a href="#标识映射" class="headerlink" title="标识映射"></a>标识映射</h2><p>标识映射(Identity Map)是一个由Martin Fowler定义的模式，下面是Martin Fowler在书中对这个模式的介绍：</p>
+<blockquote>
+<p><img src="http://www.martinfowler.com/eaaCatalog/idMapperSketch.gif" alt="Figure: Identity Mapper Sketch"></p>
+<p>一个古老的谚语说，一个有两块手表的人永远不知道时间是多少。在从数据库加载对象时，如果两块表（两个对象）不一致，你会有更大的麻烦。你一不小心就可能从同一个数据库中加载数据并存到两个不同的对象中。当你同时更新了两个对象，你在把改变写到数据库时，就会出现一些奇怪的结果。</p>
+<p>这还和一个明显的性能问题有关。如果你不止一次加载同一份数据，会导致远程调用的昂贵开销。那么，避免加载同一份数据两次，不仅能保证正确性，还能提升应用的性能。</p>
+<p>标识映射保存了在一个事务中从数据库中读取出的所有数据。当你需要一份（加载到对象中的）数据时，首先检查标识映射，看看是不是已经有了。</p>
+</blockquote>
+<p>—— Martin Fowler, <a href="http://www.martinfowler.com/eaaCatalog/identityMap.html" target="_blank" rel="noopener"><em>Patterns of Enterprise Application Architecture</em>, Identity Map</a></p>
+<p>简单的说，标识映射是一个Python字典，是从一个Python对象到这个对象的数据库ID的映射。当应用程序试图获取一个对象时，如果对象还没有被加载，标识映射会加载这个对象，并保存在字典里；而如果对象已经加载过，标识映射会从字典里取出原先的对象。标识映射有两个显著的好处：</p>
+<ol>
+<li>已加载的对象被“缓存”下来，不需要加载多次，造成额外开销。这实际上是一种懒惰加载(lazy loading)</li>
+<li>保证应用程序获取对象时，得到的是唯一的对象，避免数据不一致的问题</li>
+</ol>
+<p>在SQLAlchemy的实际实现中，<code>IdentityMap</code>的key是数据库ID，但value不是一个对象，而是保存了对象状态的<code>InstanceState</code>。下面“状态跟踪”解释了<code>IdentityMap</code>为什么要这样设计。</p>
+<h2 id="状态跟踪"><a href="#状态跟踪" class="headerlink" title="状态跟踪"></a>状态跟踪</h2><p>在<code>Session</code>中，一个对象有四种状态，用一个<code>InstanceState</code>来记录：</p>
+<ul>
+<li><strong>Transient</strong> - 这个对象不在会话中，而且没有保存到数据库。也就是说，它没有一个数据库ID。这个对象和ORM的唯一关系是，它的类关联到了一个<code>mapper()</code></li>
+<li><strong>Pending</strong> - 当你调用<code>add()</code>并传入了一个transient对象，它就成了pending状态。这时候它还没有刷新到数据库中，但下一次刷新后就会保存到数据库</li>
+<li><strong>Persistent</strong> - 在会话当中，并且在数据库里有一条记录的对象。得到persistent对象有两种方法，一种是通过刷新将pending对象变成persistent对象，另一种是从数据库中查询得到对象</li>
+<li><strong>Detached</strong> - 对象和数据库里的一条记录对应（或曾经对应），但它不在任何会话中了。在会话中的事务提交后，所有的对象都变为detached状态</li>
+</ul>
+<p>一个对象从进入<code>Session</code>到离开<code>Session</code>，就是将这四个状态依次走一遍的过程（对新创建的对象，需要走完四个状态；其他对象则没有transient状态）。先是进入<code>Session</code>，内存的数据发生了改变，进入pending状态；接着经过刷新操作，将内存的改变保存到数据库，进入persistent状态；最后离开<code>Session</code>，进入detached状态。</p>
+<p>理解了这四种状态的区别后，我们就可以发现：<code>Session</code>要重点跟踪的对象是pending状态的对象，因为这些对象的内存数据和数据库不一致；而一旦对象到达persistent状态，实际上对象已经不需要跟踪，因为内存数据已经和数据库一致，<code>Session</code>可以在此后的任意时间点将这些对象丢弃。</p>
+<p>那么，何时将这个对象丢弃掉呢？首先，不能丢弃得太早。因为当对象在persistent状态时，用户可能进行一次查询操作，通过标识映射找到了这个内存中的对象。如果太早丢弃，这时候就要从数据库中重新加载对象，造成不必要的开销。其次，也不能丢弃得太晚，因为这样会话中会保留大量的对象，内存得不到及时的回收。那么最好的方法，就是交给垃圾回收器来做决定，垃圾回收器在内存不够的时候会释放对象，回收内存，同时有让对象在内存中保持一段时间，在需要的时候可以拿来使用。</p>
+<p><code>Session</code>使用<em>弱引用</em>(weak reference)机制来实现这一点，所谓弱引用，就是说，在保存了对象的引用的情况下，对象仍然可能被垃圾回收器回收。在某一时刻通过引用访问对象时，对象可能存在也可能不存在，如果对象不存在，就重新从数据库中加载对象。而如果不希望对象被回收，只需要另外保存一个对象的强引用即可。<code>Session</code>中的<code>IdentityMap</code>，实际上是一个“弱引用字典”(weak value dictionary)，也就是说，映射中的值(value)是弱引用的，当字典中的值没有强引用指向它时，字典中的这个键值对就会被清除。关于弱引用字典的详细资料可以查看<a href="https://docs.python.org/3/library/weakref.html#weakref.WeakValueDictionary" target="_blank" rel="noopener">Python官方文档-WeakValueDictionary</a>。</p>
+<p>图中显示，<code>Session</code>对象包含了一个<code>new</code>属性和一个<code>deleted</code>属性。阅读源代码发现，<code>Session</code>还包含一个<code>dirty</code>属性。这三个属性都是对象的集合。顾名思义，<code>new</code>表示刚刚被加入会话的对象，<code>dirty</code>属性表示刚刚被修改的对象，而<code>deleted</code>属性表示在会话中被删除的对象。这三个对象都有一个共同的特点：它们都是内存中经过改变而和数据库不一致的数据，正是上面“对象的四个状态”中的pending状态。也就是说，<code>Session</code>保存了所有处于pending状态的对象的强引用，这保证了这些对象不会被垃圾回收器回收。对于其他的对象，<code>Session</code>只保留了弱引用。</p>
+<h1 id="9-工作单元"><a href="#9-工作单元" class="headerlink" title="9. 工作单元"></a>9. 工作单元</h1><p>工作单元也是Martin Fowler在书中定义的模式，SQLAlchemy的<code>unitofwork</code>模块实现了这个模式。SQLAlchemy文档中说，工作单元模式“自动地跟踪对象上发生的改变，周期性地将pending的改变刷新到数据库中”（<a href="http://docs.sqlalchemy.org/en/rel_1_0/glossary.html#term-unit-of-work" target="_blank" rel="noopener">SQLAlchemy文档 - 术语表 - unit of work</a>）。工作单元和会话之间的关系是：会话定义了对象的四个状态，而工作单元负责将会话中的pending状态对象转移到persistent状态，在这个过程中完成数据库持久化的工作。用户调用<code>Session</code>的<code>commit</code>方法，讲对数据的查询、更新等操作保存到数据库中。原文中提到，<code>commit</code>方法调用了<code>flush</code>方法进行“刷新”操作，而<code>flush</code>的所有实际工作都由工作单元模块完成。</p>
+<p>工作单元是我认为SQLAlchemy设计最精妙的两个部分之二。要理解工作单元的精妙之处，首先要知道数据库持久化工作的主要难点在哪里。内存的速度很快，在一段时间内可能有很多对象的状态发生了改变。要将这些改变进行持久化，最简单的做法是，对每一个发生变化的对象，生成一条SQL语句（可能是INSERT语句、UPDATE语句或DELETE语句），进行一次数据库调用。但是数据库的写入速度要比内存慢很多，太多的数据库操作会极大地降低性能。要想实现高效，需要一次将一批数据送入数据库。</p>
+<p>然而，这些对象并不能按照任意的顺序进行持久化。例如，当两个表之间存在外键关系，如果想要持久化一个存在外键的对象，就要先对外键引用的对象进行持久化。这意味着，虽然可以一次将一批对象持久化，但遇到有外键的对象，就必须停下来，先持久化那个外键引用的对象。于是实际上还是进行了很多次的数据库调用。</p>
+<p>工作单元则使用了一种非常优越的模式，在进行持久化操作之前，先安排好对象进行持久化的顺序。持久化的时候只需要将一批批的对象送到数据库，而不需要在处理每个对象之前先考虑一下是不是还有别的依赖。工作单元将对象之间的依赖关系用有向图进行建模，根据图论中有向无环图的拓扑排序，就可以安排出所有对象刷新的顺序。关于具体的步骤，原文中已经讲得很清楚了，在此不再赘述。</p>
+<h1 id="10-结语"><a href="#10-结语" class="headerlink" title="10. 结语"></a>10. 结语</h1><p>在调研SQLAlchemy之前，我从未听说过ORM这个概念，也不知道Hibernate等著名的ORM工具。去年在使用JSP进行Web开发时，就遇到了关系数据库和对象之间的转换问题，也意识到这是一个必要但又很复杂的工作。如果在开发中使用ORM工具，必然会很大程度上提升程序的健壮性。 关系数据库是再重要不过的技术，而面向对象语言一直是主流的语言。ORM则将这两者结合了起来。SQLAlchemy是Python中最流行的ORM工具，也是事实上的标准。实际上，Python著名的Web框架Django因为自带了一套ORM系统而不支持SQLAlchemy一直遭人诟病。如果你还从来没有听说ORM这个概念，建议你能了解一下SQLAlchemy，并在开发中尝试使用这个库。</p>
+<hr>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a href="http://docs.sqlalchemy.org/en/rel_1_0/index.html" target="_blank" rel="noopener">SQLAlchemy 1.0 官方文档</a></li>
+<li>Martin Fowler: Patterns of Enterprise Application Architecture </li>
+<li><a href="http://techspot.zzzeek.org/2012/02/07/patterns-implemented-by-sqlalchemy/" target="_blank" rel="noopener">Mike Bayer: SQLAlchemy所实现的模式</a></li>
+<li><a href="http://techspot.zzzeek.org/files/2011/sqla_arch_retro.key.pdf" target="_blank" rel="noopener">Mike Bayer: SQLAlchemy架构回顾</a></li>
+<li><a href="http://martinfowler.com/eaaCatalog/" target="_blank" rel="noopener">Catalog of Patterns of Enterprise Application Architecture</a></li>
+<li><a href="http://hibernate.org/orm/what-is-an-orm/" target="_blank" rel="noopener">Hibernate文档 - 什么是ORM</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Architecture/" rel="tag"># Architecture</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/2016/SQLAlchemy-Translation/" rel="next" title="开源软件架构之SQLAlchemy翻译">
+                <i class="fa fa-chevron-left"></i> 开源软件架构之SQLAlchemy翻译
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/2016/Two-Branch-Managing-Blog/" rel="prev" title="Hexo博客的多分支管理方法">
+                Hexo博客的多分支管理方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4"
+                alt="nettee" />
+            
+              <p class="site-author-name" itemprop="name">nettee</p>
+              <p class="site-description motion-element" itemprop="description">持续学习中...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/nettee" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:nettee.liu@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5c68d1196fb9a04a0164de03" target="_blank" title="掘金">
+                    
+                      <i class="fa fa-fw fa-globe"></i>掘金</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/nettee" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-数据库抽象面临的挑战"><span class="nav-number">1.</span> <span class="nav-text">1. 数据库抽象面临的挑战</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-SQLAlchemy的两层结构"><span class="nav-number">2.</span> <span class="nav-text">2. SQLAlchemy的两层结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-改良DBAPI"><span class="nav-number">3.</span> <span class="nav-text">3. 改良DBAPI</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Engine和Connection"><span class="nav-number">3.1.</span> <span class="nav-text">Engine和Connection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pool"><span class="nav-number">3.2.</span> <span class="nav-text">Pool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行SQL语句"><span class="nav-number">3.3.</span> <span class="nav-text">执行SQL语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dialect"><span class="nav-number">3.4.</span> <span class="nav-text">Dialect</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ResultProxy"><span class="nav-number">3.5.</span> <span class="nav-text">ResultProxy</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-模式定义"><span class="nav-number">4.</span> <span class="nav-text">4. 模式定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-SQL表达式语言"><span class="nav-number">5.</span> <span class="nav-text">5. SQL表达式语言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#源代码分析"><span class="nav-number">5.1.</span> <span class="nav-text">源代码分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-对象-关系映射（ORM）"><span class="nav-number">6.</span> <span class="nav-text">6. 对象-关系映射（ORM）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#两类映射"><span class="nav-number">6.1.</span> <span class="nav-text">两类映射</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-查询和加载"><span class="nav-number">7.</span> <span class="nav-text">7. 查询和加载</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查询对象"><span class="nav-number">7.1.</span> <span class="nav-text">查询对象</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-会话"><span class="nav-number">8.</span> <span class="nav-text">8. 会话</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#标识映射"><span class="nav-number">8.1.</span> <span class="nav-text">标识映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#状态跟踪"><span class="nav-number">8.2.</span> <span class="nav-text">状态跟踪</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-工作单元"><span class="nav-number">9.</span> <span class="nav-text">9. 工作单元</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-结语"><span class="nav-number">10.</span> <span class="nav-text">10. 结语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">11.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nettee</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://nettee.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/posts/2016/SQLAlchemy-Architecture-Note/';
+          this.page.identifier = 'posts/2016/SQLAlchemy-Architecture-Note/';
+          this.page.title = 'SQLAlchemy架构笔记';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://nettee.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,翻译," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="nettee 的 blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="本文翻译自Python官方documentation, Python 版本 3.3 原文：Argparse Tutorial 翻译：nettee  这份教程是对 argparse 的简要介绍, argparse 是 Python 标准库中推荐使用的命令行解析模块. 注意: 与 argparse 完成相同任务的模块还有 getopt (与C语言中的 getopt() 函数用法相同)和已经被废弃的 o">
+<meta name="keywords" content="Python,翻译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python Argparse Tutorial 翻译">
+<meta property="og:url" content="http://yoursite.com/posts/2015/Python-Argparse-Tutorial/index.html">
+<meta property="og:site_name" content="nettee 的 blog">
+<meta property="og:description" content="本文翻译自Python官方documentation, Python 版本 3.3 原文：Argparse Tutorial 翻译：nettee  这份教程是对 argparse 的简要介绍, argparse 是 Python 标准库中推荐使用的命令行解析模块. 注意: 与 argparse 完成相同任务的模块还有 getopt (与C语言中的 getopt() 函数用法相同)和已经被废弃的 o">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-17T13:30:12.278Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python Argparse Tutorial 翻译">
+<meta name="twitter:description" content="本文翻译自Python官方documentation, Python 版本 3.3 原文：Argparse Tutorial 翻译：nettee  这份教程是对 argparse 的简要介绍, argparse 是 Python 标准库中推荐使用的命令行解析模块. 注意: 与 argparse 完成相同任务的模块还有 getopt (与C语言中的 getopt() 函数用法相同)和已经被废弃的 o">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/posts/2015/Python-Argparse-Tutorial/"/>
+
+
+
+
+
+  <title>Python Argparse Tutorial 翻译 | nettee 的 blog</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">nettee 的 blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Less is more than more.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/posts/2015/Python-Argparse-Tutorial/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nettee">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="nettee 的 blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python Argparse Tutorial 翻译</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-09T12:49:58+00:00">
+                2015-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/posts/2015/Python-Argparse-Tutorial/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="posts/2015/Python-Argparse-Tutorial/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文翻译自Python官方documentation, Python 版本 3.3</p>
+<p>原文：<a href="http://docs.python.org/3/howto/argparse.html#id1" target="_blank" rel="noopener">Argparse Tutorial</a></p>
+<p>翻译：<a href="http://nettee.github.io" target="_blank" rel="noopener">nettee</a></p>
+<hr>
+<p>这份教程是对 <code>argparse</code> 的简要介绍, <code>argparse</code> 是 Python 标准库中推荐使用的命令行解析模块.</p>
+<p>注意: 与 <code>argparse</code> 完成相同任务的模块还有 <code>getopt</code> (与C语言中的 <code>getopt()</code> 函数用法相同)和已经被废弃的 <code>optparse</code>. 另外 <code>argparse</code> 是以 <code>optparse</code> 为基础的,因此二者在用法方面很相似.</p>
+<h2 id="一些概念"><a href="#一些概念" class="headerlink" title="一些概念"></a>一些概念</h2><p>让我们通过使用 <strong>ls</strong> 命令来展示在入门指引中我们将要探讨的命令行解析功能:</p>
+<a id="more"></a>
+<pre><code>$ ls
+cpython  devguide  prog.py  pypy  rm-unused-function.patch
+$ ls pypy
+ctypes_configure  demo  dotviewer  include  lib_pypy  lib-python ...
+$ ls -l
+total 20
+drwxr-xr-x 19 wena wena 4096 Feb 18 18:51 cpython
+drwxr-xr-x  4 wena wena 4096 Feb  8 12:04 devguide
+-rwxr-xr-x  1 wena wena  535 Feb 19 00:05 prog.py
+drwxr-xr-x 14 wena wena 4096 Feb  7 00:59 pypy
+-rw-r--r--  1 wena wena  741 Feb 18 01:01 rm-unused-function.patch
+$ ls --help
+Usage: ls [OPTION]... [FILE]...
+List information about the FILEs (the current directory by default).
+Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.
+...
+</code></pre><p>我们从这四条命令中可以看出几点概念:</p>
+<ul>
+<li><p><strong>ls</strong> 命令在不加选项时可以直接运行,它默认打印出当前目录下的内容.</p>
+</li>
+<li><p>如果想实现默认以外的功能,就要多给 ls 一个参数.在第二条命令中,我们想让它打印出 <code>pypy</code> 目录下的内容,这时就要指明”位置参数”.程序对命令行参数的处理取决于参数在命令行上出现的位置.这个概念在 <strong>cp</strong> 命令的使用中体现得更明显, 它的基本用法是 <code>cp SRC DEST</code>. 第一个参数是你要复制的东西,第二个参数是要复制到的目标位置.</p>
+</li>
+<li><p>在第三条命令中,我们想要改变程序的行为,于是我们让 <strong>ls</strong> 打印出每个文件的详细信息,而不仅是文件名.这时的 <code>-l</code> 就是可选参数.</p>
+</li>
+<li><p>第四条命令是让显示一段帮助信息.在你从来没有用过一个命令的时候,这是非常有用的,我们简单地通过查看帮助文字就可以明白一个命令是怎样工作的.</p>
+</li>
+</ul>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>让我们从一个非常简单的例子开始,下面这段代码几乎什么都不做:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.parse_args()
+</code></pre><p>程序的运行结果如下:</p>
+<pre><code>$ python3 prog.py
+$ python3 prog.py --help
+usage: prog.py [-h]
+
+optional arguments:
+  -h, --help  show this help message and exit
+$ python3 prog.py --verbose
+usage: prog.py [-h]
+prog.py: error: unrecognized arguments: --verbose
+$ python3 prog.py foo
+usage: prog.py [-h]
+prog.py: error: unrecognized arguments: foo
+</code></pre><p>解释一下每次程序都做了什么:</p>
+<ul>
+<li><p>不加任何选项就运行,结果什么都没有打印到标准输出.这没啥意思.</p>
+</li>
+<li><p>第二条命令已经开始体现出 argparse 模块的优势了:即使我们什么都没做,也能自动显示出漂亮的帮助信息.</p>
+</li>
+<li><p><code>--help</code> 选项(或缩写 <code>-h</code>),是唯一被自动添加的选项.在命令中给出任何其他的选项都会导致错误.</p>
+</li>
+</ul>
+<h2 id="必选参数"><a href="#必选参数" class="headerlink" title="必选参数"></a>必选参数</h2><p>一个例子:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;echo&quot;)
+args = parser.parse_args()
+print(args.echo)
+</code></pre><p>运行结果:</p>
+<pre><code>$ python3 prog.py
+usage: prog.py [-h] echo
+prog.py: error: the following arguments are required: echo
+$ python3 prog.py --help
+usage: prog.py [-h] echo
+
+positional arguments:
+  echo
+
+optional arguments:
+  -h, --help  show this help message and exit
+$ python3 prog.py foo
+foo
+</code></pre><p>解释一下程序做了什么:</p>
+<ul>
+<li><p><code>add_argument()</code> 方法用来添加我们想要的选项.在例子中,我们添加了一个叫 <code>echo</code> 的选项.</p>
+</li>
+<li><p>现在运行程序必须指定一个参数</p>
+</li>
+<li><p><code>parse_args()</code> 方法返回一些参数中指明的数据，比如例子中的 <code>echo</code>.</p>
+</li>
+<li><p><code>args.echo</code> 是一个”有魔力”的变量,即我们不需要指定在 <code>echo</code> 参数位置上的值用什么变量来存储，argparse 自动创建一个和参数名相同名字的变量，作为 <code>parse_args()</code> 返回值的方法.</p>
+</li>
+</ul>
+<p>注意到,虽然帮助信息看起来漂亮齐全,但其实它并不够有用.我们通过帮助可以知道有一个叫 <code>echo</code> 的位置参数，但不能从帮助信息中得知它的作用.下面做一点小的改动:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;echo&quot;, help=&quot;echo the string you use here&quot;)
+args = parser.parse_args()
+print(args.echo)
+</code></pre><p>然后结果变成这样：</p>
+<pre><code>$ python3 prog.py -h
+usage: prog.py [-h] echo
+
+positional arguments:
+  echo        echo the string you use here
+
+optional arguments:
+  -h, --help  show this help message and exit
+</code></pre><p>让我们做些更有用的东西:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;square&quot;, help=&quot;display a square of a given number&quot;)
+args = parser.parse_args()
+print(args.square**2)
+</code></pre><p>运行结果如下:</p>
+<pre><code>$ python3 prog.py 4
+Traceback (most recent call last):
+  File &quot;prog.py&quot;, line 5, in &lt;module&gt;
+    print(args.square**2)
+TypeError: unsupported operand type(s) for ** or pow(): &apos;str&apos; and &apos;int&apos;
+</code></pre><p>出了点问题.这是因为,除非另外说明, argparse 把我们传给它的参数当成字符串类型.那么,我们可以告诉 argparse 把输入作为整数类型对待:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;square&quot;, help=&quot;display a square of a given number&quot;,
+                    type=int)
+args = parser.parse_args()
+print(args.square**2)
+</code></pre><p>下面是运行结果:</p>
+<pre><code>$ python3 prog.py 4
+16
+$ python3 prog.py four
+usage: prog.py [-h] square
+prog.py: error: argument square: invalid int value: &apos;four&apos;
+</code></pre><p>这样就对了. 现在程序不仅能对正确的输入给出正确的结果,还能对错误的输入及时给出有用的提示并退出. </p>
+<h2 id="可选参数"><a href="#可选参数" class="headerlink" title="可选参数"></a>可选参数</h2><p>现在我们已经可以添加必选参数了.下面我们来看一下可选参数是怎么添加的:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;--verbosity&quot;, help=&quot;increase output verbosity&quot;)
+args = parser.parse_args()
+if args.verbosity:
+    print(&quot;verbosity turned on&quot;)
+</code></pre><p>结果是:</p>
+<pre><code>$ python3 prog.py --verbosity 1
+verbosity turned on
+$ python3 prog.py
+$ python3 prog.py --help
+usage: prog.py [-h] [--verbosity VERBOSITY]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --verbosity VERBOSITY
+                        increase output verbosity
+$ python3 prog.py --verbosity
+usage: prog.py [-h] [--verbosity VERBOSITY]
+prog.py: error: argument --verbosity: expected one argument
+</code></pre><p>解释一下发生了什么:</p>
+<ul>
+<li><p>这个程序在有 <code>--verbosity</code> 选项的时候输出一段话,在没有选项的时候就什么都不输出</p>
+</li>
+<li><p>不加这个选项,程序也可以正常运行,证明了这个选项确实是可选的.注意到,在默认情况下,可选参数是不被使用的,这种情况下,选项对应的变量(本例中是 <code>args.verbosity</code>)被赋值为 <code>None</code>,这时它作为 <code>if</code> 语句中的条件表达式就会被认为是假.</p>
+</li>
+<li><p>帮助信息和之前有一些不同.</p>
+</li>
+<li><p>当使用 <code>--verbosity</code> 选项的时候,必须给定一个值,这个值可以是任意的.</p>
+</li>
+</ul>
+<p>上面的例子中,任意的整数值都可以被 <code>--verbosity</code> 接受,但是对于简单的程序来说,其实只要两个值就够了,那就是 <code>True</code> 和 <code>False</code>. 让我们修改代码来做到这一点:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;--verbose&quot;, help=&quot;increase output verbosity&quot;,
+                    action=&quot;store_true&quot;)
+args = parser.parse_args()
+if args.verbose:
+    print(&quot;verbosity turned on&quot;)
+</code></pre><p>然后结果变成:</p>
+<pre><code>$ python3 prog.py --verbose
+verbosity turned on
+$ python3 prog.py --verbose 1
+usage: prog.py [-h] [--verbose]
+prog.py: error: unrecognized arguments: 1
+$ python3 prog.py --help
+usage: prog.py [-h] [--verbose]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --verbose   increase output verbosity
+</code></pre><p>这时候的情况是:</p>
+<ul>
+<li><p>现在这个选项不再需要一个值,而是变成了一个标志. 为了体现这一点,我们甚至把选项的名字改了. 现在我们指定了一个新关键字 <code>action</code>, 它的值是 <code>store_true</code>. 这意味着,如果用户给出了这个参数,就为 <code>args.verbose</code> 赋值 <code>True</code>, 否则赋值 <code>False</code>.</p>
+</li>
+<li><p>这个选项确实是作为一个标志,如果你给它指定一个值,将会出错.</p>
+</li>
+<li><p>帮助信息又有一些不同.</p>
+</li>
+</ul>
+<h3 id="短选项"><a href="#短选项" class="headerlink" title="短选项"></a>短选项</h3><p>如果你对命令行的使用比较熟悉的话,你会发现有一个方面我们还没有涉及,那就是短选项.它实现起来很简单:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;-v&quot;, &quot;--verbose&quot;, help=&quot;increase output verbosity&quot;,
+                    action=&quot;store_true&quot;)
+args = parser.parse_args()
+if args.verbose:
+    print(&quot;verbosity turned on&quot;)
+</code></pre><p>运行结果:</p>
+<pre><code>$ python3 prog.py -v
+verbosity turned on
+$ python3 prog.py --help
+usage: prog.py [-h] [-v]
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -v, --verbose  increase output verbosity
+</code></pre><p>注意到这个新功能在帮助文本里也反映了出来.</p>
+<h2 id="必选参数和可选参数的结合"><a href="#必选参数和可选参数的结合" class="headerlink" title="必选参数和可选参数的结合"></a>必选参数和可选参数的结合</h2><p>我们继续让程序变得更复杂:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;square&quot;, type=int,
+                    help=&quot;display a square of a given number&quot;)
+parser.add_argument(&quot;-v&quot;, &quot;--verbose&quot;, action=&quot;store_true&quot;,
+                    help=&quot;increase output verbosity&quot;)
+args = parser.parse_args()
+answer = args.square**2
+if args.verbose:
+    print(&quot;the square of {} equals {}&quot;.format(args.square, answer))
+else:
+    print(answer)
+</code></pre><p>然后结果是:</p>
+<pre><code>$ python3 prog.py
+usage: prog.py [-h] [-v] square
+prog.py: error: the following arguments are required: square
+$ python3 prog.py 4
+16
+$ python3 prog.py 4 --verbose
+the square of 4 equals 16
+$ python3 prog.py --verbose 4
+the square of 4 equals 16
+</code></pre><ul>
+<li><p>我们加回了一个必选参数,因此运行时什么参数都不给会出错</p>
+</li>
+<li><p>注意必选参数和可选参数的顺序是无所谓的.</p>
+</li>
+</ul>
+<p>如果我们让程序可以处理多个 verbosity 级别,我们可以让 verbosity 选项拥有值,并且使用该值:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;square&quot;, type=int,
+                    help=&quot;display a square of a given number&quot;)
+parser.add_argument(&quot;-v&quot;, &quot;--verbosity&quot;, type=int,
+                    help=&quot;increase output verbosity&quot;)
+args = parser.parse_args()
+answer = args.square**2
+if args.verbosity == 2:
+    print(&quot;the square of {} equals {}&quot;.format(args.square, answer))
+elif args.verbosity == 1:
+    print(&quot;{}^2 == {}&quot;.format(args.square, answer))
+else:
+    print(answer)
+</code></pre><p>结果是:</p>
+<pre><code>$ python3 prog.py 4
+16
+$ python3 prog.py 4 -v
+usage: prog.py [-h] [-v VERBOSITY] square
+prog.py: error: argument -v/--verbosity: expected one argument
+$ python3 prog.py 4 -v 1
+4^2 == 16
+$ python3 prog.py 4 -v 2
+the square of 4 equals 16
+$ python3 prog.py 4 -v 3
+16
+</code></pre><p>除了最后一次运行之外都一切正常,这暴露出了我们程序中的一个 bug. 我们可以通过限制 <code>--verbosity</code> 选项可以接受的值来修正这个 bug:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;square&quot;, type=int,
+                    help=&quot;display a square of a given number&quot;)
+parser.add_argument(&quot;-v&quot;, &quot;--verbosity&quot;, type=int, choices=[0, 1, 2],
+                    help=&quot;increase output verbosity&quot;)
+args = parser.parse_args()
+answer = args.square**2
+if args.verbosity == 2:
+    print(&quot;the square of {} equals {}&quot;.format(args.square, answer))
+elif args.verbosity == 1:
+    print(&quot;{}^2 == {}&quot;.format(args.square, answer))
+else:
+    print(answer)
+</code></pre><p>运行结果是:</p>
+<pre><code>$ python3 prog.py 4 -v 3
+usage: prog.py [-h] [-v {0,1,2}] square
+prog.py: error: argument -v/--verbosity: invalid choice: 3 (choose from 0, 1, 2)
+$ python3 prog.py 4 -h
+usage: prog.py [-h] [-v {0,1,2}] square
+
+positional arguments:
+  square                display a square of a given number
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v {0,1,2}, --verbosity {0,1,2}
+                        increase output verbosity
+</code></pre><p>注意到这个限制在出错信息和帮助文本里也同样体现了出来.</p>
+<p>然后我们可以用另一种常见的方法来使用 verbosity:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;square&quot;, type=int,
+                    help=&quot;display the square of a given number&quot;)
+parser.add_argument(&quot;-v&quot;, &quot;--verbosity&quot;, action=&quot;count&quot;,
+                    help=&quot;increase output verbosity&quot;)
+args = parser.parse_args()
+answer = args.square**2
+if args.verbosity == 2:
+    print(&quot;the square of {} equals {}&quot;.format(args.square, answer))
+elif args.verbosity == 1:
+    print(&quot;{}^2 == {}&quot;.format(args.square, answer))
+else:
+    print(answer)
+</code></pre><p>我们引入了另一个 action, “count”, 来为某个可选参数出现的次数计数:</p>
+<pre><code>$ python3 prog.py 4
+16
+$ python3 prog.py 4 -v
+4^2 == 16
+$ python3 prog.py 4 -vv
+the square of 4 equals 16
+$ python3 prog.py 4 --verbosity --verbosity
+the square of 4 equals 16
+$ python3 prog.py 4 -v 1
+usage: prog.py [-h] [-v] square
+prog.py: error: unrecognized arguments: 1
+$ python3 prog.py 4 -h
+usage: prog.py [-h] [-v] square
+
+positional arguments:
+  square           display a square of a given number
+
+optional arguments:
+  -h, --help       show this help message and exit
+  -v, --verbosity  increase output verbosity
+$ python3 prog.py 4 -vvv
+16
+</code></pre><ul>
+<li><p>现在这个参数更像是一个标志(和 `action=”store_true”)类似, 这解释了为什么给它一个值会出错.</p>
+</li>
+<li><p>参数的行为也和 “store_true” 的行为类似</p>
+</li>
+<li><p>例子中示范出了 “count” 行为是如何工作的. 你可能之前看到过类似的用法.</p>
+</li>
+<li><p>和 “store_true” 行为一样,如果你没有指定 <code>-v</code> 标志, 这个标志对应的变量的值应该是 <code>None</code>.</p>
+</li>
+<li><p>和预计的一样,长选项和短选项具有相同的效果.</p>
+</li>
+<li><p>遗憾的是,对于我们要求的新的功能 (verbosity 级别只能是 0,1,2), 我们的帮助信息中并没有说明. 不过我们可以通过修改在 <code>help</code> 关键字中给出的信息来解决这个问题.</p>
+</li>
+<li><p>最后一个运行暴露了我们程序中的一个 bug.</p>
+</li>
+</ul>
+<p>让我们修正这个 bug:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;square&quot;, type=int,
+                    help=&quot;display a square of a given number&quot;)
+parser.add_argument(&quot;-v&quot;, &quot;--verbosity&quot;, action=&quot;count&quot;,
+                    help=&quot;increase output verbosity&quot;)
+args = parser.parse_args()
+answer = args.square**2
+
+# bugfix: replace == with &gt;=
+if args.verbosity &gt;= 2:
+    print(&quot;the square of {} equals {}&quot;.format(args.square, answer))
+elif args.verbosity &gt;= 1:
+    print(&quot;{}^2 == {}&quot;.format(args.square, answer))
+else:
+    print(answer)
+</code></pre><p>现在程序运行结果变成了:</p>
+<pre><code>$ python3 prog.py 4 -vvv
+the square of 4 equals 16
+$ python3 prog.py 4 -vvvv
+the square of 4 equals 16
+$ python3 prog.py 4
+Traceback (most recent call last):
+  File &quot;prog.py&quot;, line 11, in &lt;module&gt;
+    if args.verbosity &gt;= 2:
+TypeError: unorderable types: NoneType() &gt;= int()
+</code></pre><ul>
+<li><p>第一次运行结果是正确的,修正了之前程序中的 bug. 我们让所有 &gt;= 2 的值都认为是最高级别的 verbosity.</p>
+</li>
+<li><p>第三次运行结果有问题.</p>
+</li>
+</ul>
+<p>继续修正 bug:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;square&quot;, type=int,
+                    help=&quot;display a square of a given number&quot;)
+parser.add_argument(&quot;-v&quot;, &quot;--verbosity&quot;, action=&quot;count&quot;, default=0,
+                    help=&quot;increase output verbosity&quot;)
+args = parser.parse_args()
+answer = args.square**2
+if args.verbosity &gt;= 2:
+    print(&quot;the square of {} equals {}&quot;.format(args.square, answer))
+elif args.verbosity &gt;= 1:
+    print(&quot;{}^2 == {}&quot;.format(args.square, answer))
+else:
+    print(answer)
+</code></pre><p>我们又引入了一个新的关键字, <code>default</code>. 将默认值设置成0, 使得它总是能够和整数值想比较. 如果不这么设置, 如果可选参数没有给定, 变量的值会是 <code>None</code>, 和整数值无法比较, 会引发 <code>TypeError</code> 异常.</p>
+<p>看到这里相信你已经学会了不少东西了, 但是 argparse 模块太强大了, 我们在最后还要再介绍一些内容.</p>
+<h2 id="一点高级用法"><a href="#一点高级用法" class="headerlink" title="一点高级用法"></a>一点高级用法</h2><p>如果我们想让程序不再只是计算平方值, 而是拥有高级一点的功能:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;x&quot;, type=int, help=&quot;the base&quot;)
+parser.add_argument(&quot;y&quot;, type=int, help=&quot;the exponent&quot;)
+parser.add_argument(&quot;-v&quot;, &quot;--verbosity&quot;, action=&quot;count&quot;, default=0)
+args = parser.parse_args()
+answer = args.x**args.y
+if args.verbosity &gt;= 2:
+    print(&quot;{} to the power {} equals {}&quot;.format(args.x, args.y, answer))
+elif args.verbosity &gt;= 1:
+    print(&quot;{}^{} == {}&quot;.format(args.x, args.y, answer))
+else:
+    print(answer)
+</code></pre><p>结果是:</p>
+<pre><code>$ python3 prog.py
+usage: prog.py [-h] [-v] x y
+prog.py: error: the following arguments are required: x, y
+$ python3 prog.py -h
+usage: prog.py [-h] [-v] x y
+
+positional arguments:
+  x                the base
+  y                the exponent
+
+optional arguments:
+  -h, --help       show this help message and exit
+  -v, --verbosity
+$ python3 prog.py 4 2 -v
+4^2 == 16
+</code></pre><p>刚才我们通过 verbosity 级别来改变结果输出的格式, 下面一个例子改成用 verbosity 级别来输出更多的信息:</p>
+<pre><code>import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument(&quot;x&quot;, type=int, help=&quot;the base&quot;)
+parser.add_argument(&quot;y&quot;, type=int, help=&quot;the exponent&quot;)
+parser.add_argument(&quot;-v&quot;, &quot;--verbosity&quot;, action=&quot;count&quot;, default=0)
+args = parser.parse_args()
+answer = args.x**args.y
+if args.verbosity &gt;= 2:
+    print(&quot;Running &apos;{}&apos;&quot;.format(__file__))
+if args.verbosity &gt;= 1:
+    print(&quot;{}^{} == &quot;.format(args.x, args.y), end=&quot;&quot;)
+print(answer)
+</code></pre><p>运行结果:</p>
+<pre><code>$ python3 prog.py 4 2
+16
+$ python3 prog.py 4 2 -v
+4^2 == 16
+$ python3 prog.py 4 2 -vv
+Running &apos;prog.py&apos;
+4^2 == 16
+</code></pre><h3 id="有冲突的选项"><a href="#有冲突的选项" class="headerlink" title="有冲突的选项"></a>有冲突的选项</h3><p>到目前为止我们都是在使用 <code>argparse.ArgumentParser</code> 实例的两个方法. 下面介绍第三个方法, <code>add_mutually_exclusive_group()</code>. 这个方法让我们可以制定互相冲突的选项. 我们对程序进行一些更改,使得新功能有意义: 我们引入 <code>--quiet</code> 选项, 和 <code>--verboes</code> 选项是对立的.</p>
+<pre><code>import argparse
+
+parser = argparse.ArgumentParser()
+group = parser.add_mutually_exclusive_group()
+group.add_argument(&quot;-v&quot;, &quot;--verbose&quot;, action=&quot;store_true&quot;)
+group.add_argument(&quot;-q&quot;, &quot;--quiet&quot;, action=&quot;store_true&quot;)
+parser.add_argument(&quot;x&quot;, type=int, help=&quot;the base&quot;)
+parser.add_argument(&quot;y&quot;, type=int, help=&quot;the exponent&quot;)
+args = parser.parse_args()
+answer = args.x**args.y
+
+if args.quiet:
+    print(answer)
+elif args.verbose:
+    print(&quot;{} to the power {} equals {}&quot;.format(args.x, args.y, answer))
+else:
+    print(&quot;{}^{} == {}&quot;.format(args.x, args.y, answer))
+</code></pre><p>现在程序变得简单了一些,为了便于展示,我们牺牲了一些程序功能. 下面是运行结果:</p>
+<pre><code>$ python3 prog.py 4 2
+4^2 == 16
+$ python3 prog.py 4 2 -q
+16
+$ python3 prog.py 4 2 -v
+4 to the power 2 equals 16
+$ python3 prog.py 4 2 -vq
+usage: prog.py [-h] [-v | -q] x y
+prog.py: error: argument -q/--quiet: not allowed with argument -v/--verbose
+$ python3 prog.py 4 2 -v --quiet
+usage: prog.py [-h] [-v | -q] x y
+prog.py: error: argument -q/--quiet: not allowed with argument -v/--verbose
+</code></pre><p>应该容易看得懂. 最后一个例子是为了说明参数的一些灵活性,长选项和短选项是可以混合的.</p>
+<p>最后一个内容,你可能想要告诉用户你的程序的主要功能,以防他们不知道:</p>
+<pre><code>import argparse
+
+parser = argparse.ArgumentParser(description=&quot;calculate X to the power of Y&quot;)
+group = parser.add_mutually_exclusive_group()
+group.add_argument(&quot;-v&quot;, &quot;--verbose&quot;, action=&quot;store_true&quot;)
+group.add_argument(&quot;-q&quot;, &quot;--quiet&quot;, action=&quot;store_true&quot;)
+parser.add_argument(&quot;x&quot;, type=int, help=&quot;the base&quot;)
+parser.add_argument(&quot;y&quot;, type=int, help=&quot;the exponent&quot;)
+args = parser.parse_args()
+answer = args.x**args.y
+
+if args.quiet:
+    print(answer)
+elif args.verbose:
+    print(&quot;{} to the power {} equals {}&quot;.format(args.x, args.y, answer))
+else:
+    print(&quot;{}^{} == {}&quot;.format(args.x, args.y, answer))
+
+
+$ python3 prog.py --help
+usage: prog.py [-h] [-v | -q] x y
+
+calculate X to the power of Y
+
+positional arguments:
+  x              the base
+  y              the exponent
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -v, --verbose
+  -q, --quiet
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>argparse</code> 模块提供的功能远比我们介绍到的要多. 它的文档相当全面细致,而且有很多的例子. 在看过这个 tutorial 之后, 你应该可以仔细研究那份文档而不会晕头转向了.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/2015/Hello-World/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/2016/Gluttonous-Snake/" rel="prev" title="用HTML5 Canvas实现一个贪吃蛇小游戏">
+                用HTML5 Canvas实现一个贪吃蛇小游戏 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/3953668?s=460&v=4"
+                alt="nettee" />
+            
+              <p class="site-author-name" itemprop="name">nettee</p>
+              <p class="site-description motion-element" itemprop="description">持续学习中...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/nettee" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:nettee.liu@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://juejin.im/user/5c68d1196fb9a04a0164de03" target="_blank" title="掘金">
+                    
+                      <i class="fa fa-fw fa-globe"></i>掘金</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://www.zhihu.com/people/nettee" target="_blank" title="知乎">
+                    
+                      <i class="fa fa-fw fa-globe"></i>知乎</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一些概念"><span class="nav-number">1.</span> <span class="nav-text">一些概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识"><span class="nav-number">2.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#必选参数"><span class="nav-number">3.</span> <span class="nav-text">必选参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可选参数"><span class="nav-number">4.</span> <span class="nav-text">可选参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#短选项"><span class="nav-number">4.1.</span> <span class="nav-text">短选项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#必选参数和可选参数的结合"><span class="nav-number">5.</span> <span class="nav-text">必选参数和可选参数的结合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一点高级用法"><span class="nav-number">6.</span> <span class="nav-text">一点高级用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#有冲突的选项"><span class="nav-number">6.1.</span> <span class="nav-text">有冲突的选项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nettee</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://nettee.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://yoursite.com/posts/2015/Python-Argparse-Tutorial/';
+          this.page.identifier = 'posts/2015/Python-Argparse-Tutorial/';
+          this.page.title = 'Python Argparse Tutorial 翻译';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://nettee.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+</body>
+</html>
