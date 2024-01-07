@@ -1,0 +1,14 @@
+name: 'Deploy to nettee.github.io'
+on: 
+  push:
+    branches:
+      - main
+jobs:
+  generate-blog:
+    name: 'Generate blog files'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: pwd && ls
