@@ -1,4 +1,4 @@
-# test 2
+# test 3
 name: 'Deploy to nettee.github.io'
 on: 
   push:
@@ -11,5 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build
-        run: pwd && ls
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - run: npm install
+      - run: git clone https://github.com/nettee/hexo-theme-next themes/next
