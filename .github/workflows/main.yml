@@ -1,4 +1,4 @@
-# test 8
+# test 9
 name: 'Deploy blog'
 on: 
   push:
@@ -25,12 +25,11 @@ jobs:
           hexo clean
           hexo generate
       - name: Push files
-        run: |
-          cd ./public
-          git init
-          git config user.name "nettee"
-          git config user.email "nettee.liu@gmail.com"
-          git add .
-          git commit -m "Deploy blog pages"
-          git push --force --quiet "https://nettee@github.com/nettee/nettee.github.io" master:master
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: public
+          branch: master
+          git-config-name: nettee
+          git-config-email: nettee.liu@gmail.com
+          dry-run: true
 
