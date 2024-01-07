@@ -1,12 +1,12 @@
-# test 5
-name: 'Deploy to nettee.github.io'
+# test 6
+name: 'Deploy blog'
 on: 
   push:
     branches:
       - blog
 jobs:
   generate-blog:
-    name: 'Generate blog files'
+    name: 'Deploy to nettee.github.io'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,4 +24,11 @@ jobs:
         run: |
           hexo clean
           hexo generate
+      - name: Push files
+        run: |
+          cd ./public
+          git init
+          git add .
+          git commit -m "Deploy blog pages"
+          git push --force --quiet "https://github.com/nettee/nettee.github.io" master:master
 
