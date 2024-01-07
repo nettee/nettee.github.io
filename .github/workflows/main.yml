@@ -23,11 +23,3 @@ jobs:
         run: |
           hexo clean
           hexo generate
-      - name: Push files
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: public
-          branch: master
-          git-config-name: nettee
-          git-config-email: nettee.liu@gmail.com
-

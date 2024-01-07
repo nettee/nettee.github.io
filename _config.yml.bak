@@ -13,8 +13,8 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://nettee.cn
-root: /
+url: http://nettee.cn/blog
+root: /blog/
 permalink: posts/:year/:title/
 permalink_defaults:
 
@@ -81,5 +81,5 @@ theme: next
 ## Docs: http://hexo.io/docs/deployment.html
 deploy: 
   type: git
-  repository: git@github.com:nettee/nettee.github.io
+  repository: git@49.235.68.240:/home/git/hexo.git
   branch: master
