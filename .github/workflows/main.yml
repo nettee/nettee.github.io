@@ -1,4 +1,4 @@
-# test 7
+# test 8
 name: 'Deploy blog'
 on: 
   push:
@@ -32,5 +32,5 @@ jobs:
           git config user.email "nettee.liu@gmail.com"
           git add .
           git commit -m "Deploy blog pages"
-          git push --force --quiet "https://github.com/nettee/nettee.github.io" master:master
+          git push --force --quiet "https://nettee@github.com/nettee/nettee.github.io" master:master
 
