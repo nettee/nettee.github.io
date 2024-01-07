@@ -1,4 +1,4 @@
-# test 9
+# test 10
 name: 'Deploy blog'
 on: 
   push:
@@ -31,5 +31,4 @@ jobs:
           branch: master
           git-config-name: nettee
           git-config-email: nettee.liu@gmail.com
-          dry-run: true
 
