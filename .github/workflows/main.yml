@@ -17,8 +17,7 @@ jobs:
       - name: Setup Hexo
         run: |
           npm install
-          npm install -g hexo
-          git clone https://github.com/nettee/hexo-theme-next themes/next
+          npm install -g hexo-cli
       - name: Build Hexo
         run: |
           hexo clean

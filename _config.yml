@@ -8,7 +8,7 @@ subtitle: Less is more than more.
 description: 持续学习中...
 author: nettee
 email: nettee.liu@gmail.com
-language: zh-Hans
+language: zh-CN
 timezone:
 
 # URL
@@ -30,6 +30,9 @@ skip_render: [games/**, depview/**, knowledge/**]
 
 # when new an article, create a directory with same name
 post_asset_folder: true
+marked:
+  prependRoot: true
+  postAsset: true
 
 # Writing
 new_post_name: :title.md # File name of new posts
@@ -75,7 +78,8 @@ pagination_dir: page
 #  hub:
 
 ## Themes: http://hexo.io/themes/
-theme: next
+# theme: next
+theme: icarus
 
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
