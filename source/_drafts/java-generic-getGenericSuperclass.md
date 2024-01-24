@@ -39,6 +39,8 @@ void handle(String message, Class<T> clazz) {
 
 为了一探究竟，我打开 netty 的源码，获取泛型类型的关键就在于这一行代码：
 
+<!-- more -->
+
 ```Java
 matcher = TypeParameterMatcher.find(this, SimpleChannelInboundHandler.class, "I");
 ```
