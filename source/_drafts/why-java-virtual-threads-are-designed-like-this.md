@@ -1,6 +1,9 @@
 title: Java 的虚拟线程为什么设计成这样？
-tags: [Java]
+tags:
+  - Java
+date: 2024-01-28 13:38:54
 ---
+
 
 Java 的主要思路还是尽量保持兼容性。
 
