@@ -1,4 +1,6 @@
 title: 从 SimpleChannelInboundHandler 看 Java 如何获取真实泛型类型
+categories:
+- 编程
 tags: [Java]
 ---
 
