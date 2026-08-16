@@ -3121,3 +3121,39 @@ pre .javascript .function {
     margin: 8px 0 0;
   }
 }
+
+.site-migration-banner {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 20px;
+  background: #e8f4fd;
+  border-bottom: 1px solid #b8dcf5;
+  color: #24536f;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+.site-migration-banner a {
+  color: #0b6fac;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.site-migration-banner a:hover,
+.site-migration-banner a:focus {
+  color: #084d78;
+}
+@media (max-width: 767px) {
+  .site-migration-banner {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+}
+@media print {
+  .site-migration-banner {
+    display: none;
+  }
+}

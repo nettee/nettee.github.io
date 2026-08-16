@@ -4,6 +4,19 @@ $(document).ready(function () {
 
   $(document).trigger('bootstrap:before');
 
+  $('<aside>', {
+    'class': 'site-migration-banner',
+    'role': 'status',
+    'aria-label': '博客迁移通知'
+  }).append(
+    $('<span>').text('本站已迁移至新地址 '),
+    $('<a>', {
+      'href': 'https://nettee.io/',
+      'text': 'nettee.io',
+      'aria-label': '访问博客新地址 nettee.io'
+    })
+  ).prependTo(document.body);
+
   NexT.utils.isMobile() && window.FastClick.attach(document.body);
 
   NexT.utils.lazyLoadPostsImages();
